@@ -1,0 +1,574 @@
+/* ========================================= */
+/* --- Global / Body Styles --- */
+/* ========================================= */
+body {
+    font-family: -apple-system, BlinkMacMacFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"; /* iOS-like system fonts */
+    -webkit-font-smoothing: antialiased; /* Smooth typography */
+    -moz-osx-font-smoothing: grayscale; /* For Firefox */
+    margin: 0;
+    padding: 0;
+    background-color: #F8F8F8; /* A light, clean background color */
+    color: #333; /* Default text color */
+}
+
+/* ========================================= */
+/* --- Header Section --- */
+/* ========================================= */
+header {
+    width: 100%;
+    /* Reduced padding to match screenshot's tighter feel */
+    padding: 8px 0; /* Changed from 10px 0 to 8px 0 for a slightly thinner header */
+    position: fixed; /* Header remains fixed at the top */
+    top: 0;
+    left: 0;
+    z-index: 1000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden; /* Important for clean transitions */
+
+    /* Default visible state with NO glassmorphism (clean appearance) */
+    transform: translateY(0); /* Start visible */
+    opacity: 1;
+    backdrop-filter: blur(0px); /* Initially no blur */
+    background-color: rgba(255, 255, 255, 0); /* Initially transparent */
+    box-shadow: none; /* Initially no shadow */
+
+    /* Transition for when it hides/shows based on scroll/hover and applies glassmorphism */
+    transition: transform 0.3s ease-out, opacity 0.3s ease-out, backdrop-filter 0.3s ease-out, background-color 0.3s ease-out, box-shadow 0.3s ease-out;
+}
+
+/* This class will be added by JS when header needs glassmorphism effect */
+header.show-glassmorphism {
+    backdrop-filter: blur(15px);
+    background-color: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+/* This class will be added by JS to hide the header when scrolling down/not hovered */
+header.hide-header {
+    transform: translateY(-100%); /* Move off-screen upwards */
+    opacity: 0;
+    backdrop-filter: blur(0px); /* Remove blur when hidden */
+    background-color: rgba(255, 255, 255, 0); /* Make fully transparent when hidden */
+    box-shadow: none; /* Remove shadow when hidden */
+}
+
+
+.header-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    /* Adjusted width: To push content closer to edges as per screenshot */
+    width: 95%; /* Increased from 90% to 95% for more edge-to-edge content */
+    max-width: 1200px;
+}
+
+/* --- Company Name (NexGen Graphics) --- */
+.company-name {
+    position: relative;
+    /* Font size: Make it a bit larger, as seen in the screenshot */
+    font-size: 1em; /* Adjusted to 1em */
+    font-weight: 500;
+    color: #333;
+    cursor: pointer;
+    line-height: 1; /* Keep this at 1 to align with the nav bar's vertical center */
+}
+
+.company-name a {
+    color: inherit;
+    text-decoration: none;
+    position: relative;
+    z-index: 1;
+    display: inline-block;
+    /* Default dark text color, will be overridden by shimmer-active */
+    background: none;
+    -webkit-background-clip: unset;
+    -webkit-text-fill-color: initial;
+    background-clip: unset;
+    text-fill-color: initial;
+    transition: background-position 0.2s ease-out; /* For hover effect */
+}
+
+/* For the shimmer animation on text */
+@keyframes text-shimmer {
+    0% { background-position: -100% 0; }
+    100% { background-position: 100% 0; }
+}
+
+.company-name.shimmer-active a {
+    background: linear-gradient(90deg, #333, #fff, #333); /* Dark text with white sparkle */
+    background-size: 200% 100%; /* Make gradient wider than text */
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-fill-color: transparent; /* Standard property */
+    animation: text-shimmer 8s infinite linear; /* Duration changed to 8 seconds */
+}
+
+/* Disappearing "Click Me" text */
+.about-us-click-hint {
+    position: absolute;
+    bottom: -15px; /* Position below "NexGen Graphics" */
+    left: 0; /* Keep it aligned with the company name */
+    font-size: 0.7em; /* Slightly smaller for subtlety */
+    font-weight: 400;
+    color: rgba(0, 0, 0, 0.4); /* Light semi-transparent text */
+    opacity: 0;
+    transition: opacity 0.3s ease-out;
+    pointer-events: none;
+    white-space: nowrap;
+}
+
+.about-us-click-hint.show {
+    opacity: 1;
+}
+
+/* --- Navigation Bar --- */
+.main-nav ul {
+    list-style: none;
+    display: flex;
+    padding: 0;
+    margin: 0;
+    background-color: #3C3C3C; /* Dark gray background for the nav container */
+    /* Border-radius: Match screenshot's smooth pill shape */
+    border-radius: 20px; /* Adjusted from 28px to 20px for a tighter pill */
+    overflow: hidden;
+    position: relative;
+    /* Height: Make it tightly fit the content as per screenshot */
+    height: 30px; /* Adjusted to 30px */
+    align-items: center;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08); /* Soft shadow for dimension */
+
+    /* This is the transition that will animate its appearance */
+    transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55), opacity 0.4s ease-out;
+}
+
+/* Class for the initial hidden state - applied directly in HTML */
+.main-nav ul.nav-hidden-initial {
+    transform: scaleX(0);
+    opacity: 0;
+}
+
+/* This class will be added by JS to trigger the pop-out animation */
+/* It effectively brings it to its final visible state */
+.main-nav ul.show-nav-initial {
+    transform: scaleX(1);
+    opacity: 1;
+}
+
+
+.main-nav li {
+    padding: 0;
+    position: relative;
+    z-index: 1;
+}
+
+.main-nav a {
+    display: flex;
+    align-items: center;
+    /* Padding: Fine-tune for a perfect fit and spacing within the pill */
+    padding: 3px 7px; /* Adjusted to 3px 7px */
+    color: #D3D3D3; /* Light gray text for inactive links */
+    text-decoration: none;
+    font-weight: 500;
+    white-space: nowrap;
+    /* Border-radius: Match this to the active bar's border-radius for smooth transition */
+    border-radius: 18px; /* Adjusted from 20px to 18px to match active bar */
+    /* Font size: Fine-tune for letter blending as per screenshot */
+    font-size: 1em; /* Adjusted to 1em */
+    transform: scale(1); /* Default scale */
+    transition: color 0.2s ease, transform 0.2s ease-out; /* Add transform to transition */
+}
+
+.main-nav a:hover {
+    color: #FFFFFF;
+    transform: scale(1.05); /* Slight enlarge on hover */
+}
+
+/* Active Page Indicator (the moving bar) */
+.active-bar {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: #c8c8c8; /* Light gray for the active bar */
+    /* Border-radius: Match nav links for a consistent pill shape when active */
+    border-radius: 20px; /* Adjusted from 20px to 18px to match nav links */
+    /* Height: Slightly less than 100% to ensure a small gap around it, matching screenshot */
+    height: calc(100% - 1px); /* Adjusted from 8px to 6px (3px top/bottom gap) */
+    width: calc(var(--active-bar-width, 0px) - 1px);
+    transition: transform 0.7s cubic-bezier(0.68, -0.55, 0.265, 1.55), width 0.7s cubic-bezier(0.68, -0.55, 0.265, 1.55), left 0.7s cubic-bezier(0.68, -0.55, 0.265, 1.55); /* Apply cubic-bezier for smoother active bar movement */
+    z-index: 0;
+}
+
+/* Style for the active navigation item - text color only */
+.main-nav li.active a {
+    color: #e8e8e8; /* Dark gray text for active link, to contrast with light gray bar */
+}
+
+/* Home icon styling */
+.main-nav .home-icon {
+    /* Set explicit width and height for the image */
+    width: 20px; /* Example size, adjust as needed */
+    height: 20px; /* Example size, adjust as needed */
+    vertical-align: middle; /* Align with text */
+    margin-right: 5px; /* Adjusted from 6px to 5px */
+    display: inline-block;
+    border-radius: 20px;
+    backface-visibility: hidden;
+    transform: rotateY(0deg) scale(1); /* Initial state for flip and zoom */
+    transition: transform 0.3s ease-out; /* Transition for zoom */
+}
+
+/* Icon flip and zoom animation */
+@keyframes icon-flip-zoom {
+    0% { transform: rotateY(0deg) scale(1); }
+    50% { transform: rotateY(180deg) scale(1.1); } /* Flip and slight zoom */
+    100% { transform: rotateY(360deg) scale(1); } /* Complete flip and return to original size */
+}
+
+/* Admin Link Styling */
+.admin-link {
+    position: relative;
+    /* Font size: Matched NexGen Graphics font size for consistency as per screenshot */
+    font-size: 1em; /* Adjusted to 1em */
+    font-weight: 500;
+    color: #333;
+    cursor: pointer;
+    line-height: 1; /* Match company-name for vertical alignment */
+}
+
+.admin-link a {
+    color: inherit;
+    text-decoration: none;
+    position: relative;
+    z-index: 1;
+    display: inline-block;
+    /* Default dark text color, will be overridden by shimmer-active */
+    background: none;
+    -webkit-background-clip: unset;
+    -webkit-text-fill-color: initial;
+    background-clip: unset;
+    text-fill-color: initial;
+    transition: background-position 0.2s ease-out;
+}
+
+.admin-link.shimmer-active a {
+    background: linear-gradient(90deg, #333, #fff, #333);
+    background-size: 200% 100%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-fill-color: transparent;
+    animation: text-shimmer 8s infinite linear; /* Duration changed to 8 seconds */
+}
+
+
+/* ========================================= */
+/* --- Modal Window (About Us, Admin Login, Contact) --- */
+/* ========================================= */
+.modal-window {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1002; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgba(0, 0, 0, 0.6); /* Black w/ opacity */
+    backdrop-filter: blur(8px); /* Subtle blur for the background */
+    -webkit-backdrop-filter: blur(8px); /* For Safari */
+    justify-content: center;
+    align-items: center;
+    opacity: 0; /* Start invisible for animation */
+    pointer-events: none; /* Allows clicks underneath initially */
+    transition: opacity 0.3s ease-out;
+}
+
+.modal-window.active {
+    display: flex; /* Show flex container */
+    opacity: 1; /* Fade in */
+    pointer-events: auto; /* Enable clicks */
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: auto; /* Center content vertically and horizontally */
+    padding: 30px; /* Increased padding for better spacing */
+    border-radius: 15px; /* Rounded corners for modal */
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2); /* Deeper shadow */
+    position: relative;
+    width: 80%; /* Adjust width as needed */
+    max-width: 700px; /* Max width for readability */
+    transform: translateY(20px); /* Start slightly below for pop-in effect */
+    opacity: 0;
+    transition: transform 0.3s ease-out, opacity 0.3s ease-out;
+}
+
+.modal-window.active .modal-content {
+    transform: translateY(0); /* Pop into place */
+    opacity: 1;
+}
+
+.close-button {
+    color: #aaa;
+    float: right;
+    font-size: 32px; /* Larger close button */
+    font-weight: bold;
+    position: absolute; /* Position relative to modal-content */
+    top: 10px;
+    right: 20px;
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+
+.close-button:hover,
+.close-button:focus {
+    color: #333;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.modal-content h2 {
+    color: #2c3e50; /* Darker heading color */
+    margin-top: 0;
+    margin-bottom: 20px;
+    font-size: 1.8em;
+}
+
+.modal-content p {
+    line-height: 1.6;
+    color: #555;
+    margin-bottom: 15px;
+}
+
+.modal-content ul {
+    list-style: disc inside;
+    margin-left: 20px;
+    padding: 0;
+    color: #555;
+}
+
+.modal-content ul li {
+    margin-bottom: 8px;
+}
+
+.contact-details p, .social-links a {
+    margin-bottom: 10px;
+}
+
+.social-links a {
+    display: inline-block;
+    background-color: #007bff; /* Example blue, adjust as needed */
+    color: white;
+    padding: 8px 15px;
+    border-radius: 5px;
+    text-decoration: none;
+    margin-right: 10px;
+    transition: background-color 0.2s ease;
+}
+
+.social-links a:hover {
+    background-color: #0056b3;
+}
+
+/* Form Group Styling */
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: #333;
+}
+
+.form-group input[type="text"],
+.form-group input[type="password"] {
+    width: calc(100% - 20px); /* Account for padding */
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 1em;
+    transition: border-color 0.3s ease;
+}
+
+.form-group input[type="text"]:focus,
+.form-group input[type="password"]:focus {
+    border-color: #007bff;
+    outline: none;
+}
+
+.modal-content button[type="submit"] {
+    background-color: #28a745; /* Green for submit */
+    color: white;
+    padding: 12px 25px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1.1em;
+    transition: background-color 0.3s ease;
+}
+
+.modal-content button[type="submit"]:hover {
+    background-color: #218838;
+}
+
+#loginMessage {
+    margin-top: 10px;
+    font-weight: bold;
+}
+
+/* ========================================= */
+/* --- Flip Card (About Us) --- */
+/* ========================================= */
+.flip-card {
+    background-color: transparent;
+    width: 250px; /* Adjust size as needed */
+    height: 250px;
+    perspective: 1000px; /* 3D effect */
+    margin: 20px auto; /* Center the flip card */
+}
+
+.flip-card-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    transition: transform 0.6s;
+    transform-style: preserve-3d;
+}
+
+/* .about-us-flip-card.flipped will be applied by JS */
+.flip-card.flipped .flip-card-inner {
+    transform: rotateY(180deg);
+}
+
+.flip-card-front, .flip-card-back {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    -webkit-backface-visibility: hidden; /* Safari */
+    backface-visibility: hidden;
+    border-radius: 10px;
+    overflow: hidden; /* Ensure images stay within bounds */
+}
+
+.flip-card-front {
+    background-color: #bbb;
+    color: black;
+}
+
+.flip-card-back {
+    background-color: #2980b9;
+    color: white;
+    transform: rotateY(180deg);
+}
+
+.flip-card-front img, .flip-card-back img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Cover the area, crop if necessary */
+    display: block;
+}
+
+
+/* ========================================= */
+/* --- Hero Section --- */
+/* ========================================= */
+.hero-section {
+    position: relative;
+    width: 100%;
+    display: flex;
+    flex-direction: column; /* Stack text and image (though image is absolute) */
+    justify-content: center; /* Center vertically */
+    align-items: center; /* Center horizontally */
+    overflow: hidden;
+    margin-top: 100px; /* To prevent it from being under the fixed header initially */
+    padding: 40px 0; /* Adjust vertical padding for spacing */
+}
+
+.hero-image-container {
+    position: relative; /* Changed to relative to allow height to be based on content */
+    width: 90%;
+    overflow: hidden;
+    border-radius: 40px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+}
+
+.hero-image-container img {
+    filter: blur(2px);
+    width: 100%;
+    display: block; /* Prevent extra space below image */
+    object-fit: fill; /* Ensures image covers the container if aspect ratio differs */
+}
+
+.hero-text-overlay {
+    position: absolute; /* Overlay the image */
+    transform: translate(-50%, -50%);
+    z-index: 2; /* Ensure text is above the image */
+    color: white;
+    text-align: center;
+    max-width: 800px;
+    padding: 20px;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5); /* Subtle shadow for text readability */
+
+    /* Initial state for "fade-in-from-below" animation */
+    opacity: 0;
+    transform: translateY(20px); /* Start slightly below its final position */
+    transition: opacity 1s ease-out, transform 1s ease-out; /* Animation properties */
+}
+
+/* Class to trigger the animation (added by JS) */
+.hero-text-overlay.animate-in {
+    opacity: 1;
+    transform: translateY(0); /* Move to final position */
+}
+
+.hero-text-overlay h1 {
+    font-size: 3.5em;
+    margin-bottom: 15px;
+    font-weight: 700;
+    line-height: 1.2; /* Improved readability */
+}
+
+.hero-text-overlay p {
+    font-size: 1.2em;
+    font-weight: 300;
+    margin-bottom: 25px;
+}
+
+
+@keyframes pulse-glow {
+    0% {
+        box-shadow: 0 0 20px 5px rgba(0, 255, 0, 0.7);
+        border-image: linear-gradient(to right, #00ff00, #33cc33, #00ff00) 1;
+    }
+    100% {
+        box-shadow: 0 0 30px 10px rgba(0, 255, 0, 1);
+        border-image: linear-gradient(to right, #33cc33, #00ff00, #33cc33) 1;
+    }
+}
+
+
+/* ========================================= */
+/* --- Placeholder for other sections --- */
+/* ========================================= */
+/* These will be dynamically loaded/inserted */
+#quickServicesSectionContainer,
+#whyChooseSectionContainer,
+#imageGallerySectionContainer,
+#testimonialsSectionContainer {
+    min-height: 300px; /* Placeholder height */
+    margin: 20px auto;
+    background-color: #eee;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.5em;
+    color: #777;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
