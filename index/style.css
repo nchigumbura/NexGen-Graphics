@@ -2,13 +2,16 @@
 /* --- Global / Body Styles --- */
 /* ========================================= */
 body {
-    font-family: -apple-system, BlinkMacMacFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"; /* iOS-like system fonts */
+    /* Updated font-family to include 'Inter' as the primary font */
+    font-family: 'Inter', -apple-system, BlinkMacMacFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"; /* iOS-like system fonts */
     -webkit-font-smoothing: antialiased; /* Smooth typography */
     -moz-osx-font-smoothing: grayscale; /* For Firefox */
     margin: 0;
     padding: 0;
-    background-color: #F8F8F8; /* A light, clean background color */
+    /* This background color matches the light gray in your screenshot for the page background */
+    background-color: #F8F8F8; /* Changed from #E3E3E3 to #F8F8F8 for a softer light gray from screenshot */
     color: #333; /* Default text color */
+    overflow-x: hidden; /* Prevent horizontal overflow, fixing page width to screen width */
 }
 
 /* ========================================= */
@@ -125,11 +128,16 @@ header.hide-header {
 }
 
 /* --- Navigation Bar --- */
+.main-nav {
+    /* This is the key change to center the nav bar within the header-container */
+    margin: 0 auto;
+}
+
 .main-nav ul {
     list-style: none;
     display: flex;
     padding: 0;
-    margin: 0;
+    margin: 0; /* Keep this margin 0 for the ul itself */
     background-color: #3C3C3C; /* Dark gray background for the nav container */
     /* Border-radius: Match screenshot's smooth pill shape */
     border-radius: 20px; /* Adjusted from 28px to 20px for a tighter pill */
@@ -480,64 +488,76 @@ header.hide-header {
 /* ========================================= */
 .hero-section {
     position: relative;
-    width: 100%;
+    width: 100%; /* Can remain 100% or set a specific width if desired */
+    max-width: 1200px; /* Limits the content width of the section */
+    /* This is the key change to ensure it clears the fixed header */
+    margin: 80px auto 0 auto; /* Adjusted: Increased margin-top to ensure it clears the fixed header (approx. 8px + content height + 8px header padding) */
     display: flex;
-    flex-direction: column; /* Stack text and image (though image is absolute) */
-    justify-content: center; /* Center vertically */
-    align-items: center; /* Center horizontally */
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
     overflow: hidden;
-    margin-top: 100px; /* To prevent it from being under the fixed header initially */
-    padding: 40px 0; /* Adjust vertical padding for spacing */
+    padding: 20px 20px 40px 20px;
+    text-align: center;
+}
+
+.hero-text-overlay {
+    z-index: 2;
+    color: #333; /* Darker gray for the text as seen in the screenshot */
+    max-width: 800px;
+    padding: 0;
+    text-shadow: none;
+    margin-bottom: 0;
+
+    opacity: 0;
+    transform: translateY(20px) scale(0.95);
+    transition: opacity 1s ease-out, transform 1s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.hero-text-overlay.animate-in {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+}
+
+.hero-text-overlay p:first-child { /* This targets "Modern, Affordable, Powerful." (your effective h2) */
+    font-size: 1.2em;
+    font-weight: 700;
+    color: #555;
+    margin-bottom: 2px; /* Shortened distance: Adjusted from 5px to 2px as requested */
+    line-height: 1.2;
+}
+
+.hero-text-overlay h1 {
+    font-size: 2.5em;
+    margin-bottom: 20px;
+    font-weight: 700;
+    line-height: 1.2;
+    color: #333;
+}
+
+/* Remove this if you don't have a third paragraph in the hero text */
+.hero-text-overlay p:last-child {
+    font-size: 1.2em;
+    font-weight: 300;
+    /* margin-bottom: 25px; This can be controlled by .hero-text-overlay's margin-bottom or hero-section padding */
 }
 
 .hero-image-container {
-    position: relative; /* Changed to relative to allow height to be based on content */
+    position: relative;
     width: 90%;
+    max-width: 10000px;
     overflow: hidden;
-    border-radius: 40px;
+    border-radius: 30px;
     box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+    margin-top: 40px; /* Spacing between text and image */
 }
 
 .hero-image-container img {
     filter: blur(2px);
     width: 100%;
-    display: block; /* Prevent extra space below image */
-    object-fit: fill; /* Ensures image covers the container if aspect ratio differs */
-}
-
-.hero-text-overlay {
-    position: absolute; /* Overlay the image */
-    transform: translate(-50%, -50%);
-    z-index: 2; /* Ensure text is above the image */
-    color: white;
-    text-align: center;
-    max-width: 800px;
-    padding: 20px;
-    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5); /* Subtle shadow for text readability */
-
-    /* Initial state for "fade-in-from-below" animation */
-    opacity: 0;
-    transform: translateY(20px); /* Start slightly below its final position */
-    transition: opacity 1s ease-out, transform 1s ease-out; /* Animation properties */
-}
-
-/* Class to trigger the animation (added by JS) */
-.hero-text-overlay.animate-in {
-    opacity: 1;
-    transform: translateY(0); /* Move to final position */
-}
-
-.hero-text-overlay h1 {
-    font-size: 3.5em;
-    margin-bottom: 15px;
-    font-weight: 700;
-    line-height: 1.2; /* Improved readability */
-}
-
-.hero-text-overlay p {
-    font-size: 1.2em;
-    font-weight: 300;
-    margin-bottom: 25px;
+    height: auto;
+    display: block;
+    object-fit: cover;
 }
 
 

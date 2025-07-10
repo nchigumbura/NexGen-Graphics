@@ -12,9 +12,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const activeNavLink = document.querySelector('.main-nav li.active');
     const homeIcon = document.querySelector('.main-nav li.active .home-icon');
 
-    // New variables for Hero Section Animation
+    // Hero Section elements
+    const heroSection = document.querySelector('.hero-section'); // Get the whole hero section for observation
     const heroTextOverlay = document.querySelector('.hero-text-overlay');
-    let heroAnimationPlayed = false; // Flag to ensure animation plays only once
 
     let shimmerObserver;
     let headerHideTimeout;
@@ -262,34 +262,43 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // --- Hero Section Text Animation ---
-    const heroObserver = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting && !heroAnimationPlayed) {
-                // When the hero section enters the viewport, add the animation class
-                heroTextOverlay.classList.add('animate-in');
-                heroAnimationPlayed = true; // Set flag to true
-                heroObserver.unobserve(entry.target); // Stop observing after animation
-            }
-        });
-    }, {
-        threshold: 0.5 // Trigger when 50% of the hero section is visible
-    });
-
-    // Start observing the hero section
-    if (heroTextOverlay) {
-        heroObserver.observe(heroTextOverlay);
-    }
-    
-    // Optional: If you want the animation to play on load even if not scrolled
-    // For example, if the hero section is immediately visible
-    // This is good practice to ensure it animates if it's the very first thing on the page.
-    if (heroTextOverlay && heroTextOverlay.getBoundingClientRect().top < window.innerHeight && !heroAnimationPlayed) {
-        heroTextOverlay.classList.add('animate-in');
-        heroAnimationPlayed = true;
+    // Function to handle hero text animation
+    function animateHeroText() {
+        if (heroTextOverlay) {
+            // Force reflow to ensure animation runs correctly on repeat view
+            heroTextOverlay.classList.remove('animate-in');
+            void heroTextOverlay.offsetWidth; // Trigger reflow
+            heroTextOverlay.classList.add('animate-in');
+        }
     }
 
-    // Event listener for current active link to re-animate on click (if applicable)
-    // You'd typically update the 'active' class via JS for navigation clicks.
-    // For now, this just ensures the animation plays on initial load of the active link.
+    // Observe the hero section for animation
+    if (heroSection && heroTextOverlay) { // Ensure both elements exist
+        const observerOptions = {
+            root: null, // relative to the viewport
+            rootMargin: '0px',
+            threshold: 0.5 // Trigger when 50% of the hero section is visible
+        };
 
+        const heroObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    // When hero section comes into view
+                    animateHeroText();
+                } else {
+                    // Reset animation when it leaves view
+                    heroTextOverlay.classList.remove('animate-in');
+                }
+            });
+        }, observerOptions);
+
+        heroObserver.observe(heroSection);
+
+        // Initial animation check on page load
+        // Check if the hero section is already in view on load
+        const rect = heroSection.getBoundingClientRect();
+        if (rect.top <= window.innerHeight && rect.bottom >= 0) {
+            animateHeroText();
+        }
+    }
 });
