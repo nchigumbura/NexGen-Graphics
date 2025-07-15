@@ -1,4 +1,15 @@
 /* ========================================= */
+/* --- Universal Box Sizing --- */
+/* ========================================= */
+html {
+    box-sizing: border-box;
+}
+
+*, *::before, *::after {
+    box-sizing: inherit;
+}
+
+/* ========================================= */
 /* --- Global / Body Styles --- */
 /* ========================================= */
 body {
@@ -12,6 +23,37 @@ body {
     background-color: #F8F8F8; /* Changed from #E3E3E3 to #F8F8F8 for a softer light gray from screenshot */
     color: #333; /* Default text color */
     overflow-x: hidden; /* Prevent horizontal overflow, fixing page width to screen width */
+
+    /* Transition for body blur when modal opens/closes */
+    transition: filter 0.3s ease-out; /* This transition is for the body's filter if it were still there; effectively no-op now */
+}
+
+/* NEW: Class to prevent body scrolling when a modal is active */
+body.modal-open {
+    overflow: hidden; /* Prevent body scrolling when modal is open */
+    padding-right: var(--scrollbar-width); /* Compensate for scrollbar if it disappears */
+    user-select: none; /* Prevent selection of blurred content */
+}
+
+/* NEW: Styles for the modal backdrop overlay */
+#modal-backdrop-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.05); /* Slightly less dark tint as requested */
+    backdrop-filter: blur(15px); /* Increased blur for a stronger effect as requested */
+    -webkit-backdrop-filter: blur(15px); /* For Safari */
+    z-index: 1007; /* NEW Z-INDEX: Below modals (1010), above header (1005) */
+    opacity: 0; /* Start hidden */
+    visibility: hidden; /* Hide from interaction */
+    transition: opacity 0.3s ease-out, visibility 0.3s ease-out;
+}
+
+#modal-backdrop-overlay.active {
+    opacity: 1; /* Show the overlay */
+    visibility: visible;
 }
 
 /* ========================================= */
@@ -24,7 +66,7 @@ header {
     position: fixed; /* Header remains fixed at the top */
     top: 0;
     left: 0;
-    z-index: 1000;
+    z-index: 1005; /* Header z-index */
     display: flex;
     justify-content: center;
     align-items: center;
@@ -38,7 +80,8 @@ header {
     box-shadow: none; /* Initially no shadow */
 
     /* Transition for when it hides/shows based on scroll/hover and applies glassmorphism */
-    transition: transform 0.3s ease-out, opacity 0.3s ease-out, backdrop-filter 0.3s ease-out, background-color 0.3s ease-out, box-shadow 0.3s ease-out;
+    /* ADDED 'padding-right' to the transition for smoother scrollbar compensation */
+    transition: transform 0.3s ease-out, opacity 0.3s ease-out, backdrop-filter 0.3s ease-out, background-color 0.3s ease-out, box-shadow 0.3s ease-out, padding-right 0.3s ease-out;
 }
 
 /* This class will be added by JS when header needs glassmorphism effect */
@@ -201,10 +244,10 @@ header.hide-header {
     transform: translateY(-50%);
     background-color: #c8c8c8; /* Light gray for the active bar */
     /* Border-radius: Match nav links for a consistent pill shape when active */
-    border-radius: 20px; /* Adjusted from 20px to 18px to match nav links */
-    /* Height: Slightly less than 100% to ensure a small gap around it, matching screenshot */
-    height: calc(100% - 1px); /* Adjusted from 8px to 6px (3px top/bottom gap) */
-    width: calc(var(--active-bar-width, 0px) - 1px);
+    border-radius: 20px; /* Changed from 18px to 20px as per request */
+    /* Height: Set to 28px as requested */
+    height: 28px; /* Set to 28px as per user request */
+    width: var(--active-bar-width, 0px);
     transition: transform 0.7s cubic-bezier(0.68, -0.55, 0.265, 1.55), width 0.7s cubic-bezier(0.68, -0.55, 0.265, 1.55), left 0.7s cubic-bezier(0.68, -0.55, 0.265, 1.55); /* Apply cubic-bezier for smoother active bar movement */
     z-index: 0;
 }
@@ -220,7 +263,7 @@ header.hide-header {
     width: 20px; /* Example size, adjust as needed */
     height: 20px; /* Example size, adjust as needed */
     vertical-align: middle; /* Align with text */
-    margin-right: 5px; /* Adjusted from 6px to 5px */
+    margin-right: 5px; /* Adjusted from 6px to 5px as requested */
     display: inline-block;
     border-radius: 20px;
     backface-visibility: hidden;
@@ -276,168 +319,243 @@ header.hide-header {
 /* --- Modal Window (About Us, Admin Login, Contact) --- */
 /* ========================================= */
 .modal-window {
-    display: none; /* Hidden by default */
+    display: flex; /* Always use flexbox so content can be centered */
     position: fixed; /* Stay in place */
-    z-index: 1002; /* Sit on top */
+    z-index: 1010; /* CRITICAL CHANGE: Make sure modals are above header (1005) and enlarged logo overlay (1003) */
     left: 0;
     top: 0;
-    width: 100%; /* Full width */
-    height: 100%; /* Full height */
-    overflow: auto; /* Enable scroll if needed */
-    background-color: rgba(0, 0, 0, 0.6); /* Black w/ opacity */
-    backdrop-filter: blur(8px); /* Subtle blur for the background */
-    -webkit-backdrop-filter: blur(8px); /* For Safari */
-    justify-content: center;
-    align-items: center;
+    width: 100vw; /* Full viewport width */
+    height: 100vh; /* Full viewport height */
+    overflow: hidden; /* Hide modal scrollbars by default; content will manage its own */
+    justify-content: center; /* Center content horizontally */
+    align-items: center; /* Center content vertically */
+
+    /* Default (inactive) state */
     opacity: 0; /* Start invisible for animation */
+    visibility: hidden; /* Hide from screen readers and interaction */
     pointer-events: none; /* Allows clicks underneath initially */
-    transition: opacity 0.3s ease-out;
+    background-color: rgba(0, 0, 0, 0); /* Start fully transparent background */
+    
+    /* CRITICAL: Ensure no blur on the modal container itself. */
+    /* This overrides any global backdrop-filter that might be affecting fixed elements */
+    backdrop-filter: blur(0px); /* Explicitly set to 0px */
+    -webkit-backdrop-filter: blur(0px); /* For Safari */
+
+    /* Transition for smooth fade-in/out */
+    transition: opacity 0.3s ease-out, visibility 0.3s ease-out, background-color 0.3s ease-out;
 }
 
 .modal-window.active {
-    display: flex; /* Show flex container */
     opacity: 1; /* Fade in */
+    visibility: visible; /* Make visible for interaction */
     pointer-events: auto; /* Enable clicks */
 }
 
 .modal-content {
-    background-color: #fefefe;
+    /* Updated: Matching card color #c6c8c7 for the modal content background */
+    background-color: rgba(255, 255, 255, 0.6); /* Lighter, semi-transparent white as requested */
+    backdrop-filter: blur(10px); /* Apply blur directly to the card content as requested */
+    -webkit-backdrop-filter: blur(10px); /* For Safari */
     margin: auto; /* Center content vertically and horizontally */
-    padding: 30px; /* Increased padding for better spacing */
-    border-radius: 15px; /* Rounded corners for modal */
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2); /* Deeper shadow */
-    position: relative;
-    width: 80%; /* Adjust width as needed */
-    max-width: 700px; /* Max width for readability */
-    transform: translateY(20px); /* Start slightly below for pop-in effect */
-    opacity: 0;
-    transition: transform 0.3s ease-out, opacity 0.3s ease-out;
+    /* Reduced padding for a more minimalist, compact look */
+    padding: 2.5rem; /* Good padding for minimalist look as requested */
+    /* Rounded corners matching iOS elements */
+    border-radius: 12px; /* Smooth rounded corners as requested */
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4); /* More pronounced shadow as requested */
+    position: relative; /* For positioning close button */
+    display: flex; /* Use flex for internal layout if needed */
+    flex-direction: column; /* Stack content vertically */
+    
+    /* CRITICAL: Ensure no blur or other filters applied to content itself */
+    filter: none;
+    -webkit-filter: none;
+    box-sizing: border-box; /* Include padding/border in width/height */
+
+    /* Sizing for minimalist look - width matching hero image, height flexible */
+    max-width: 90vw; /* Maximum width, responsive */
+    /* Adjusted width: Using clamp for flexible width.
+        The 75vw means it will take 75% of the viewport width.
+        The 1000px max-width allows it to grow larger on bigger screens. */
+    width: clamp(300px, 75vw, 1000px); /* Updated width as requested */
+    min-height: 200px; /* Minimum height to give it some presence */
+    max-height: 90vh; /* Prevents modal from exceeding viewport height */
+    overflow-y: auto; /* Allow internal scrolling for long content */
+
+    transform: scale(0.9); /* Initial state for animation */
+    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s ease-out; /* Smooth pop-in effect */
 }
 
 .modal-window.active .modal-content {
-    transform: translateY(0); /* Pop into place */
-    opacity: 1;
+    transform: scale(1); /* Animate to full size */
+    opacity: 1; /* Ensure content fades in with modal */
 }
 
 .close-button {
-    color: #aaa;
-    float: right;
-    font-size: 32px; /* Larger close button */
+    color: #333; /* Darker close button for better contrast */
+    font-size: 2rem; /* Adjusted from 28px to 2rem for better responsiveness and consistency */
     font-weight: bold;
     position: absolute; /* Position relative to modal-content */
-    top: 10px;
-    right: 20px;
+    top: 15px; /* Adjusted position */
+    right: 15px; /* Adjusted position */
     cursor: pointer;
-    transition: color 0.2s ease;
+    transition: color 0.2s ease, transform 0.2s ease; /* Add transform for hover effect */
+    border-radius: 50%; /* Make it a perfect circle */
+    width: 30px; /* Give it a clickable area */
+    height: 30px; /* Give it a clickable area */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(0, 0, 0, 0.05); /* Subtle background for visual cue */
+    z-index: 10; /* Ensure it's above other modal content */
 }
 
 .close-button:hover,
 .close-button:focus {
-    color: #333;
-    text-decoration: none;
-    cursor: pointer;
+    color: #000;
+    transform: scale(1.1); /* Slight enlargement on hover */
+    background-color: rgba(0, 0, 0, 0.1); /* Slightly darker background on hover */
 }
 
 .modal-content h2 {
-    color: #2c3e50; /* Darker heading color */
-    margin-top: 0;
-    margin-bottom: 20px;
-    font-size: 1.8em;
+    color: #1a1a1a; /* Very dark gray for headings */
+    margin-top: 10px; /* Slightly reduced margin top */
+    margin-bottom: 15px; /* Reduced margin bottom */
+    font-size: 1.6em; /* Slightly smaller for elegance */
+    font-weight: 600; /* Medium-bold for iOS feel */
 }
 
 .modal-content p {
-    line-height: 1.6;
-    color: #555;
-    margin-bottom: 15px;
+    line-height: 1.5; /* Slightly tighter line-height for minimalist text blocks */
+    color: #4a4a4a; /* Medium dark gray for body text */
+    margin-bottom: 10px; /* Reduced margin bottom */
+    font-size: 0.95em; /* Slightly smaller font size */
 }
 
 .modal-content ul {
-    list-style: disc inside;
-    margin-left: 20px;
-    padding: 0;
-    color: #555;
+    list-style: none; /* Remove default list style */
+    padding: 0; /* Remove default padding */
+    margin: 15px 0; /* Centered with some vertical margin */
+    text-align: center; /* Center list items */
 }
 
 .modal-content ul li {
-    margin-bottom: 8px;
+    margin-bottom: 5px; /* Reduced margin */
+    color: #4a4a4a;
+    font-size: 0.9em;
 }
 
+/* Specific styling for the list item bullets if needed, you might add a custom bullet with pseudo-elements */
+.modal-content ul li::before {
+    content: "•"; /* Custom bullet point */
+    color: #007bff; /* Accent color for bullets */
+    display: inline-block;
+    width: 1em;
+    margin-left: -1em;
+}
+
+
 .contact-details p, .social-links a {
+    margin-bottom: 8px; /* Consistent spacing */
+    font-size: 0.9em; /* Smaller font for details */
+}
+
+.social-links {
+    margin-top: 20px;
     margin-bottom: 10px;
 }
 
 .social-links a {
-    display: inline-block;
-    background-color: #007bff; /* Example blue, adjust as needed */
+    background-color: #007bff; /* Consistent accent color for buttons */
     color: white;
-    padding: 8px 15px;
-    border-radius: 5px;
-    text-decoration: none;
-    margin-right: 10px;
-    transition: background-color 0.2s ease;
+    padding: 8px 12px; /* Slightly smaller buttons */
+    border-radius: 8px; /* More rounded corners for buttons */
+    margin: 0 5px; /* Spacing between social links */
+    font-weight: 500; /* Medium weight */
 }
 
 .social-links a:hover {
     background-color: #0056b3;
+    transform: translateY(-1px); /* Subtle lift on hover */
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1); /* Soft shadow on hover */
 }
 
-/* Form Group Styling */
+/* Form Group Styling (Admin Login) */
 .form-group {
     margin-bottom: 15px;
+    text-align: left; /* Align labels and inputs to the left within the centered modal */
 }
 
 .form-group label {
     display: block;
-    margin-bottom: 5px;
-    font-weight: bold;
+    margin-bottom: 8px; /* Slightly more space */
+    font-weight: 500; /* Medium weight */
     color: #333;
+    font-size: 0.95em;
 }
 
 .form-group input[type="text"],
 .form-group input[type="password"] {
-    width: calc(100% - 20px); /* Account for padding */
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
+    width: calc(100% - 24px); /* Account for padding and border */
+    padding: 12px; /* Increased padding for larger touch targets */
+    border: 1px solid #c8c8c8; /* Lighter border color for minimalist look */
+    border-radius: 10px; /* More rounded corners for input fields */
     font-size: 1em;
-    transition: border-color 0.3s ease;
+    background-color: #f0f0f0; /* Light gray background for inputs */
+    color: #333;
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.05); /* Subtle inner shadow */
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 .form-group input[type="text"]:focus,
 .form-group input[type="password"]:focus {
-    border-color: #007bff;
+    border-color: #007bff; /* Accent color on focus */
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.2); /* Soft blue glow on focus */
     outline: none;
+    background-color: #ffffff; /* White background on focus */
 }
 
 .modal-content button[type="submit"] {
-    background-color: #28a745; /* Green for submit */
+    background-color: #007AFF; /* Changed to vibrant blue as requested */
     color: white;
-    padding: 12px 25px;
+    padding: 12px 30px; /* Larger padding for a more substantial button */
     border: none;
-    border-radius: 8px;
+    border-radius: 10px; /* Rounded button corners */
     cursor: pointer;
-    font-size: 1.1em;
-    transition: background-color 0.3s ease;
+    font-size: 1em; /* Consistent font size */
+    font-weight: 600; /* Medium-bold */
+    transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
+    margin-top: 15px; /* Space above button */
 }
 
 .modal-content button[type="submit"]:hover {
-    background-color: #218838;
+    background-color: #005BBF; /* Changed to darker blue for hover as requested */
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
 }
 
 #loginMessage {
-    margin-top: 10px;
-    font-weight: bold;
+    margin-top: 15px; /* Adjusted margin */
+    font-weight: 500; /* Medium weight */
+    font-size: 0.9em;
+    text-align: center;
 }
 
+
 /* ========================================= */
-/* --- Flip Card (About Us) --- */
+/* --- Flip Card (About Us, Admin) --- */
 /* ========================================= */
 .flip-card {
     background-color: transparent;
-    width: 250px; /* Adjust size as needed */
-    height: 250px;
-    perspective: 1000px; /* 3D effect */
-    margin: 20px auto; /* Center the flip card */
+    width: 180px; /* Reduced size for a more 'iconic' look at top-center */
+    height: 180px; /* Keep it square */
+    perspective: 1000px;
+    /* Position at top center of the modal content */
+    margin: -100px auto 20px auto; /* Negative top margin to lift it above the modal-content, auto for horizontal centering. Adjust negative margin based on desired overlap. */
+    border-radius: 50%; /* Make it a perfect circle */
+    overflow: hidden; /* Crucial for circular shape */
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15); /* Soft shadow for depth */
+    position: relative; /* Needed for z-index and potential overlays */
+    z-index: 10; /* Ensure it's above modal content */
 }
 
 .flip-card-inner {
@@ -445,11 +563,11 @@ header.hide-header {
     width: 100%;
     height: 100%;
     text-align: center;
-    transition: transform 0.6s;
+    transition: transform 0.8s; /* Slower transition for a more deliberate flip */
     transform-style: preserve-3d;
 }
 
-/* .about-us-flip-card.flipped will be applied by JS */
+/* Class for the default flip, if needed by JS (e.g., initial automatic flip) */
 .flip-card.flipped .flip-card-inner {
     transform: rotateY(180deg);
 }
@@ -458,28 +576,66 @@ header.hide-header {
     position: absolute;
     width: 100%;
     height: 100%;
-    -webkit-backface-visibility: hidden; /* Safari */
+    -webkit-backface-visibility: hidden;
     backface-visibility: hidden;
-    border-radius: 10px;
-    overflow: hidden; /* Ensure images stay within bounds */
-}
-
-.flip-card-front {
-    background-color: #bbb;
-    color: black;
-}
-
-.flip-card-back {
-    background-color: #2980b9;
-    color: white;
-    transform: rotateY(180deg);
+    border-radius: 50%; /* Ensure both sides are circular */
+    overflow: hidden; /* Confirmed: Ensure this is present */
 }
 
 .flip-card-front img, .flip-card-back img {
     width: 100%;
     height: 100%;
-    object-fit: cover; /* Cover the area, crop if necessary */
+    /* CRUCIAL FIX: This makes the image fill the circular container, potentially cropping its edges */
+    object-fit: cover; 
     display: block;
+}
+
+/* NEW: Styles for the enlarged logo overlay */
+.flip-card .enlarged-logo-overlay {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: fixed; /* Fixed position to cover the whole screen */
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6); /* Darker blur background for logo display */
+    backdrop-filter: blur(15px); /* Stronger blur for the overlay */
+    -webkit-backdrop-filter: blur(15px);
+    z-index: 1015; /* CRITICAL CHANGE: Make sure enlarged logo is above modals (1010) */
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease-out;
+}
+
+.flip-card .enlarged-logo-overlay.show {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.flip-card .enlarged-logo-overlay img {
+    max-width: 90%;
+    max-height: 90%;
+    border-radius: 20px; /* Rounded corners for the enlarged square logo */
+    object-fit: contain; /* Ensure the whole logo is visible within its padded box */
+    background-color: rgba(255, 255, 255, 0.8); /* Slightly transparent white background for the image card */
+    padding: 15px; /* More padding inside the logo card */
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    transform: scale(0.8);
+    opacity: 0;
+    transition: transform 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55), opacity 0.3s ease-out;
+}
+
+.flip-card .enlarged-logo-overlay.show img {
+    transform: scale(1);
+    opacity: 1;
+}
+
+/* Admin specific flip card positioning adjustment if needed */
+#adminLoginWindow .flip-card {
+    /* You can apply different margins here if the admin modal content structure is different */
+    margin: -100px auto 20px auto; /* Consistent positioning for now */
 }
 
 
@@ -489,7 +645,7 @@ header.hide-header {
 .hero-section {
     position: relative;
     width: 100%; /* Can remain 100% or set a specific width if desired */
-    max-width: 1200px; /* Limits the content width of the section */
+    max-width: 1200px;
     /* This is the key change to ensure it clears the fixed header */
     margin: 80px auto 0 auto; /* Adjusted: Increased margin-top to ensure it clears the fixed header (approx. 8px + content height + 8px header padding) */
     display: flex;
@@ -591,4 +747,6 @@ header.hide-header {
     color: #777;
     border-radius: 10px;
     box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    /* Add padding-top if they appear directly under the fixed header */
+    padding-top: 20px; /* Example, adjust as needed based on content */
 }
