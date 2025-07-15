@@ -356,19 +356,16 @@ header.hide-header {
     background-color: rgba(255, 255, 255, 0.6); /* Lighter, semi-transparent white as requested */
     backdrop-filter: blur(10px); /* Apply blur directly to the card content as requested */
     -webkit-backdrop-filter: blur(10px); /* For Safari */
-    margin: auto; /* Center content vertically and horizontally */
+    margin: auto ; /* Center content vertically and horizontally */
     /* Reduced padding for a more minimalist, compact look */
-    padding: 2.5rem; /* Good padding for minimalist look as requested */
+    /* padding: 2.5rem; This is moved to modal-content-wrapper */
     /* Rounded corners matching iOS elements */
     border-radius: 12px; /* Smooth rounded corners as requested */
     box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4); /* More pronounced shadow as requested */
-    position: relative; /* For positioning close button */
-    display: flex; /* Use flex for internal layout if needed */
-    flex-direction: column; /* Stack content vertically */
     
-    /* CRITICAL: Ensure no blur or other filters applied to content itself */
-    filter: none;
-    -webkit-filter: none;
+    position: relative; /* CRITICAL: Make this the positioning context for the absolute flip-card */
+    display: flex; /* Use flex to manage the flip-card and wrapper */
+    flex-direction: column; /* Stack children vertically */
     box-sizing: border-box; /* Include padding/border in width/height */
 
     /* Sizing for minimalist look - width matching hero image, height flexible */
@@ -378,16 +375,39 @@ header.hide-header {
         The 1000px max-width allows it to grow larger on bigger screens. */
     width: clamp(300px, 75vw, 1000px); /* Updated width as requested */
     min-height: 200px; /* Minimum height to give it some presence */
-    max-height: 90vh; /* Prevents modal from exceeding viewport height */
-    overflow-y: auto; /* Allow internal scrolling for long content */
+    max-height: 90vh; /* Limits max height of the *entire* modal */
+    
+    padding: 0; /* REMOVE any padding from modal-content, it will be on the wrapper */
+
+    /* Change overflow on modal-content to hidden to prevent clipping of absolute children,
+       the wrapper will handle its own scrolling. */
+    overflow: hidden; /* Changed from overflow-y: auto; to prevent clipping the absolutely positioned flip-card */
 
     transform: scale(0.9); /* Initial state for animation */
     transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s ease-out; /* Smooth pop-in effect */
+
+    /* CRITICAL: Ensure no blur or other filters applied to content itself */
+    filter: none;
+    -webkit-filter: none;
 }
 
 .modal-window.active .modal-content {
     transform: scale(1); /* Animate to full size */
     opacity: 1; /* Ensure content fades in with modal */
+}
+
+/* NEW: Styles for the content wrapper inside modal-content */
+.modal-content-wrapper {
+    /* This div holds all the actual text/form content */
+    padding: 2.5rem; /* Apply your original padding here to the content */
+    padding-top: 100px; /* IMPORTANT: This creates space for the flip card at the top.
+                           Adjust this value based on the flip card's height and how much it "pops out".
+                           (Flip card height is 180px, it's vertically centered by transform:translateY(-50%),
+                           so roughly 90px of its height is above the `top:0` line. 100px provides a small gap.) */
+    box-sizing: border-box;
+    flex-grow: 1; /* Allows this wrapper to take up available vertical space */
+    overflow-y: auto; /* This now handles scrolling for the main content of the modal */
+    z-index: 1; /* Ensure it's below the flip-card and close button */
 }
 
 .close-button {
@@ -406,7 +426,7 @@ header.hide-header {
     justify-content: center;
     align-items: center;
     background-color: rgba(0, 0, 0, 0.05); /* Subtle background for visual cue */
-    z-index: 10; /* Ensure it's above other modal content */
+    z-index: 11; /* Keep this higher than the flip card */
 }
 
 .close-button:hover,
@@ -418,7 +438,7 @@ header.hide-header {
 
 .modal-content h2 {
     color: #1a1a1a; /* Very dark gray for headings */
-    margin-top: 10px; /* Slightly reduced margin top */
+    margin-top: 0; /* Remove any large margin-top here as the wrapper's padding-top handles spacing */
     margin-bottom: 15px; /* Reduced margin bottom */
     font-size: 1.6em; /* Slightly smaller for elegance */
     font-weight: 600; /* Medium-bold for iOS feel */
@@ -515,7 +535,7 @@ header.hide-header {
 }
 
 .modal-content button[type="submit"] {
-    background-color: #007AFF; /* Changed to vibrant blue as requested */
+    background-color: #485a49; /* Changed to vibrant blue as requested */
     color: white;
     padding: 12px 30px; /* Larger padding for a more substantial button */
     border: none;
@@ -549,13 +569,19 @@ header.hide-header {
     width: 180px; /* Reduced size for a more 'iconic' look at top-center */
     height: 180px; /* Keep it square */
     perspective: 1000px;
-    /* Position at top center of the modal content */
-    margin: -100px auto 20px auto; /* Negative top margin to lift it above the modal-content, auto for horizontal centering. Adjust negative margin based on desired overlap. */
+    
+    /* CRITICAL FIX: Absolute positioning relative to .modal-content */
+    position: absolute; 
+    top: 0; /* Position at the very top edge of the .modal-content */
+    left: 50%; /* Center horizontally */
+    transform: translate(-50%, -50%); /* Adjust to center the *entire card* vertically on the top edge.
+                                         The -50% for Y lifts half of its height above the `top:0` line,
+                                         creating the "popping out" effect. */
+    
     border-radius: 50%; /* Make it a perfect circle */
     overflow: hidden; /* Crucial for circular shape */
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15); /* Soft shadow for depth */
-    position: relative; /* Needed for z-index and potential overlays */
-    z-index: 10; /* Ensure it's above modal content */
+    z-index: 10; /* Ensure it's above modal content (which is z-index:1) but below close button (z-index:11) */
 }
 
 .flip-card-inner {
@@ -579,15 +605,30 @@ header.hide-header {
     -webkit-backface-visibility: hidden;
     backface-visibility: hidden;
     border-radius: 50%; /* Ensure both sides are circular */
-    overflow: hidden; /* Confirmed: Ensure this is present */
+    overflow: hidden; /* Confirmed: Ensure this is present for circular clipping */
+    
+    /* Use background-image for better circular fill and image flexibility */
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover; /* This will make the image cover the entire circular area,
+                               potentially cropping non-square images. */
+    display: flex; /* Use flexbox to center any potential content if you add it later */
+    justify-content: center;
+    align-items: center;
 }
 
-.flip-card-front img, .flip-card-back img {
-    width: 100%;
-    height: 100%;
-    /* CRUCIAL FIX: This makes the image fill the circular container, potentially cropping its edges */
-    object-fit: cover; 
-    display: block;
+.flip-card-front {
+    background-image: url('../images/black-logo.png'); /* Adjust image path as necessary */
+}
+
+.flip-card-back {
+    background-image: url('../images/nate.png'); /* Adjust image path as necessary */
+    transform: rotateY(180deg);
+}
+
+/* Remove these if you've already removed img tags from HTML */
+.flip-card-front img, .flip-card-back img { 
+    display: none; /* Hide any remaining img tags */
 }
 
 /* NEW: Styles for the enlarged logo overlay */
@@ -635,7 +676,8 @@ header.hide-header {
 /* Admin specific flip card positioning adjustment if needed */
 #adminLoginWindow .flip-card {
     /* You can apply different margins here if the admin modal content structure is different */
-    margin: -100px auto 20px auto; /* Consistent positioning for now */
+    /* This rule is now effectively overridden by the absolute positioning above, keeping for reference */
+    /* margin: -100px auto 20px auto; */ 
 }
 
 
