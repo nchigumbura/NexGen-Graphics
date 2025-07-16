@@ -15,7 +15,7 @@
     <meta property="og:url" content="https://yourdomain.com" />
     <meta property="og:type" content="website" />
 
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="index/style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -31,7 +31,7 @@
             </div>
             <nav class="main-nav">
                 <ul class="nav-hidden-initial">
-                    <li class="active"> <a href="index.html"> <img src="images/home-icon.png" alt="Home Icon" class="home-icon"> Home </a> </li>
+                    <li class="active"> <a href="index.html"> <img src="index/images/home-icon.png" alt="Home Icon" class="home-icon"> Home </a> </li>
                     <li><a href="services.html">Services</a></li>
                     <li><a href="portfolio.html">Portfolio</a></li>
                 </ul>
@@ -44,14 +44,14 @@
         <div class="modal-content">
             <span class="close-button" id="closeAboutUs">&times;</span>
             
-            <div class="flip-card" id="aboutUsFlipCard">
-                <div class="flip-card-inner">
-                    <div class="flip-card-front"></div>
-                    <div class="flip-card-back"></div>
-                </div>
-            </div>
-
             <div class="modal-content-wrapper">
+                <div class="flip-card" id="aboutUsFlipCard">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front"></div>
+                        <div class="flip-card-back"></div>
+                    </div>
+                </div>
+
                 <h2>About Us — NexGen Graphics</h2>
                 <p><strong>Curating the Future, One Design at a Time.</strong></p>
                 <p>NexGen Graphics is more than just a design studio — it's a legacy in motion.</p>
@@ -82,14 +82,14 @@
         <div class="modal-content">
             <span class="close-button" id="closeAdminLogin">&times;</span>
             
-            <div class="flip-card" id="adminFlipCard">
-                <div class="flip-card-inner">
-                    <div class="flip-card-front"></div>
-                    <div class="flip-card-back"></div>
-                </div>
-            </div>
-
             <div class="modal-content-wrapper">
+                <div class="flip-card" id="adminFlipCard">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front"></div>
+                        <div class="flip-card-back"></div>
+                    </div>
+                </div>
+
                 <h2>Welcome back, Boss!</h2> 
                 <p>Enter your credentials to securely access the admin panel.</p> 
                 <form id="adminLoginForm">
@@ -136,7 +136,7 @@
             <h1>Designs that Curate <br>Your Legacy</h1>
         </div>
         <div class="hero-image-container">
-            <img src="images/green-hero-image.jpeg" alt="Vibrant green leaves with glowing neon frame">
+            <img src="index/images/green-hero-image.jpeg" alt="Vibrant green leaves with glowing neon frame">
             <div class="glowing-frame"></div>
         </div>
     </section>
@@ -149,8 +149,8 @@
     <footer>
     </footer>
 
-    <script src="index.js"></script>
-    <script src="index-animation.js"></script>
+    <script src="index/index.js"></script>
+    <script src="index/index-animation.js"></script>
 
 </body>
 </html>

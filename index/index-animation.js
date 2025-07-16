@@ -1,4 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
+    // Header elements for scroll and hover effects
     const header = document.querySelector('header');
     const companyName = document.querySelector('.company-name');
     const adminLink = document.querySelector('.admin-link');
@@ -6,7 +7,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const aboutUsClickHint = document.getElementById('aboutUsClickHint');
     const mainNavUl = document.querySelector('.main-nav ul');
     const activeNavLink = document.querySelector('.main-nav li.active');
-    const homeIcon = document.querySelector('.main-nav .home-icon'); // Corrected selector to match your HTML
+    const homeIcon = document.querySelector('.main-nav .home-icon');
 
     // Hero Section elements
     const heroSection = document.querySelector('.hero-section');
@@ -16,22 +17,26 @@ document.addEventListener('DOMContentLoaded', () => {
     const aboutUsFlipCard = document.querySelector('#aboutUsWindow .flip-card');
     const adminFlipCard = document.querySelector('#adminLoginWindow .flip-card');
 
-    // Modal Backdrop Overlay
+    // Modal Backdrop Overlay & Enlarged Logo Overlay - Get references from DOM
+    // These elements are created in index.js and are available in the DOM
     const modalBackdropOverlay = document.getElementById('modal-backdrop-overlay');
+    const enlargedLogoOverlay = document.querySelector('.enlarged-logo-overlay');
+    const enlargedLogoImg = enlargedLogoOverlay ? enlargedLogoOverlay.querySelector('img') : null;
+
 
     let shimmerObserver;
-    let headerHideTimeout;
+    let headerHideTimeout; // This variable is declared but not used, consider removing if not needed.
     let headerHovering = false;
     let lastScrollTop = 0;
     let navAnimationPlayedOnLoad = false;
-    const topThreshold = 50; // Pixels from top to trigger header behavior changes
+    const topThreshold = 50;
 
     // Calculate scrollbar width for body overflow compensation
     function getScrollbarWidth() {
         const outer = document.createElement('div');
         outer.style.visibility = 'hidden';
-        outer.style.overflow = 'scroll'; // Force scrollbar to appear
-        outer.style.msOverflowStyle = 'scrollbar'; // Needed for Windows 8
+        outer.style.overflow = 'scroll';
+        outer.style.msOverflowStyle = 'scrollbar';
         document.body.appendChild(outer);
         const inner = document.createElement('div');
         outer.appendChild(inner);
@@ -52,32 +57,43 @@ document.addEventListener('DOMContentLoaded', () => {
         if (header) header.classList.remove('show-glassmorphism');
     }
 
-    function hideHeader() {
-        if (header) {
-            // Only hide if not at the very top AND not hovering AND no modal is open
-            if (!document.body.classList.contains('modal-open') && !headerHovering && window.pageYOffset > topThreshold) {
-                header.classList.add('hide-header');
-                removeGlassmorphism(); // Ensure it clears blur when hidden
-            }
-        }
-    }
+    // Consolidated function to update header style based on all conditions
+    function updateHeaderStyle() {
+        if (!header) return;
 
-    function showHeader() {
-        if (header) {
+        const currentScrollY = window.pageYOffset;
+        const isHovering = header.matches(':hover') || (headerTriggerArea && headerTriggerArea.matches(':hover'));
+
+        const activeModals = document.querySelectorAll('.modal-window.active');
+        const enlargedLogoIsShowing = enlargedLogoOverlay && enlargedLogoOverlay.classList.contains('active');
+
+        // Condition 1: If any modal or enlarged logo is active, always show header with glassmorphism
+        if (activeModals.length > 0 || enlargedLogoIsShowing) {
             header.classList.remove('hide-header');
-            clearTimeout(headerHideTimeout); // Clear any pending hide timeouts
+            applyGlassmorphism();
+            return; // Exit, as overlays override scroll/hover
+        }
 
-            // Apply glassmorphism only if scrolled down OR currently hovering OR a modal is open
-            if (window.pageYOffset > topThreshold || headerHovering || document.body.classList.contains('modal-open')) {
-                applyGlassmorphism();
-            } else {
-                // If at top, ensure no glassmorphism is applied (initial state)
+        // Condition 2: Scrolling down and past header height, and not hovering
+        if (currentScrollY > lastScrollTop && currentScrollY > topThreshold) {
+            if (!isHovering) {
+                header.classList.add('hide-header');
                 removeGlassmorphism();
             }
         }
+        // Condition 3: Scrolling up, or at the very top, or hovering
+        else if (currentScrollY < lastScrollTop || currentScrollY <= topThreshold || isHovering) {
+            header.classList.remove('hide-header');
+            if (currentScrollY > topThreshold || isHovering) {
+                applyGlassmorphism();
+            } else {
+                removeGlassmorphism();
+            }
+        }
+        lastScrollTop = currentScrollY;
     }
 
-    // Create an invisible "hot zone" at the top of the viewport
+
     const headerTriggerArea = document.createElement('div');
     headerTriggerArea.style.cssText = `
         position: fixed;
@@ -85,70 +101,37 @@ document.addEventListener('DOMContentLoaded', () => {
         left: 0;
         width: 100%;
         height: ${topThreshold}px;
-        z-index: 1004; /* Lower than header's z-index (1005) */
-        pointer-events: auto; /* Allow hover detection for header visibility */
+        z-index: 1004; /* High z-index to be clickable, but lower than modals/enlarged logo */
+        pointer-events: auto;
     `;
     document.body.appendChild(headerTriggerArea);
 
     headerTriggerArea.addEventListener('mouseenter', () => {
-        headerHovering = true;
-        showHeader();
+        headerHovering = true; // This variable is declared but not used inside updateHeaderStyle. Consider removing if not needed.
+        updateHeaderStyle();
     });
 
     headerTriggerArea.addEventListener('mouseleave', () => {
-        headerHovering = false;
-        if (window.pageYOffset > topThreshold && !document.body.classList.contains('modal-open')) {
-            headerHideTimeout = setTimeout(() => {
-                if (!header.matches(':hover') && !headerHovering) {
-                    hideHeader();
-                }
-            }, 100);
-        }
+        headerHovering = false; // This variable is declared but not used inside updateHeaderStyle. Consider removing if not needed.
+        updateHeaderStyle();
     });
 
     if (header) {
         header.addEventListener('mouseenter', () => {
-            headerHovering = true;
-            showHeader();
+            headerHovering = true; // This variable is declared but not used inside updateHeaderStyle. Consider removing if not needed.
+            updateHeaderStyle();
         });
 
         header.addEventListener('mouseleave', () => {
-            headerHovering = false;
-            if (window.pageYOffset > topThreshold && !document.body.classList.contains('modal-open')) {
-                headerHideTimeout = setTimeout(() => {
-                    if (!headerHovering && !headerTriggerArea.matches(':hover')) {
-                        hideHeader();
-                    }
-                }, 100);
-            }
+            headerHovering = false; // This variable is declared but not used inside updateHeaderStyle. Consider removing if not needed.
+            updateHeaderStyle();
         });
     }
 
-    // Main scroll event handler
-    window.addEventListener('scroll', () => {
-        const currentScrollTop = window.pageYOffset || document.documentElement.scrollTop;
+    window.addEventListener('scroll', updateHeaderStyle);
 
-        if (currentScrollTop > lastScrollTop && currentScrollTop > topThreshold) {
-            // Scrolling down past threshold, hide header if not hovered and no modal
-            if (!headerHovering && !document.body.classList.contains('modal-open')) {
-                hideHeader();
-            }
-        } else if (currentScrollTop < lastScrollTop || currentScrollTop <= topThreshold) {
-            // Scrolling up, or at the very top, show header
-            showHeader();
-        }
-
-        lastScrollTop = currentScrollTop;
-    });
-
-    // Initial check on load to ensure correct state
-    if (window.pageYOffset <= topThreshold) {
-        removeGlassmorphism();
-    } else {
-        applyGlassmorphism();
-        // Do not hide header immediately on load if already scrolled down, just apply glassmorphism.
-        // Hiding logic will be handled by the scroll event if user scrolls further down.
-    }
+    // Initial check on load
+    updateHeaderStyle();
 
 
     // --- Text Sparkle (Shimmer) Effect for NexGen Graphics and Admin ---
@@ -156,10 +139,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const linkElement = element.querySelector('a');
         if (linkElement && !element.classList.contains('shimmer-active')) {
             element.classList.add('shimmer-active');
-            // Remove the class after 8 seconds to reset to original color
             setTimeout(() => {
                 element.classList.remove('shimmer-active');
-            }, 8000); // Shimmer duration
+            }, 8000);
         }
     }
 
@@ -175,7 +157,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                 }
             });
-        }, { threshold: 0.5 }); // Trigger when 50% of the element is visible
+        }, { threshold: 0.5 });
 
         if (companyName) shimmerObserver.observe(companyName);
         if (adminLink) shimmerObserver.observe(adminLink);
@@ -194,7 +176,7 @@ document.addEventListener('DOMContentLoaded', () => {
             clearTimeout(hintTimeout);
             hintTimeout = setTimeout(() => {
                 aboutUsClickHint.classList.remove('show');
-            }, 3000); // Hint disappears after 3 seconds
+            }, 3000);
         }
     }
 
@@ -318,36 +300,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     // --- Flip Card Initial Flip & Hover/Tap (About Us & Admin) ---
-    // Function to show enlarged logo (this should be a global function or passed down)
-    window.showEnlargedLogo = function(modalElement, imageUrl) {
-        let enlargedLogoOverlay = document.querySelector('.enlarged-logo-overlay');
-        let enlargedLogoImg;
-
-        if (!enlargedLogoOverlay) {
-            enlargedLogoOverlay = document.createElement('div');
-            enlargedLogoOverlay.classList.add('enlarged-logo-overlay');
-            document.body.appendChild(enlargedLogoOverlay);
-
-            enlargedLogoImg = document.createElement('img');
-            enlargedLogoOverlay.appendChild(enlargedLogoImg);
-
-            enlargedLogoOverlay.addEventListener('click', () => {
-                enlargedLogoOverlay.classList.remove('show');
-            });
-        } else {
-            enlargedLogoImg = enlargedLogoOverlay.querySelector('img');
-        }
-
-        enlargedLogoImg.src = imageUrl;
-        enlargedLogoOverlay.classList.add('show');
-    };
-
-    function setupFlipCardAnimation(flipCardElement, backImageSrc, frontImageSrcForHover, stopOnFlippedState = false) {
+    function setupFlipCardAnimation(flipCardElement, backImageSrc, frontImageSrc, stopOnFlippedState = false) {
         if (!flipCardElement) return;
 
         let flipInterval;
         const flipDuration = 3000; // 3 seconds per side
-        const totalAnimationDuration = 15000; // 15 seconds total for auto-flip
+        const totalAnimationDuration = 15000; // 15 seconds total for auto-flip (5 flips)
 
         function startAutoFlip() {
             clearInterval(flipInterval); // Clear any existing interval
@@ -355,30 +313,28 @@ document.addEventListener('DOMContentLoaded', () => {
             // Initial flip after a short delay to start the sequence
             setTimeout(() => {
                 if (flipCardElement && !flipCardElement.classList.contains('flipped')) {
-                    flipCardElement.classList.add('flipped'); // Show 'nate.png' first
+                    // Ensure it starts by flipping to the back image (e.g., nate.png for about us initially)
+                    flipCardElement.classList.add('flipped');
                 }
             }, 500); // Small delay before first flip
 
+            let flipCount = 0; // Track the number of flips
             flipInterval = setInterval(() => {
                 if (flipCardElement) {
                     flipCardElement.classList.toggle('flipped');
-                }
-            }, flipDuration); // Flip every 3 seconds
-
-            // Stop auto-flipping after totalAnimationDuration
-            setTimeout(() => {
-                clearInterval(flipInterval);
-                if (flipCardElement) {
-                    // Ensure it stops on the desired side
-                    // For About Us: stopOnFlippedState = false (stops on front - black-logo.png)
-                    // For Admin: stopOnFlippedState = true (stops on back - nate.png)
-                    if (flipCardElement.classList.contains('flipped') && !stopOnFlippedState) {
-                        flipCardElement.classList.remove('flipped'); // Unflip to show front
-                    } else if (!flipCardElement.classList.contains('flipped') && stopOnFlippedState) {
-                        flipCardElement.classList.add('flipped'); // Flip to show back
+                    flipCount++;
+                    // Stop auto-flipping once total duration (5 flips) is reached
+                    if (flipCount >= (totalAnimationDuration / flipDuration)) {
+                        clearInterval(flipInterval);
+                        // Ensure it stops on the desired side
+                        if (flipCardElement.classList.contains('flipped') && !stopOnFlippedState) {
+                            flipCardElement.classList.remove('flipped'); // Unflip to show front (black-logo.png)
+                        } else if (!flipCardElement.classList.contains('flipped') && stopOnFlippedState) {
+                            flipCardElement.classList.add('flipped'); // Flip to show back (nate.png)
+                        }
                     }
                 }
-            }, totalAnimationDuration);
+            }, flipDuration); // Flip every 3 seconds
         }
 
         // Initially start auto-flipping
@@ -391,8 +347,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
         flipCardElement.addEventListener('mouseleave', () => {
             const modalParent = flipCardElement.closest('.modal-window');
-            // Resume auto-flip only if no modal is active and not showing enlarged logo
-            const enlargedLogoActive = document.querySelector('.enlarged-logo-overlay.show');
+            // Resume auto-flip only if no modal is active and no enlarged logo overlay is active
+            const enlargedLogoActive = enlargedLogoOverlay && enlargedLogoOverlay.classList.contains('active');
             if ((!modalParent || !modalParent.classList.contains('active')) && !enlargedLogoActive) {
                 startAutoFlip(); // Restart if not in a modal and not enlarging
             }
@@ -404,102 +360,162 @@ document.addEventListener('DOMContentLoaded', () => {
 
             clearInterval(flipInterval); // Stop auto-flip on click/tap
 
-            let imageUrlToEnlarge = frontImageSrcForHover;
-            // Determine which image to show enlarged based on the 'flipped' class on the PARENT
+            let imageUrlToEnlarge;
+            // Determine which image to show enlarged based on the 'flipped' class on the card
             if (flipCardElement.classList.contains('flipped')) {
-                imageUrlToEnlarge = backImageSrc;
+                imageUrlToEnlarge = backImageSrc; // If currently showing back (nate.png)
+            } else {
+                imageUrlToEnlarge = frontImageSrc; // If currently showing front (black-logo.png)
             }
 
-            if (typeof window.showEnlargedLogo === 'function') {
-                window.showEnlargedLogo(flipCardElement.closest('.modal-window'), imageUrlToEnlarge);
+            // Call the animationModule's showEnlargedLogo function directly
+            if (window.animationModule && typeof window.animationModule.showEnlargedLogo === 'function') {
+                window.animationModule.showEnlargedLogo(imageUrlToEnlarge); // Removed unnecessary params as they are already globally referenced
             }
         });
     }
 
     // Setup for About Us Flip Card
-    const aboutUsFrontImgSrc = aboutUsFlipCard ? aboutUsFlipCard.querySelector('.flip-card-front img')?.src : '';
-    const aboutUsBackImgSrc = aboutUsFlipCard ? aboutUsFlipCard.querySelector('.flip-card-back img')?.src : '';
     if (aboutUsFlipCard) {
-        // For About Us, stopOnFlippedState is false (stops on company logo - front)
-        setupFlipCardAnimation(aboutUsFlipCard, aboutUsBackImgSrc, aboutUsFrontImgSrc, false); 
+        // For About Us, stopOnFlippedState is false (stops on company logo - front: black-logo.png)
+        setupFlipCardAnimation(aboutUsFlipCard, '../images/nate.png', '../images/black-logo.png', false);
     }
 
     // Setup for Admin Flip Card
-    const adminFrontImgSrc = adminFlipCard ? adminFlipCard.querySelector('.flip-card-front img')?.src : '';
-    const adminBackImgSrc = adminFlipCard ? adminFlipCard.querySelector('.flip-card-back img')?.src : '';
     if (adminFlipCard) {
-        // For Admin, stopOnFlippedState is true (stops on NC side - back)
-        setupFlipCardAnimation(adminFlipCard, adminBackImgSrc, adminFrontImgSrc, true); 
+        // For Admin, stopOnFlippedState is true (stops on NC side - back: nate.png)
+        setupFlipCardAnimation(adminFlipCard, '../images/nate.png', '../images/black-logo.png', true);
     }
 
-    // --- Modal Opening/Closing Logic (Integrate with modalBackdropOverlay) ---
-    const aboutUsWindow = document.getElementById('aboutUsWindow');
-    const adminLoginWindow = document.getElementById('adminLoginWindow');
-    const contactUsWindow = document.getElementById('contactInfoModal'); // Corrected ID to match HTML
-    const closeButtons = document.querySelectorAll('.modal-window .close-button');
 
-    function openModal(modalElement) {
-        if (modalElement) {
-            document.body.classList.add('modal-open');
-            modalElement.classList.add('active');
-            if (modalBackdropOverlay) { // NEW: Activate the backdrop
-                modalBackdropOverlay.classList.add('active');
-            }
-            clearTimeout(headerHideTimeout);
-            showHeader();
-        }
-    }
+    // --- Global Animation Module (for Modals and Enlarged Logo) ---
+    // This object will hold all the functions related to modal and overlay animations and logic.
+    window.animationModule = {
+        // Helper to update body class and backdrop state
+        updateOverlayState: function() {
+            const activeModals = document.querySelectorAll('.modal-window.active');
+            const enlargedLogoIsShowing = enlargedLogoOverlay && enlargedLogoOverlay.classList.contains('active');
 
-    function closeModal(modalElement) {
-        if (modalElement) {
-            modalElement.classList.remove('active');
-            setTimeout(() => {
-                const activeModals = document.querySelectorAll('.modal-window.active');
-                if (activeModals.length === 0) { // Only remove if no other modals are open
-                    document.body.classList.remove('modal-open');
-                    if (modalBackdropOverlay) { // NEW: Deactivate the backdrop
-                        modalBackdropOverlay.classList.remove('active');
-                    }
-                    if (!headerHovering && window.pageYOffset > topThreshold) {
-                        headerHideTimeout = setTimeout(hideHeader, 100);
-                    } else {
-                        showHeader();
-                    }
+            if (activeModals.length === 0 && !enlargedLogoIsShowing) {
+                document.body.classList.remove('modal-open');
+                if (modalBackdropOverlay) {
+                    modalBackdropOverlay.classList.remove('active');
                 }
-            }, 300); // Match modal fade-out transition duration
-        }
-    }
+            } else if (enlargedLogoIsShowing) {
+                document.body.classList.add('modal-open');
+                if (modalBackdropOverlay) {
+                    modalBackdropOverlay.classList.add('active');
+                    // Set backdrop Z-index for enlarged logo (higher than regular modals)
+                    modalBackdropOverlay.style.zIndex = '9998';
+                }
+                // Set enlarged logo Z-index (highest)
+                if (enlargedLogoOverlay) enlargedLogoOverlay.style.zIndex = '9999';
+            } else if (activeModals.length > 0) {
+                document.body.classList.add('modal-open');
+                if (modalBackdropOverlay) {
+                    modalBackdropOverlay.classList.add('active');
+                    // Set backdrop Z-index for regular modals
+                    modalBackdropOverlay.style.zIndex = '100';
+                }
+            }
+            // Always update header style after overlay state changes
+            updateHeaderStyle();
+        },
 
-    // Attach click listeners to open buttons (e.g., your header links)
-    if (aboutUsLinkElement && aboutUsWindow) {
+        openModal: function(modalElement) {
+            if (modalElement) {
+                modalElement.classList.add('active');
+                // Set modal Z-index (higher than regular modal backdrop)
+                modalElement.style.zIndex = '101';
+                this.updateOverlayState();
+            }
+        },
+
+        closeModal: function(modalElement) {
+            if (modalElement) {
+                modalElement.classList.remove('active');
+                // Give a brief delay to allow CSS transition to complete before updating state
+                setTimeout(() => {
+                    modalElement.style.zIndex = ''; // Reset z-index
+                    this.updateOverlayState();
+                }, 300); // Match modal fade-out transition duration
+            }
+        },
+
+        showEnlargedLogo: function(imageUrl) {
+            if (!enlargedLogoOverlay || !enlargedLogoImg) return;
+
+            enlargedLogoImg.src = imageUrl;
+            enlargedLogoImg.alt = "Enlarged Logo";
+
+            enlargedLogoOverlay.style.visibility = 'visible';
+            enlargedLogoOverlay.style.opacity = '1';
+            enlargedLogoImg.style.transform = 'scale(1)';
+            enlargedLogoOverlay.classList.add('active');
+
+            this.updateOverlayState();
+
+            // Re-attach click listener for closing, ensuring 'once' behavior
+            // Remove previous listener if it exists to avoid multiple triggers
+            const currentCloseHandler = enlargedLogoOverlay.__closeHandler__; // Use a hidden property to store handler
+            if (currentCloseHandler) {
+                enlargedLogoOverlay.removeEventListener('click', currentCloseHandler);
+            }
+
+            const newCloseHandler = (e) => {
+                if (e.target === enlargedLogoOverlay || e.target === enlargedLogoImg) { // Also allow clicking the image to close
+                    enlargedLogoOverlay.style.opacity = '0';
+                    enlargedLogoImg.style.transform = 'scale(0.8)';
+                    enlargedLogoOverlay.classList.remove('active');
+
+                    setTimeout(() => {
+                        enlargedLogoOverlay.style.visibility = 'hidden';
+                        this.updateOverlayState();
+                        // Remove the event listener after it's used
+                        enlargedLogoOverlay.removeEventListener('click', newCloseHandler);
+                        enlargedLogoOverlay.__closeHandler__ = null; // Clear the stored handler
+                    }, 300);
+                }
+            };
+            enlargedLogoOverlay.addEventListener('click', newCloseHandler);
+            enlargedLogoOverlay.__closeHandler__ = newCloseHandler; // Store reference to the handler
+        },
+
+        handleBackdropClick: function() {
+            // Prioritize closing the enlarged logo if it's active
+            if (enlargedLogoOverlay && enlargedLogoOverlay.classList.contains('active')) {
+                // Directly call the close logic for enlarged logo
+                this.showEnlargedLogo(''); // Call with empty string to trigger close logic
+            } else {
+                // Otherwise, close any active modals
+                const activeModals = document.querySelectorAll('.modal-window.active');
+                activeModals.forEach(modal => {
+                    modal.classList.remove('active');
+                    // Give a brief delay to allow CSS transition to complete before updating state
+                    setTimeout(() => {
+                        modal.style.zIndex = ''; // Reset z-index
+                        this.updateOverlayState();
+                    }, 300);
+                });
+            }
+        }
+    }; // End window.animationModule
+
+    // Attach open modal listeners directly here, using the animationModule
+    // These will now call animationModule.openModal which handles display.
+    if (aboutUsLinkElement) {
         aboutUsLinkElement.addEventListener('click', (event) => {
             event.preventDefault();
-            openModal(aboutUsWindow);
+            const aboutUsWindow = document.getElementById('aboutUsWindow');
+            if (aboutUsWindow) window.animationModule.openModal(aboutUsWindow);
         });
     }
 
-    if (adminLink && adminLoginWindow) {
-        // Ensure adminLink is the container for the <a>, and target the <a>
+    if (adminLink && adminLink.querySelector('a')) {
         adminLink.querySelector('a').addEventListener('click', (event) => {
             event.preventDefault();
-            openModal(adminLoginWindow);
+            const adminLoginWindow = document.getElementById('adminLoginWindow');
+            if (adminLoginWindow) window.animationModule.openModal(adminLoginWindow);
         });
     }
-
-    // Attach click listeners to close buttons
-    closeButtons.forEach(button => {
-        button.addEventListener('click', (event) => {
-            const modalToClose = event.target.closest('.modal-window');
-            closeModal(modalToClose);
-        });
-    });
-
-    // Close modal if clicking outside the modal-content
-    document.querySelectorAll('.modal-window').forEach(modal => {
-        modal.addEventListener('click', (event) => {
-            if (event.target === modal) {
-                closeModal(modal);
-            }
-        });
-    });
 });

@@ -6,9 +6,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const adminLoginWindow = document.getElementById('adminLoginWindow');
     const contactInfoModal = document.getElementById('contactInfoModal');
 
-    const closeAboutUs = document.getElementById('closeAboutUs');
-    const closeAdminLogin = document.getElementById('closeAdminLogin');
-    const closeContactInfo = document.getElementById('closeContactInfo');
+    const closeButtons = document.querySelectorAll('.modal-window .close-button'); // Simplified selection for all close buttons
 
     const adminLoginForm = document.getElementById('adminLoginForm');
     const usernameInput = document.getElementById('username');
@@ -21,71 +19,107 @@ document.addEventListener('DOMContentLoaded', () => {
     const imageGallerySectionContainer = document.getElementById('imageGallerySectionContainer');
     const testimonialsSectionContainer = document.getElementById('testimonialsSectionContainer');
 
-    // Function to open a modal
-    function openModal(modalElement) {
-        if (modalElement) {
-            modalElement.classList.add('active'); // Use 'active' class for styling
-            document.body.classList.add('modal-open'); // Add class to blur body
-        }
-    }
+    // Modal Backdrop Overlay - This will be managed by animation.js
+    const modalBackdropOverlay = document.getElementById('modal-backdrop-overlay');
 
-    // Function to close a modal
-    function closeModal(modalElement) {
-        if (modalElement) {
-            modalElement.classList.remove('active'); // Remove 'active' class
-            document.body.classList.remove('modal-open'); // Remove class to unblur body
-        }
-    }
+    // Create the single enlarged logo overlay once on DOMContentLoaded
+    // Note: Z-index, visibility, and click handling will be managed by animation.js
+    const enlargedLogoOverlay = document.createElement('div');
+    enlargedLogoOverlay.classList.add('enlarged-logo-overlay');
+    enlargedLogoOverlay.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.8); /* Dark overlay */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.3s ease;
+    `;
+    const imgElement = document.createElement('img');
+    imgElement.style.cssText = `
+        max-width: 90%;
+        max-height: 90%;
+        object-fit: contain;
+        transform: scale(0.8); /* Initial scale for animation */
+        transition: transform 0.3s ease;
+    `;
+    enlargedLogoOverlay.appendChild(imgElement);
+    document.body.appendChild(enlargedLogoOverlay); // Append to body
 
-    // Event Listeners for opening modals
+    // --- Global functions to be called by other scripts (like animation.js) ---
+    // These functions now delegate directly to the animationModule.
+    // Ensure animationModule is loaded before these are called.
+    window.openModal = function(modalElement) {
+        if (window.animationModule && window.animationModule.openModal) {
+            window.animationModule.openModal(modalElement);
+        }
+    };
+
+    window.closeModal = function(modalElement) {
+        if (window.animationModule && window.animationModule.closeModal) {
+            window.animationModule.closeModal(modalElement);
+        }
+    };
+
+    window.showEnlargedLogo = function(imageUrl) {
+        if (window.animationModule && window.animationModule.showEnlargedLogo) {
+            window.animationModule.showEnlargedLogo(imageUrl);
+        }
+    };
+
+
+    // Event Listeners for opening modals (using the globally defined openModal)
+    // These will now trigger the animationModule's logic via window.openModal
     if (aboutUsLink) {
         aboutUsLink.addEventListener('click', (event) => {
             event.preventDefault(); // Prevent default link behavior
-            openModal(aboutUsWindow);
+            window.openModal(aboutUsWindow);
         });
     }
 
     if (adminLoginLink) {
         adminLoginLink.addEventListener('click', (event) => {
             event.preventDefault(); // Prevent default link behavior
-            openModal(adminLoginWindow);
+            window.openModal(adminLoginWindow);
             // Optional: Clear form on open
             if (adminLoginForm) adminLoginForm.reset();
             if (loginMessage) loginMessage.style.display = 'none';
         });
     }
 
-    // Event Listeners for closing modals
-    if (closeAboutUs) {
-        closeAboutUs.addEventListener('click', () => {
-            closeModal(aboutUsWindow);
+    // Event Listeners for closing modals (using the general closeButtons selector)
+    // These will now trigger the animationModule's logic via window.closeModal
+    closeButtons.forEach(button => {
+        button.addEventListener('click', (event) => {
+            const modalToClose = event.target.closest('.modal-window');
+            window.closeModal(modalToClose);
         });
-    }
-
-    if (closeAdminLogin) {
-        closeAdminLogin.addEventListener('click', () => {
-            closeModal(adminLoginWindow);
-        });
-    }
-
-    if (closeContactInfo) {
-        closeContactInfo.addEventListener('click', () => {
-            closeModal(contactInfoModal);
-        });
-    }
-
-    // Close modal if user clicks outside of the modal content
-    window.addEventListener('click', (event) => {
-        if (event.target === aboutUsWindow) {
-            closeModal(aboutUsWindow);
-        }
-        if (event.target === adminLoginWindow) {
-            closeModal(adminLoginWindow);
-        }
-        if (event.target === contactInfoModal) {
-            closeModal(contactInfoModal);
-        }
     });
+
+    // Close modal if user clicks outside of the modal content or on the backdrop
+    document.querySelectorAll('.modal-window').forEach(modal => {
+        modal.addEventListener('click', (event) => {
+            // Check if the clicked element is the modal container itself (not its content)
+            if (event.target === modal) {
+                window.closeModal(modal);
+            }
+        });
+    });
+
+    // Handle clicks on the modal backdrop overlay
+    if (modalBackdropOverlay) {
+        modalBackdropOverlay.addEventListener('click', () => {
+            // Let animation.js handle the logic for closing based on what's active
+            if (window.animationModule && window.animationModule.handleBackdropClick) {
+                window.animationModule.handleBackdropClick();
+            }
+        });
+    }
 
     // Admin Login Form Submission (basic client-side validation example)
     if (adminLoginForm) {
@@ -103,7 +137,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     loginMessage.style.display = 'block';
                 }
                 setTimeout(() => {
-                    closeModal(adminLoginWindow);
+                    window.closeModal(adminLoginWindow);
                     window.location.href = 'admin.html'; // Redirect to admin page
                 }, 1000);
             } else {
@@ -115,34 +149,6 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
-
-    // --- Function to handle showing the "About Us" flip card's enlarged logo ---
-    // This function is globally accessible so index-animation.js can call it
-    window.showEnlargedLogo = function(modalElement, imageUrl) {
-        if (!modalElement) return;
-
-        let overlay = modalElement.querySelector('.enlarged-logo-overlay');
-        if (!overlay) {
-            overlay = document.createElement('div');
-            overlay.classList.add('enlarged-logo-overlay');
-            overlay.innerHTML = `<img src="${imageUrl}" alt="Enlarged Logo">`;
-            modalElement.appendChild(overlay);
-
-            overlay.addEventListener('click', (e) => {
-                // Only close if clicking on the overlay itself, not the image
-                if (e.target === overlay) {
-                    overlay.classList.remove('show');
-                    // Delay removal to allow animation
-                    setTimeout(() => {
-                        overlay.remove(); // Remove overlay from DOM after animation
-                    }, 300);
-                }
-            });
-        } else {
-            overlay.querySelector('img').src = imageUrl;
-        }
-        overlay.classList.add('show');
-    };
 
 
     // --- Dynamic Content Generation Functions ---
@@ -249,7 +255,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const galleryItemsData = [
         {
             id: 'img-a',
-            src: 'images/gallery-image-1-red-boat.jpg', // Corrected path assumption
+            src: 'images/gallery-image-1-red-boat.jpg',
             alt: 'Red boat on black sand beach',
             subtitle: 'Design Showcase',
             heading: 'Oceanic Horizons',
@@ -366,6 +372,19 @@ document.addEventListener('DOMContentLoaded', () => {
         return imageGalleryHTML;
     }
 
+    // Function to add click handlers to the dynamically generated gallery images
+    function setupImageGalleryClickHandlers() {
+        const galleryImages = document.querySelectorAll('.image-gallery-section .gallery-item img');
+        galleryImages.forEach(img => {
+            img.addEventListener('click', () => {
+                // When an image is clicked, call the globally defined showEnlargedLogo function
+                // which will now delegate to animationModule.
+                window.showEnlargedLogo(img.src);
+            });
+        });
+    }
+
+
     // Data for Testimonials
     const testimonialsData = [
         {
@@ -427,8 +446,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     // Call the functions to insert the HTML when the DOM is fully loaded
-    // This block runs after all elements are available in the DOM
-    // and after the initial modal references have been grabbed.
     if (quickServicesSectionContainer) {
         quickServicesSectionContainer.innerHTML = generateQuickServicesSection();
     }
@@ -439,13 +456,15 @@ document.addEventListener('DOMContentLoaded', () => {
         const contactUsButton = document.getElementById('contactUsButton');
         if (contactUsButton) {
             contactUsButton.addEventListener('click', () => {
-                openModal(contactInfoModal);
+                window.openModal(contactInfoModal); // Use window.openModal to delegate to animationModule
             });
         }
     }
 
     if (imageGallerySectionContainer) {
         imageGallerySectionContainer.innerHTML = generateImageGallerySection();
+        // Setup click handlers for gallery images
+        setupImageGalleryClickHandlers();
     }
 
     if (testimonialsSectionContainer) {

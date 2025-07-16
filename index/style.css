@@ -45,7 +45,9 @@ body.modal-open {
     background-color: rgba(0, 0, 0, 0.05); /* Slightly less dark tint as requested */
     backdrop-filter: blur(15px); /* Increased blur for a stronger effect as requested */
     -webkit-backdrop-filter: blur(15px); /* For Safari */
-    z-index: 1007; /* NEW Z-INDEX: Below modals (1010), above header (1005) */
+    /* Z-INDEX REVISION: Set a base Z-index here that is above the header,
+       JS will dynamically set it higher for the enlarged logo if needed. */
+    z-index: 1006; /* Must be higher than header (1005) */
     opacity: 0; /* Start hidden */
     visibility: hidden; /* Hide from interaction */
     transition: opacity 0.3s ease-out, visibility 0.3s ease-out;
@@ -321,11 +323,13 @@ header.hide-header {
 .modal-window {
     display: flex; /* Always use flexbox so content can be centered */
     position: fixed; /* Stay in place */
-    z-index: 1010; /* CRITICAL CHANGE: Make sure modals are above header (1005) and enlarged logo overlay (1003) */
+    /* Z-INDEX REVISION: Base Z-index for the modal container itself.
+       JS will set it to 1007 for active modals. */
+    z-index: 1007; /* Must be higher than header (1005) and backdrop (1006) */
     left: 0;
-    top: 0;
+    top: 0; /* Make it cover the whole viewport from the top */
     width: 100vw; /* Full viewport width */
-    height: 100vh; /* Full viewport height */
+    height: 100vh; /* Full viewport height, it will now correctly start at 0 */
     overflow: hidden; /* Hide modal scrollbars by default; content will manage its own */
     justify-content: center; /* Center content horizontally */
     align-items: center; /* Center content vertically */
@@ -354,9 +358,10 @@ header.hide-header {
 .modal-content {
     /* Updated: Matching card color #c6c8c7 for the modal content background */
     background-color: rgba(255, 255, 255, 0.6); /* Lighter, semi-transparent white as requested */
-    backdrop-filter: blur(10px); /* Apply blur directly to the card content as requested */
+    backdrop-filter: blur(20px); /* Apply blur directly to the card content as requested */
     -webkit-backdrop-filter: blur(10px); /* For Safari */
-    margin: auto ; /* Center content vertically and horizontally */
+    /* margin: auto is no longer needed here as flexbox on .modal-window handles centering */
+    /* Removed margin: auto; */
     /* Reduced padding for a more minimalist, compact look */
     /* padding: 2.5rem; This is moved to modal-content-wrapper */
     /* Rounded corners matching iOS elements */
@@ -375,13 +380,14 @@ header.hide-header {
         The 1000px max-width allows it to grow larger on bigger screens. */
     width: clamp(300px, 75vw, 1000px); /* Updated width as requested */
     min-height: 200px; /* Minimum height to give it some presence */
-    max-height: 90vh; /* Limits max height of the *entire* modal */
+    max-height: 90vh; /* Limits max height of the *entire* modal to leave space top/bottom */
     
     padding: 0; /* REMOVE any padding from modal-content, it will be on the wrapper */
 
     /* Change overflow on modal-content to hidden to prevent clipping of absolute children,
-       the wrapper will handle its own scrolling. */
+        the wrapper will handle its own scrolling. */
     overflow: hidden; /* Changed from overflow-y: auto; to prevent clipping the absolutely positioned flip-card */
+    z-index: 2; /* Keeping this at 2 to ensure a robust stacking context for its children */
 
     transform: scale(0.9); /* Initial state for animation */
     transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s ease-out; /* Smooth pop-in effect */
@@ -400,14 +406,13 @@ header.hide-header {
 .modal-content-wrapper {
     /* This div holds all the actual text/form content */
     padding: 2.5rem; /* Apply your original padding here to the content */
-    padding-top: 100px; /* IMPORTANT: This creates space for the flip card at the top.
-                           Adjust this value based on the flip card's height and how much it "pops out".
-                           (Flip card height is 180px, it's vertically centered by transform:translateY(-50%),
-                           so roughly 90px of its height is above the `top:0` line. 100px provides a small gap.) */
+    /* IMPORTANT: This padding now creates space for the flip card AND the content below it. */
+    padding-top: 40px; /* Adjusted: flip-card height (180px) + desired gap (e.g., 50px) */
     box-sizing: border-box;
     flex-grow: 1; /* Allows this wrapper to take up available vertical space */
     overflow-y: auto; /* This now handles scrolling for the main content of the modal */
-    z-index: 1; /* Ensure it's below the flip-card and close button */
+    position: relative; /* Keep relative for any potential child positioning, though not critical for flip-card now */
+    z-index: 1; /* Ensure it's below the close button if needed, but not critical for flip-card now */
 }
 
 .close-button {
@@ -426,7 +431,7 @@ header.hide-header {
     justify-content: center;
     align-items: center;
     background-color: rgba(0, 0, 0, 0.05); /* Subtle background for visual cue */
-    z-index: 11; /* Keep this higher than the flip card */
+    z-index: 11; /* Keep this higher than the flip card and other modal content */
 }
 
 .close-button:hover,
@@ -548,7 +553,7 @@ header.hide-header {
 }
 
 .modal-content button[type="submit"]:hover {
-    background-color: #005BBF; /* Changed to darker blue for hover as requested */
+    background-color: #00bf00; /* Changed to darker blue for hover as requested */
     transform: translateY(-1px);
     box-shadow: 0 4px 8px rgba(0,0,0,0.15);
 }
@@ -570,18 +575,15 @@ header.hide-header {
     height: 180px; /* Keep it square */
     perspective: 1000px;
     
-    /* CRITICAL FIX: Absolute positioning relative to .modal-content */
-    position: absolute; 
-    top: 0; /* Position at the very top edge of the .modal-content */
-    left: 50%; /* Center horizontally */
-    transform: translate(-50%, -50%); /* Adjust to center the *entire card* vertically on the top edge.
-                                         The -50% for Y lifts half of its height above the `top:0` line,
-                                         creating the "popping out" effect. */
+    /* === MODIFIED: Now it's in the normal document flow and scrolls with content === */
+    position: static; /* No longer absolute */
+    margin: 0 auto 20px auto; /* Center horizontally and add margin below for spacing */
+    display: block; /* Ensure margin auto works */
     
     border-radius: 50%; /* Make it a perfect circle */
     overflow: hidden; /* Crucial for circular shape */
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15); /* Soft shadow for depth */
-    z-index: 10; /* Ensure it's above modal content (which is z-index:1) but below close button (z-index:11) */
+    z-index: auto; /* No longer needs a specific z-index relative to scrolling content */
 }
 
 .flip-card-inner {
@@ -611,18 +613,20 @@ header.hide-header {
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover; /* This will make the image cover the entire circular area,
-                               potentially cropping non-square images. */
+                                   potentially cropping non-square images. */
     display: flex; /* Use flexbox to center any potential content if you add it later */
     justify-content: center;
     align-items: center;
 }
 
 .flip-card-front {
-    background-image: url('../images/black-logo.png'); /* Adjust image path as necessary */
+    /* CORRECTED PATH: Go up one level (..) then into images/ */
+    background-image: url('index/images/black-logo.png'); 
 }
 
 .flip-card-back {
-    background-image: url('../images/nate.png'); /* Adjust image path as necessary */
+    /* CORRECTED PATH: Go up one level (..) then into images/ */
+    background-image: url('index/images/nate.png'); 
     transform: rotateY(180deg);
 }
 
@@ -632,7 +636,7 @@ header.hide-header {
 }
 
 /* NEW: Styles for the enlarged logo overlay */
-.flip-card .enlarged-logo-overlay {
+.enlarged-logo-overlay { /* Changed from .flip-card .enlarged-logo-overlay */
     display: flex;
     justify-content: center;
     align-items: center;
@@ -644,18 +648,21 @@ header.hide-header {
     background-color: rgba(0, 0, 0, 0.6); /* Darker blur background for logo display */
     backdrop-filter: blur(15px); /* Stronger blur for the overlay */
     -webkit-backdrop-filter: blur(15px);
-    z-index: 1015; /* CRITICAL CHANGE: Make sure enlarged logo is above modals (1010) */
+    /* Z-INDEX REVISION: Base Z-index for the enlarged logo overlay,
+       JS will set it to 9999 when active. */
+    z-index: 9999; /* Highest of all fixed elements */
     opacity: 0;
     pointer-events: none;
     transition: opacity 0.3s ease-out;
 }
 
-.flip-card .enlarged-logo-overlay.show {
+.enlarged-logo-overlay.active { /* Changed from .flip-card .enlarged-logo-overlay.show */
     opacity: 1;
     pointer-events: auto;
 }
 
-.flip-card .enlarged-logo-overlay img {
+.enlarged-logo-overlay img { /* Changed from .flip-card .enlarged-logo-overlay img */
+    background-image: url('index/images/black-logo.png'); 
     max-width: 90%;
     max-height: 90%;
     border-radius: 20px; /* Rounded corners for the enlarged square logo */
@@ -668,16 +675,14 @@ header.hide-header {
     transition: transform 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55), opacity 0.3s ease-out;
 }
 
-.flip-card .enlarged-logo-overlay.show img {
+.enlarged-logo-overlay.active img { /* Changed from .flip-card .enlarged-logo-overlay.show img */
     transform: scale(1);
     opacity: 1;
 }
 
 /* Admin specific flip card positioning adjustment if needed */
 #adminLoginWindow .flip-card {
-    /* You can apply different margins here if the admin modal content structure is different */
-    /* This rule is now effectively overridden by the absolute positioning above, keeping for reference */
-    /* margin: -100px auto 20px auto; */ 
+    /* This rule is now effectively handled by the general .flip-card margin: 0 auto 20px auto; */
 }
 
 
