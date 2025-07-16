@@ -46,7 +46,7 @@ body.modal-open {
     backdrop-filter: blur(15px); /* Increased blur for a stronger effect as requested */
     -webkit-backdrop-filter: blur(15px); /* For Safari */
     /* Z-INDEX REVISION: Set a base Z-index here that is above the header,
-       JS will dynamically set it higher for the enlarged logo if needed. */
+        JS will dynamically set it higher for the enlarged logo if needed. */
     z-index: 1006; /* Must be higher than header (1005) */
     opacity: 0; /* Start hidden */
     visibility: hidden; /* Hide from interaction */
@@ -324,7 +324,7 @@ header.hide-header {
     display: flex; /* Always use flexbox so content can be centered */
     position: fixed; /* Stay in place */
     /* Z-INDEX REVISION: Base Z-index for the modal container itself.
-       JS will set it to 1007 for active modals. */
+        JS will set it to 1007 for active modals. */
     z-index: 1007; /* Must be higher than header (1005) and backdrop (1006) */
     left: 0;
     top: 0; /* Make it cover the whole viewport from the top */
@@ -613,20 +613,20 @@ header.hide-header {
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover; /* This will make the image cover the entire circular area,
-                                   potentially cropping non-square images. */
+                                    potentially cropping non-square images. */
     display: flex; /* Use flexbox to center any potential content if you add it later */
     justify-content: center;
     align-items: center;
 }
 
 .flip-card-front {
-    /* CORRECTED PATH: Go up one level (..) then into images/ */
-    background-image: url('index/images/black-logo.png'); 
+    /* Corrected path: Images are inside the 'images' folder */
+    background-image: url('images/black-logo.png'); 
 }
 
 .flip-card-back {
-    /* CORRECTED PATH: Go up one level (..) then into images/ */
-    background-image: url('index/images/nate.png'); 
+    /* Corrected path: Images are inside the 'images' folder */
+    background-image: url('images/nate.png'); 
     transform: rotateY(180deg);
 }
 
@@ -649,7 +649,7 @@ header.hide-header {
     backdrop-filter: blur(15px); /* Stronger blur for the overlay */
     -webkit-backdrop-filter: blur(15px);
     /* Z-INDEX REVISION: Base Z-index for the enlarged logo overlay,
-       JS will set it to 9999 when active. */
+        JS will set it to 9999 when active. */
     z-index: 9999; /* Highest of all fixed elements */
     opacity: 0;
     pointer-events: none;
@@ -662,7 +662,8 @@ header.hide-header {
 }
 
 .enlarged-logo-overlay img { /* Changed from .flip-card .enlarged-logo-overlay img */
-    background-image: url('index/images/black-logo.png'); 
+    /* Corrected path: Images are inside the 'images' folder */
+    background-image: url('images/black-logo.png'); 
     max-width: 90%;
     max-height: 90%;
     border-radius: 20px; /* Rounded corners for the enlarged square logo */
