@@ -18,15 +18,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const adminFlipCard = document.querySelector('#adminLoginWindow .flip-card');
 
     // Modal Backdrop Overlay & Enlarged Logo Overlay - Get references from DOM
-    // These elements are created in index.js and are available in the DOM
     const modalBackdropOverlay = document.getElementById('modal-backdrop-overlay');
     const enlargedLogoOverlay = document.querySelector('.enlarged-logo-overlay');
     const enlargedLogoImg = enlargedLogoOverlay ? enlargedLogoOverlay.querySelector('img') : null;
 
-
     let shimmerObserver;
-    let headerHideTimeout; // This variable is declared but not used, consider removing if not needed.
-    let headerHovering = false;
     let lastScrollTop = 0;
     let navAnimationPlayedOnLoad = false;
     const topThreshold = 50;
@@ -47,7 +43,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const scrollbarWidth = getScrollbarWidth();
     document.documentElement.style.setProperty('--scrollbar-width', `${scrollbarWidth}px`);
 
-
     // --- Header Visibility on Scroll/Hover ---
     function applyGlassmorphism() {
         if (header) header.classList.add('show-glassmorphism');
@@ -64,6 +59,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const currentScrollY = window.pageYOffset;
         const isHovering = header.matches(':hover') || (headerTriggerArea && headerTriggerArea.matches(':hover'));
 
+        // Use the 'active' class that animationModule applies
         const activeModals = document.querySelectorAll('.modal-window.active');
         const enlargedLogoIsShowing = enlargedLogoOverlay && enlargedLogoOverlay.classList.contains('active');
 
@@ -93,7 +89,6 @@ document.addEventListener('DOMContentLoaded', () => {
         lastScrollTop = currentScrollY;
     }
 
-
     const headerTriggerArea = document.createElement('div');
     headerTriggerArea.style.cssText = `
         position: fixed;
@@ -106,33 +101,18 @@ document.addEventListener('DOMContentLoaded', () => {
     `;
     document.body.appendChild(headerTriggerArea);
 
-    headerTriggerArea.addEventListener('mouseenter', () => {
-        headerHovering = true; // This variable is declared but not used inside updateHeaderStyle. Consider removing if not needed.
-        updateHeaderStyle();
-    });
-
-    headerTriggerArea.addEventListener('mouseleave', () => {
-        headerHovering = false; // This variable is declared but not used inside updateHeaderStyle. Consider removing if not needed.
-        updateHeaderStyle();
-    });
+    headerTriggerArea.addEventListener('mouseenter', updateHeaderStyle);
+    headerTriggerArea.addEventListener('mouseleave', updateHeaderStyle);
 
     if (header) {
-        header.addEventListener('mouseenter', () => {
-            headerHovering = true; // This variable is declared but not used inside updateHeaderStyle. Consider removing if not needed.
-            updateHeaderStyle();
-        });
-
-        header.addEventListener('mouseleave', () => {
-            headerHovering = false; // This variable is declared but not used inside updateHeaderStyle. Consider removing if not needed.
-            updateHeaderStyle();
-        });
+        header.addEventListener('mouseenter', updateHeaderStyle);
+        header.addEventListener('mouseleave', updateHeaderStyle);
     }
 
     window.addEventListener('scroll', updateHeaderStyle);
 
     // Initial check on load
     updateHeaderStyle();
-
 
     // --- Text Sparkle (Shimmer) Effect for NexGen Graphics and Admin ---
     function startShimmer(element) {
@@ -206,7 +186,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     triggerMainNavAnimation();
-
 
     // --- Active bar movement and icon flip/zoom animation ---
     function animateActiveBar() {
@@ -298,7 +277,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 1000); // Delay for 1 second after page load
     }
 
-
     // --- Flip Card Initial Flip & Hover/Tap (About Us & Admin) ---
     function setupFlipCardAnimation(flipCardElement, backImageSrc, frontImageSrc, stopOnFlippedState = false) {
         if (!flipCardElement) return;
@@ -361,16 +339,19 @@ document.addEventListener('DOMContentLoaded', () => {
             clearInterval(flipInterval); // Stop auto-flip on click/tap
 
             let imageUrlToEnlarge;
-            // Determine which image to show enlarged based on the 'flipped' class on the card
+            // If the card is currently 'flipped', it means the back image (nate.png) is visible.
+            // If it's not 'flipped', the front image (black-logo.png) is visible.
             if (flipCardElement.classList.contains('flipped')) {
-                imageUrlToEnlarge = backImageSrc; // If currently showing back (nate.png)
+                // If the back of the card (nate.png) is clicked, you want to show the black logo.
+                imageUrlToEnlarge = frontImageSrc; // This is the black logo image.
             } else {
-                imageUrlToEnlarge = frontImageSrc; // If currently showing front (black-logo.png)
+                // If the front of the card (black-logo.png) is clicked, show the black logo.
+                imageUrlToEnlarge = frontImageSrc;
             }
 
             // Call the animationModule's showEnlargedLogo function directly
             if (window.animationModule && typeof window.animationModule.showEnlargedLogo === 'function') {
-                window.animationModule.showEnlargedLogo(imageUrlToEnlarge); // Removed unnecessary params as they are already globally referenced
+                window.animationModule.showEnlargedLogo(imageUrlToEnlarge);
             }
         });
     }
@@ -378,18 +359,16 @@ document.addEventListener('DOMContentLoaded', () => {
     // Setup for About Us Flip Card
     if (aboutUsFlipCard) {
         // For About Us, stopOnFlippedState is false (stops on company logo - front: black-logo.png)
-        setupFlipCardAnimation(aboutUsFlipCard, '../images/nate.png', '../images/black-logo.png', false);
+        setupFlipCardAnimation(aboutUsFlipCard, 'index/images/nate.png', 'index/images/black-logo.png', false);
     }
 
     // Setup for Admin Flip Card
     if (adminFlipCard) {
         // For Admin, stopOnFlippedState is true (stops on NC side - back: nate.png)
-        setupFlipCardAnimation(adminFlipCard, '../images/nate.png', '../images/black-logo.png', true);
+        setupFlipCardAnimation(adminFlipCard, 'index/images/nate.png', 'index/images/black-logo.png', true);
     }
 
-
     // --- Global Animation Module (for Modals and Enlarged Logo) ---
-    // This object will hold all the functions related to modal and overlay animations and logic.
     window.animationModule = {
         // Helper to update body class and backdrop state
         updateOverlayState: function() {
@@ -400,22 +379,22 @@ document.addEventListener('DOMContentLoaded', () => {
                 document.body.classList.remove('modal-open');
                 if (modalBackdropOverlay) {
                     modalBackdropOverlay.classList.remove('active');
+                    modalBackdropOverlay.style.zIndex = ''; // Reset z-index
                 }
             } else if (enlargedLogoIsShowing) {
                 document.body.classList.add('modal-open');
                 if (modalBackdropOverlay) {
                     modalBackdropOverlay.classList.add('active');
-                    // Set backdrop Z-index for enlarged logo (higher than regular modals)
-                    modalBackdropOverlay.style.zIndex = '9998';
+                    // Ensure modal backdrop is behind enlarged logo overlay
+                    modalBackdropOverlay.style.zIndex = '9998'; 
                 }
-                // Set enlarged logo Z-index (highest)
-                if (enlargedLogoOverlay) enlargedLogoOverlay.style.zIndex = '9999';
+                // Enlarged logo overlay has its z-index set in CSS (9999) and doesn't need dynamic adjustment here.
             } else if (activeModals.length > 0) {
                 document.body.classList.add('modal-open');
                 if (modalBackdropOverlay) {
                     modalBackdropOverlay.classList.add('active');
-                    // Set backdrop Z-index for regular modals
-                    modalBackdropOverlay.style.zIndex = '100';
+                    // Backdrop for regular modals (above header, below enlarged logo)
+                    modalBackdropOverlay.style.zIndex = '1006'; 
                 }
             }
             // Always update header style after overlay state changes
@@ -425,8 +404,8 @@ document.addEventListener('DOMContentLoaded', () => {
         openModal: function(modalElement) {
             if (modalElement) {
                 modalElement.classList.add('active');
-                // Set modal Z-index (higher than regular modal backdrop)
-                modalElement.style.zIndex = '101';
+                // Modal element's z-index (above backdrop, below enlarged logo)
+                modalElement.style.zIndex = '1007'; 
                 this.updateOverlayState();
             }
         },
@@ -446,63 +425,61 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!enlargedLogoOverlay || !enlargedLogoImg) return;
 
             enlargedLogoImg.src = imageUrl;
-            enlargedLogoImg.alt = "Enlarged Logo";
+            enlargedLogoImg.alt = "Enlarged Image";
 
+            // Apply styles for visibility and animation start
             enlargedLogoOverlay.style.visibility = 'visible';
             enlargedLogoOverlay.style.opacity = '1';
             enlargedLogoImg.style.transform = 'scale(1)';
-            enlargedLogoOverlay.classList.add('active');
+            enlargedLogoImg.style.opacity = '1';
+            enlargedLogoOverlay.classList.add('active'); // Add active class
 
             this.updateOverlayState();
 
-            // Re-attach click listener for closing, ensuring 'once' behavior
-            // Remove previous listener if it exists to avoid multiple triggers
-            const currentCloseHandler = enlargedLogoOverlay.__closeHandler__; // Use a hidden property to store handler
-            if (currentCloseHandler) {
-                enlargedLogoOverlay.removeEventListener('click', currentCloseHandler);
-            }
-
-            const newCloseHandler = (e) => {
-                if (e.target === enlargedLogoOverlay || e.target === enlargedLogoImg) { // Also allow clicking the image to close
+            // Setup single click listener for closing the enlarged logo
+            const closeEnlargedLogoHandler = (e) => {
+                // Check if the click occurred directly on the overlay or the image itself
+                if (e.target === enlargedLogoOverlay || e.target === enlargedLogoImg) {
                     enlargedLogoOverlay.style.opacity = '0';
                     enlargedLogoImg.style.transform = 'scale(0.8)';
-                    enlargedLogoOverlay.classList.remove('active');
+                    enlargedLogoImg.style.opacity = '0'; // Ensure the image also fades out
+                    enlargedLogoOverlay.classList.remove('active'); // Remove active class
 
-                    setTimeout(() => {
+                    // Wait for fade-out transition to complete before setting visibility to hidden
+                    enlargedLogoOverlay.addEventListener('transitionend', function handler() {
                         enlargedLogoOverlay.style.visibility = 'hidden';
-                        this.updateOverlayState();
-                        // Remove the event listener after it's used
-                        enlargedLogoOverlay.removeEventListener('click', newCloseHandler);
-                        enlargedLogoOverlay.__closeHandler__ = null; // Clear the stored handler
-                    }, 300);
+                        enlargedLogoOverlay.removeEventListener('transitionend', handler); // Remove self
+                        window.animationModule.updateOverlayState(); // Update global state
+                    }, { once: true }); // Ensure this listener runs only once
                 }
             };
-            enlargedLogoOverlay.addEventListener('click', newCloseHandler);
-            enlargedLogoOverlay.__closeHandler__ = newCloseHandler; // Store reference to the handler
+
+            // Remove any previous click handler to prevent multiple executions
+            if (enlargedLogoOverlay.__currentCloseHandler__) {
+                enlargedLogoOverlay.removeEventListener('click', enlargedLogoOverlay.__currentCloseHandler__);
+            }
+            enlargedLogoOverlay.addEventListener('click', closeEnlargedLogoHandler);
+            enlargedLogoOverlay.__currentCloseHandler__ = closeEnlargedLogoHandler; // Store for future removal
         },
 
+        // This function is for backdrop clicks, so it needs to decide what to close
         handleBackdropClick: function() {
             // Prioritize closing the enlarged logo if it's active
             if (enlargedLogoOverlay && enlargedLogoOverlay.classList.contains('active')) {
-                // Directly call the close logic for enlarged logo
-                this.showEnlargedLogo(''); // Call with empty string to trigger close logic
+                // Simulate a click on the enlarged logo overlay to trigger its close logic
+                // This ensures the animation and state updates within showEnlargedLogo's closing part are used.
+                enlargedLogoOverlay.click();
             } else {
                 // Otherwise, close any active modals
                 const activeModals = document.querySelectorAll('.modal-window.active');
                 activeModals.forEach(modal => {
-                    modal.classList.remove('active');
-                    // Give a brief delay to allow CSS transition to complete before updating state
-                    setTimeout(() => {
-                        modal.style.zIndex = ''; // Reset z-index
-                        this.updateOverlayState();
-                    }, 300);
+                    window.animationModule.closeModal(modal); // Use the animationModule's closeModal
                 });
             }
         }
     }; // End window.animationModule
 
     // Attach open modal listeners directly here, using the animationModule
-    // These will now call animationModule.openModal which handles display.
     if (aboutUsLinkElement) {
         aboutUsLinkElement.addEventListener('click', (event) => {
             event.preventDefault();
@@ -516,6 +493,21 @@ document.addEventListener('DOMContentLoaded', () => {
             event.preventDefault();
             const adminLoginWindow = document.getElementById('adminLoginWindow');
             if (adminLoginWindow) window.animationModule.openModal(adminLoginWindow);
+        });
+    }
+
+    // Add event listeners for closing regular modals from their close buttons (re-affirmation)
+    document.querySelectorAll('.modal-window .close-button').forEach(button => {
+        button.addEventListener('click', (event) => {
+            const modalToClose = event.target.closest('.modal-window');
+            window.animationModule.closeModal(modalToClose);
+        });
+    });
+
+    // Handle clicks on the modal backdrop overlay using the module's handler
+    if (modalBackdropOverlay) {
+        modalBackdropOverlay.addEventListener('click', () => {
+            window.animationModule.handleBackdropClick();
         });
     }
 });

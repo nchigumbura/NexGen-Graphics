@@ -1,3 +1,4 @@
+// index.js
 document.addEventListener('DOMContentLoaded', () => {
     // Get references to elements
     const aboutUsLink = document.getElementById('aboutUsLink');
@@ -39,6 +40,7 @@ document.addEventListener('DOMContentLoaded', () => {
         opacity: 0;
         visibility: hidden;
         transition: opacity 0.3s ease;
+        z-index: 9999; /* Ensure it's on top of everything else */
     `;
     const imgElement = document.createElement('img');
     imgElement.style.cssText = `
@@ -46,7 +48,8 @@ document.addEventListener('DOMContentLoaded', () => {
         max-height: 90%;
         object-fit: contain;
         transform: scale(0.8); /* Initial scale for animation */
-        transition: transform 0.3s ease;
+        opacity: 0; /* Initial opacity for animation */
+        transition: transform 0.3s ease, opacity 0.3s ease;
     `;
     enlargedLogoOverlay.appendChild(imgElement);
     document.body.appendChild(enlargedLogoOverlay); // Append to body
@@ -155,6 +158,95 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Function to generate Quick Services Section HTML
     function generateQuickServicesSection() {
+        // Define service card data with custom background colors
+        const serviceCardsData = [
+            {
+                type: 'image-card',
+                imgSrc: 'index/images/mcLaren-image.jpeg',
+                alt: 'McLaren Senna design',
+                linkText: 'Graphic Brilliance',
+                linkHref: 'services.html',
+                bgColor: '#F0F0F0' // Light gray for image cards
+            },
+            {
+                type: 'content-card',
+                heading: 'Posters',
+                text: 'Make an impact with eye-catching promotional materials. From business promos to event flyers, we design to captivate.',
+                linkText: 'Graphic Brilliance',
+                linkHref: 'services.html',
+                bgColor: '#929292' // Light blue
+
+            },
+            {
+                type: 'image-card',
+                imgSrc: 'index/images/event-setup.jpeg',
+                alt: 'Event setup with tables and chairs',
+                linkHref: 'services.html',
+                bgColor: '#F0F0F0' // Light gray for image cards
+            },
+            {
+                type: 'content-card',
+                heading: 'Event Invitations',
+                text: 'Turn heads with bold designs that tell — perfect for your brand, your message, your moment.',
+                linkText: 'Attention Grabber',
+                linkHref: 'services.html',
+                bgColor: '#758184' // Light gray for image cards
+
+                   // Light pink with 75% opacity
+            },
+            {
+                type: 'content-card',
+                heading: 'Business Branding',
+                text: 'A complete package to give your brand consistency and professionalism across all platforms.',
+                linkText: 'Brand Harmony',
+                linkHref: 'services.html',
+                bgColor: 'rgba(71, 61, 53, 0.75)' // 75% transparent
+            },
+            {
+                type: 'image-card',
+                imgSrc: 'index/images/business-branding-blur.jpeg',
+                alt: 'Blurred business branding materials',
+                linkText: 'Brand Harmony',
+                linkHref: 'services.html',
+                // Light gray for image cards
+            },
+            {
+                type: 'content-card',
+                heading: 'Logos',
+                text: 'Your logo is the heart of your brand identity. We create unique, memorable logos that represent your vision — whether you\'re a startup, a business, or an event.',
+                linkText: 'Symbol Style',
+                linkHref: 'services.html',
+                bgColor: 'rgba(46, 46, 46, 0.75)' // 75% opacity
+            },
+            {
+                type: 'image-card',
+                imgSrc: 'index/images/buzz.jpeg',
+                alt: 'Blurred logo designs',
+                linkText: 'Symbol Style',
+                linkHref: 'services.html',
+                bgColor: '#F0F0F0' // Light gray for image cards
+            }
+        ];
+
+        const serviceItemsHTML = serviceCardsData.map(item => {
+            if (item.type === 'image-card') {
+                return `
+                    <div class="service-item image-card" style="background-color: ${item.bgColor || 'transparent'};">
+                        <img src="${item.imgSrc}" alt="${item.alt}">
+                        <div class="image-text-overlay"></div>
+                    </div>
+                `;
+            } else {
+                return `
+                    <div class="service-item content-card" style="background-color: ${item.bgColor};">
+                        <h3>${item.heading}</h3>
+                        <p>${item.text}</p>
+                        <a href="${item.linkHref}" class="bottom-left-link">${item.linkText}</a>
+                    </div>
+                `;
+            }
+        }).join('');
+
         const quickServicesHTML = `
             <section class="quick-services-section">
                 <div class="section-header">
@@ -162,100 +254,73 @@ document.addEventListener('DOMContentLoaded', () => {
                     <a href="services.html" class="see-more-button">See more</a>
                 </div>
                 <div class="services-grid">
-                    <div class="service-item image-card">
-                        <img src="images/mcLaren-image.jpeg" alt="McLaren Senna design">
-                        <div class="image-text-overlay">
-                            <p class="top-right-text">Quick Services</p>
-                            <p class="bottom-right-text">McLaren Senna</p>
-                        </div>
-                    </div>
-                    <div class="service-item content-card">
-                        <h3>Posters</h3>
-                        <p>Make an impact with eye-catching promotional materials. From business promos to event flyers, we design to captivate.</p>
-                        <a href="#" class="bottom-right-link">Graphic Brilliance</a>
-                    </div>
-
-                    <div class="service-item content-card">
-                        <h3>Event Invitations</h3>
-                        <p>Turn heads with bold designs that tell — perfect for your brand, your message, your moment.</p>
-                        <a href="#" class="bottom-right-link">Attention Grabber</a>
-                    </div>
-                    <div class="service-item image-card">
-                        <img src="images/event-setup-image.jpg" alt="Event setup with tables and chairs">
-                        <div class="image-text-overlay">
-                        </div>
-                    </div>
-
-                    <div class="service-item image-card">
-                        <img src="images/business-branding-blur.jpeg" alt="Blurred business branding materials">
-                        <div class="image-text-overlay">
-                        </div>
-                    </div>
-                    <div class="service-item content-card">
-                        <h3>Business Branding</h3>
-                        <p>A complete package to give your brand consistency and professionalism across all platforms.</p>
-                        <a href="#" class="bottom-right-link">Brand Harmony</a>
-                    </div>
-
-                    <div class="service-item content-card">
-                        <h3>Logos</h3>
-                        <p>Your logo is the heart of your brand identity. We create unique, memorable logos that represent your vision — whether you're a startup, a business, or an event.</p>
-                        <a href="#" class="bottom-right-link">Symbol Style</a>
-                    </div>
-                    <div class="service-item image-card">
-                        <img src="images/logos-image-blur.jpg" alt="Blurred logo designs">
-                        <div class="image-text-overlay">
-                        </div>
-                    </div>
+                    ${serviceItemsHTML}
                 </div>
             </section>
         `;
         return quickServicesHTML;
     }
 
+    // Data for the Why Choose Section
+    const whyChooseData = {
+        heading: "Why Choose NexGen Graphics?",
+        paragraph: "We offer affordable and flexible packages, available in both digital and printed formats, tailored specifically for Zimbabwean businesses and events. With a fast turnaround time and personalized support, our designs are crafted to make your brand shine without breaking the bank.",
+        buttonText: "Contact us today!",
+        cards: [
+            {
+                icon: 'index/images/icon-creative.png', // Placeholder path for your icons
+                title: "Creative",
+                description: "We turn bold ideas into beautifully crafted visuals that spark connection and curiosity."
+            },
+            {
+                icon: 'index/images/icon-trusted.png', // Placeholder path
+                title: "Trusted",
+                description: "Our clients count on us to deliver with care, consistency, and a proven track record of excellence."
+            },
+            {
+                icon: 'index/images/icon-polished.png', // Placeholder path
+                title: "Polished",
+                description: "From concept to final delivery, every detail is fine-tuned to radiate professionalism and clarity."
+            },
+            {
+                icon: 'index/images/icon-impactful.png', // Placeholder path
+                title: "Impactful",
+                description: "Our designs are built to stand out, engage audiences, and drive real results that matter."
+            }
+        ]
+    };
+
     // Function to generate Why Choose Section HTML
+    // This function now only returns the INNER HTML for the #whyChooseSectionContainer
     function generateWhyChooseSection() {
-        const whyChooseHTML = `
-            <section class="why-choose-section">
-                <div class="why-choose-content">
-                    <div class="text-and-button">
-                        <h2>Why Choose NexGen Graphics?</h2>
-                        <p>We offer affordable and flexible packages, available in both digital and printed formats, tailored specifically for Zimbabwean businesses and events. With a fast turnaround time and personalized support, our designs are crafted to make your brand shine without breaking the bank.</p>
-                        <button id="contactUsButton" class="contact-us-button">Contact us today!</button>
-                    </div>
-                    <div class="benefit-cards-grid">
-                        <div class="benefit-card">
-                            <img src="images/icon-creative.png" alt="Creative Icon" class="benefit-icon">
-                            <h3>Creative</h3>
-                            <p>We turn bold ideas into beautifully crafted visuals that spark connection and curiosity.</p>
-                        </div>
-                        <div class="benefit-card">
-                            <img src="images/icon-trusted.png" alt="Trusted Icon" class="benefit-icon">
-                            <h3>Trusted</h3>
-                            <p>Our clients count on us to deliver with care, consistency, and a proven track record of excellence.</p>
-                        </div>
-                        <div class="benefit-card">
-                            <img src="images/icon-polished.png" alt="Polished Icon" class="benefit-icon">
-                            <h3>Polished</h3>
-                            <p>From concept to final delivery, every detail is fine-tuned to radiate professionalism and clarity.</p>
-                        </div>
-                        <div class="benefit-card">
-                            <img src="images/icon-impactful.png" alt="Impactful Icon" class="benefit-icon">
-                            <h3>Impactful</h3>
-                            <p>Our designs are built to stand out, engage audiences, and drive real results that matter.</p>
-                        </div>
-                    </div>
+        const cardItemsHTML = whyChooseData.cards.map(card => `
+            <div class="why-choose-card">
+                <div class="why-choose-card-header">
+                    <img src="${card.icon}" alt="${card.title} Icon" class="icon">
+                    <h3>${card.title}</h3>
                 </div>
-            </section>
+                <p>${card.description}</p>
+            </div>
+        `).join('');
+
+        // Return only the direct children that will be laid out by the grid on #whyChooseSectionContainer
+        return `
+            <div class="why-choose-left-content">
+                <h2>${whyChooseData.heading}</h2>
+                <p>${whyChooseData.paragraph}</p>
+                <a href="#contact" class="why-choose-contact-button">${whyChooseData.buttonText}</a>
+            </div>
+            <div class="why-choose-grid-container">
+                ${cardItemsHTML}
+            </div>
         `;
-        return whyChooseHTML;
     }
 
     // Data for Image Gallery items, including identifiers and types
     const galleryItemsData = [
         {
             id: 'img-a',
-            src: 'images/gallery-image-1-red-boat.jpg',
+            src: 'index/images/gallery-image-1-red-boat.jpg',
             alt: 'Red boat on black sand beach',
             subtitle: 'Design Showcase',
             heading: 'Oceanic Horizons',
@@ -263,7 +328,7 @@ document.addEventListener('DOMContentLoaded', () => {
         },
         {
             id: 'img-b',
-            src: 'images/image-2-o66.jpg',
+            src: 'index/images/image-2-o66.jpg',
             alt: 'Modern building interiors',
             subtitle: 'Architecture',
             heading: 'Urban Spaces',
@@ -271,7 +336,7 @@ document.addEventListener('DOMContentLoaded', () => {
         },
         {
             id: 'img-c',
-            src: 'images/mexico.jpg',
+            src: 'index/images/mexico.jpg',
             alt: 'Cityscape with abstract design',
             subtitle: 'City Vibes',
             heading: 'Metropolis Art',
@@ -279,7 +344,7 @@ document.addEventListener('DOMContentLoaded', () => {
         },
         {
             id: 'img-d',
-            src: 'images/BBC.jpg',
+            src: 'index/images/BBC.jpg',
             alt: 'Planet Earth app with leopard',
             subtitle: 'App Design',
             heading: 'Planet Earth',
@@ -287,7 +352,7 @@ document.addEventListener('DOMContentLoaded', () => {
         },
         {
             id: 'img-e',
-            src: 'images/technoman.jpg',
+            src: 'index/images/technoman.jpg',
             alt: 'Techno music event design',
             subtitle: 'Event Promo',
             heading: 'Techno Night',
@@ -295,7 +360,7 @@ document.addEventListener('DOMContentLoaded', () => {
         },
         {
             id: 'img-f',
-            src: 'images/gdwoman.jpg',
+            src: 'index/images/gdwoman.jpg',
             alt: 'Graphic design of woman\'s face',
             subtitle: 'Portraits',
             heading: 'Cultural Fusion',
@@ -303,7 +368,7 @@ document.addEventListener('DOMContentLoaded', () => {
         },
         {
             id: 'img-g',
-            src: 'images/earthy.jpg',
+            src: 'index/images/earthy.jpg',
             alt: 'Planet Earth app with chimpanzee',
             subtitle: 'Nature',
             heading: 'Wildlife Focus',
@@ -311,7 +376,7 @@ document.addEventListener('DOMContentLoaded', () => {
         },
         {
             id: 'img-h',
-            src: 'images/ruin.jpg',
+            src: 'index/images/ruin.jpg',
             alt: 'Ancient ruins with sky',
             subtitle: 'History',
             heading: 'Echoes of Time',
@@ -319,7 +384,7 @@ document.addEventListener('DOMContentLoaded', () => {
         },
         {
             id: 'img-i',
-            src: 'images/we.jpg',
+            src: 'index/images/we.jpg',
             alt: 'World Environment Day graphic',
             subtitle: 'Campaign',
             heading: 'Eco Awareness',
@@ -327,7 +392,7 @@ document.addEventListener('DOMContentLoaded', () => {
         },
         {
             id: 'img-j',
-            src: 'images/run.jpg',
+            src: 'index/images/run.jpg',
             alt: 'RUN abstract design',
             subtitle: 'Typography',
             heading: 'Dynamic Motion',
@@ -335,7 +400,7 @@ document.addEventListener('DOMContentLoaded', () => {
         },
         {
             id: 'img-k',
-            src: 'images/borngreene.jpg',
+            src: 'index/images/borngreene.jpg',
             alt: 'I Was Born Not Knowing graphic',
             subtitle: 'Inspiration',
             heading: 'Growth Mindset',
@@ -343,7 +408,7 @@ document.addEventListener('DOMContentLoaded', () => {
         },
         {
             id: 'img-l',
-            src: 'images/EUNOIA.jpg',
+            src: 'index/images/EUNOIA.jpg',
             alt: 'Eunoia abstract graphic',
             subtitle: 'Abstract',
             heading: 'Pure Thought',
@@ -390,21 +455,21 @@ document.addEventListener('DOMContentLoaded', () => {
         {
             stars: 5, // We'll represent stars visually with CSS
             text: "I'm genuinely impressed by the amazing designs and how affordable everything is! You've definitely won me over—I'll be getting in touch again for sure.",
-            profileImg: 'images/tafadzwa.jpg',
+            profileImg: 'index/images/tafadzwa.jpg',
             name: "Tafadzwa M",
             request: "Business Profile"
         },
         {
             stars: 5,
             text: "They truly made everything effortless. From start to finish, it was smooth sailing—I felt completely taken care of the whole time.",
-            profileImg: "images/tariro.jpg",
+            profileImg: "index/images/tariro.jpg",
             name: "Tariro K",
             request: "Business Logo"
         },
         {
             stars: 5,
             text: "Zvese zvakagadzirirwa on time, and the experience was easy handina kana kumbonetseka.also the layout yakandifadza handina kuita stress zvachose.",
-            profileImg: "images/chipo.jpg",
+            profileImg: "index/images/chipo.jpg",
             name: "Chipo H",
             request: "Graduation Party Invite"
         }
@@ -451,11 +516,13 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     if (whyChooseSectionContainer) {
+        // Corrected: Set innerHTML directly to the content divs, not a new section.
         whyChooseSectionContainer.innerHTML = generateWhyChooseSection();
         // The contact button only exists after the HTML is inserted
-        const contactUsButton = document.getElementById('contactUsButton');
+        const contactUsButton = document.querySelector('.why-choose-contact-button'); // Changed to class selector
         if (contactUsButton) {
-            contactUsButton.addEventListener('click', () => {
+            contactUsButton.addEventListener('click', (event) => {
+                event.preventDefault(); // Prevent default link behavior if it's an <a> tag
                 window.openModal(contactInfoModal); // Use window.openModal to delegate to animationModule
             });
         }

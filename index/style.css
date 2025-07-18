@@ -45,8 +45,7 @@ body.modal-open {
     background-color: rgba(0, 0, 0, 0.05); /* Slightly less dark tint as requested */
     backdrop-filter: blur(15px); /* Increased blur for a stronger effect as requested */
     -webkit-backdrop-filter: blur(15px); /* For Safari */
-    /* Z-INDEX REVISION: Set a base Z-index here that is above the header,
-        JS will dynamically set it higher for the enlarged logo if needed. */
+    /* Z-INDEX REVISION: Must be above header (1005) but below enlarged logo (9999) */
     z-index: 1006; /* Must be higher than header (1005) */
     opacity: 0; /* Start hidden */
     visibility: hidden; /* Hide from interaction */
@@ -323,9 +322,9 @@ header.hide-header {
 .modal-window {
     display: flex; /* Always use flexbox so content can be centered */
     position: fixed; /* Stay in place */
-    /* Z-INDEX REVISION: Base Z-index for the modal container itself.
-        JS will set it to 1007 for active modals. */
-    z-index: 1007; /* Must be higher than header (1005) and backdrop (1006) */
+    /* Z-INDEX REVISION: Must be higher than header (1005) and backdrop (1006)
+        but lower than the enlarged logo overlay (9999). */
+    z-index: 1007; /* Set a default z-index higher than header and backdrop */
     left: 0;
     top: 0; /* Make it cover the whole viewport from the top */
     width: 100vw; /* Full viewport width */
@@ -413,7 +412,34 @@ header.hide-header {
     overflow-y: auto; /* This now handles scrolling for the main content of the modal */
     position: relative; /* Keep relative for any potential child positioning, though not critical for flip-card now */
     z-index: 1; /* Ensure it's below the close button if needed, but not critical for flip-card now */
+
+    /* --- Scrollbar Styling for Webkit Browsers (iOS-like) --- */
+    &::-webkit-scrollbar {
+        width: 8px; /* Width of the scrollbar */
+        border-radius: 4px; /* Rounded corners for the scrollbar track */
+    }
+
+    &::-webkit-scrollbar-track {
+        background: rgba(0, 0, 0, 0.05); /* Slightly transparent track */
+        border-radius: 4px; /* Rounded corners for the track */
+    }
+
+    &::-webkit-scrollbar-thumb {
+        background-color: rgba(0, 0, 0, 0.2); /* Transparent black thumb */
+        border-radius: 4px; /* Rounded corners for the thumb */
+        border: 2px solid transparent; /* Creates padding around the thumb */
+        background-clip: padding-box; /* Ensures border is outside the thumb color */
+    }
+
+    &::-webkit-scrollbar-thumb:hover {
+        background-color: rgba(0, 0, 0, 0.3); /* Darker on hover */
+    }
+
+    /* For Firefox (minimal styling possible) */
+    scrollbar-width: thin; /* "auto" or "thin" */
+    scrollbar-color: rgba(0, 0, 0, 0.2) rgba(0, 0, 0, 0.05); /* thumb color track color */
 }
+
 
 .close-button {
     color: #333; /* Darker close button for better contrast */
@@ -431,7 +457,7 @@ header.hide-header {
     justify-content: center;
     align-items: center;
     background-color: rgba(0, 0, 0, 0.05); /* Subtle background for visual cue */
-    z-index: 11; /* Keep this higher than the flip card and other modal content */
+    z-index: 1008; /* Must be above modal (1007) but below enlarged logo (9999) */
 }
 
 .close-button:hover,
@@ -648,8 +674,7 @@ header.hide-header {
     background-color: rgba(0, 0, 0, 0.6); /* Darker blur background for logo display */
     backdrop-filter: blur(15px); /* Stronger blur for the overlay */
     -webkit-backdrop-filter: blur(15px);
-    /* Z-INDEX REVISION: Base Z-index for the enlarged logo overlay,
-        JS will set it to 9999 when active. */
+    /* Z-INDEX REVISION: Highest of all fixed elements */
     z-index: 9999; /* Highest of all fixed elements */
     opacity: 0;
     pointer-events: none;
@@ -776,13 +801,292 @@ header.hide-header {
     }
 }
 
+/* ==========================================================================
+// --- SECOND PART OF STYLES ---
+// Contains styles for sections and components below the hero, such as
+// Quick Services, additional content blocks, footers, and responsive adjustments.
+// This area focuses on detailed content presentation and overall layout integrity.
+// ========================================================================== */
 
 /* ========================================= */
-/* --- Placeholder for other sections --- */
+/* --- Quick Services Section --- */
+/* ========================================= */
+#quickServicesSectionContainer {
+    /* Remove placeholder styles */
+    min-height: auto;
+    background-color: rgba(198, 200, 199, 0.7); /* 70% transparent */
+    /* Ensures the section is transparent */
+    font-size: unset;
+    color: unset;
+    box-shadow: none;
+
+    margin: 50px 5% 0 5%; /* 10% margin on left and right edges */
+    padding: 35px 30px; /* Padding for the entire section content */
+    border-radius: 30px;
+    max-width: 1200px; /* Max width consistent with other sections */
+    display: block; /* No longer flex placeholder */
+}
+
+.quick-services-section .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    padding: 0 0px; /* No horizontal padding here, taken care of by container */
+}
+
+.quick-services-section .section-header h2 {
+    font-size: 1.5em;
+    color: #333;
+    margin: 0;
+}
+
+.quick-services-section .see-more-button {
+    background-color: #929292; /* Dark gray */
+    color: white;
+    padding: 8px 15px;
+    border-radius: 20px;
+    text-decoration: none;
+    font-weight: 500;
+    transition: background-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.quick-services-section .see-more-button:hover {
+    background-color: #3C3C3C;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.services-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* Adjusted minmax for better responsiveness based on typical card sizes */
+    gap: 20px;
+}
+
+.service-item {
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    position: relative;
+    height: 350px; /* Fixed height for uniform card appearance */
+    overflow: hidden; /* Ensures rounded corners are applied */
+    display: flex;
+    flex-direction: column;
+}
+
+.service-item.image-card {
+    background-color: #F0F0F0; /* Light gray background for image cards */
+}
+
+.service-item.image-card img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Ensures image covers the card */
+    filter: blur(2px); /* Subtle blur as observed in screenshot */
+}
+
+.service-item.image-card .image-text-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 15px;
+    color: #333; /* Dark text for overlay on light image card */
+    text-shadow: 0 1px 2px rgba(255,255,255,0.3); /* Slight text shadow for readability */
+}
+
+.service-item.image-card .image-text-overlay .top-right-text {
+    align-self: flex-end; /* Aligns to top-right */
+    margin-top: 5px; /* Little spacing from top */
+    font-size: 0.9em;
+    font-weight: 500;
+}
+
+.service-item.image-card .image-text-overlay .bottom-right-text {
+    align-self: flex-end; /* Aligns to bottom-right */
+    margin-bottom: 5px; /* Little spacing from bottom */
+    font-size: 1.1em;
+    font-weight: 600;
+}
+
+
+.service-item.content-card {
+    background-color: #4C4C4C; /* Dark gray background for content cards */
+    padding: 20px;
+    color: #D3D3D3; /* Light gray text for general content */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; /* Pushes link to bottom */
+}
+
+.service-item.content-card h3 {
+    color: white; /* White title for headings */
+    margin-top: 0;
+    margin-bottom: 10px;
+    font-size: 1.2em;
+    font-weight: 600;
+}
+
+.service-item.content-card p {
+    font-size: 0.85em;
+    line-height: 1.4;
+    margin-bottom: 25px;
+    flex-grow: 1; /* Allows paragraph to take up available space, pushing link down */
+    display: flex;
+    align-items: center; /* Vertically center text within the available space */
+    justify-content: center; /* Horizontally center text */
+    text-align: left; /* Center text lines */
+}
+
+.service-item.content-card .bottom-left-link {
+    color: #D3D3D3; /* Lighter gray for the link */
+    font-size: 0.85em;
+    text-decoration: none;
+    font-weight: 500;
+    align-self: flex-start; /* Aligns link to bottom left */
+    text-decoration: underline; /* Underline the link */
+    transition: color 0.2s ease;
+}
+
+.service-item.content-card .bottom-right-link:hover {
+    color: white; /* White on hover */
+}
+
+/* ========================================= */
+/* --- Why Choose NexGen Graphics? Section --- */
+/* ========================================= */
+#whyChooseSectionContainer {
+    margin: 80px 4% 0 4%;
+    padding: 40px 5%;
+    max-width: 1200px;
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* This creates the two-column layout: text left, cards right */
+    gap: 30px;
+    border-radius: 30px;
+    min-height: auto;
+    align-items: start;
+    box-sizing: border-box;
+}
+
+/* Main text and button on the left */
+.why-choose-left-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Center align all content horizontally */
+    text-align: center; /* Center text within the block */
+    padding-right: 20px; /* Space between text and cards */
+    justify-content: center; /* Vertically center content if there's extra space */
+}
+
+.why-choose-left-content h2 {
+    font-size: 2em;
+    color: #333;
+    margin-top: 0;
+    margin-bottom: 20px;
+    line-height: 1.2;
+}
+
+.why-choose-left-content p {
+    font-size: 1em;
+    color: #555;
+    line-height: 1.6;
+    margin-bottom: 30px;
+    /* Ensure text is centered within its block for smaller screens or when wrapping */
+    text-align: center;
+}
+
+.why-choose-contact-button {
+    display: inline-block; /* Changed from block to inline-block for better centering with auto margins */
+    background-color: #929292; /* Dark gray from screenshot button */
+    color: white;
+    padding: 12px 25px;
+    border-radius: 10px;
+    text-decoration: none;
+    font-weight: 500;
+    transition: background-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+    border: none;
+    cursor: pointer;
+    /* Ensure button is centered */
+    margin: 0 auto; /* This correctly centers an inline-block element within a flex container */
+}
+
+.why-choose-contact-button:hover {
+    background-color: #3C3C3C;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+}
+
+/* Grid for the four cards on the right */
+.why-choose-grid-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* Two columns for the cards */
+    gap: 20px; /* Spacing between cards */
+}
+
+/* Individual feature card styles */
+.why-choose-card {
+    background-color:#c6c8c7; /* 70% transparent */
+    border-radius: 10px; /* Rounded corners for cards */
+    padding: 20px;
+    display: flex;
+    flex-direction: column; /* Stack elements vertically */
+    text-align: left; /* Default text alignment for paragraphs */
+    box-shadow: 0 2px 10px rgba(0,0,0,0.03); /* Very subtle shadow */
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    min-height: 180px; /* Ensure consistent height for cards */
+    justify-content: flex-start; /* Align content to the top */
+    box-sizing: border-box; /* Include padding in width/height */
+}
+
+.why-choose-card:hover {
+    transform: translateY(-3px); /* Slight lift on hover */
+    box-shadow: 0 8px 20px rgba(0,0,0,0.08); /* More prominent shadow on hover */
+}
+
+/* Container for icon and heading (top part of card) */
+.why-choose-card-header {
+    display: flex; /* Arrange icon and heading horizontally */
+    align-items: center; /* Vertically align icon and heading */
+    margin-bottom: 10px; /* Space between header and description */
+    width: 100%; /* Take full width to allow internal alignment */
+    /* Removed text-align: center here as it's now applied directly to h3 */
+}
+
+.why-choose-card .icon {
+    width: 40px; /* Adjusted size for icons */
+    height: 40px;
+    object-fit: contain; /* Ensure the image fits within its bounds without distortion */
+    margin-right: 15px; /* Space between icon and heading */
+    color: #4C4C4C; /* Dark gray for icons (if SVG or adaptable) */
+    flex-shrink: 0; /* Prevent icon from shrinking */
+}
+
+.why-choose-card h3 {
+    font-size: 1.1em;
+    color: #333;
+    margin: 0; /* Remove default margin */
+    font-weight: 600;
+    text-align: center; /* Center the heading text within its space */
+    flex-grow: 1; /* Allow heading to take available space */
+    /* Added min-width to prevent squishing if text is long and icon is wide */
+    min-width: 0;
+}
+
+.why-choose-card p {
+    font-size: 0.9em;
+    color: #666;
+    line-height: 1.5;
+    margin-bottom: 0;
+    text-align: left; /* Ensure description text is left-aligned */
+}
+
+/* ========================================= */
+/* --- Placeholder for other sections (Keep these minimal) --- */
 /* ========================================= */
 /* These will be dynamically loaded/inserted */
-#quickServicesSectionContainer,
-#whyChooseSectionContainer,
 #imageGallerySectionContainer,
 #testimonialsSectionContainer {
     min-height: 300px; /* Placeholder height */
@@ -795,6 +1099,6 @@ header.hide-header {
     color: #777;
     border-radius: 10px;
     box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    /* Add padding-top if they appear directly under the fixed header */
     padding-top: 20px; /* Example, adjust as needed based on content */
+    max-width: 1200px; /* Added max-width for consistency */
 }
