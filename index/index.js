@@ -283,7 +283,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 description: "From concept to final delivery, every detail is fine-tuned to radiate professionalism and clarity."
             },
             {
-                icon: 'index/images/icon-impactful.png', // Placeholder path
+                icon: 'index/images/icon-impact.png', // Placeholder path
                 title: "Impactful",
                 description: "Our designs are built to stand out, engage audiences, and drive real results that matter."
             }

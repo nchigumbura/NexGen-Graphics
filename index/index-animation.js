@@ -1,3 +1,4 @@
+// animation.js
 document.addEventListener('DOMContentLoaded', () => {
     // Header elements for scroll and hover effects
     const header = document.querySelector('header');
@@ -21,6 +22,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const modalBackdropOverlay = document.getElementById('modal-backdrop-overlay');
     const enlargedLogoOverlay = document.querySelector('.enlarged-logo-overlay');
     const enlargedLogoImg = enlargedLogoOverlay ? enlargedLogoOverlay.querySelector('img') : null;
+
+    // New: Select all why-choose-card elements
+    const whyChooseCards = document.querySelectorAll('.why-choose-card');
 
     let shimmerObserver;
     let lastScrollTop = 0;
@@ -141,11 +145,47 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (companyName) shimmerObserver.observe(companyName);
         if (adminLink) shimmerObserver.observe(adminLink);
+
+        // NEW: IntersectionObserver for Why Choose Cards
+        const whyChooseCardObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    // Start glow animation only if it hasn't been played before or if you want it to replay
+                    if (!entry.target.classList.contains('animate-glow-played')) {
+                        entry.target.classList.add('animate-glow');
+                        // Add a class to mark that the animation has played
+                        entry.target.classList.add('animate-glow-played');
+
+                        // Optionally, remove animate-glow after it finishes so it can be re-triggered
+                        // For an 8s animation, this timeout should match.
+                        setTimeout(() => {
+                            entry.target.classList.remove('animate-glow');
+                            // If you want it to replay *every* time it's viewed, remove 'animate-glow-played' here
+                            // entry.target.classList.remove('animate-glow-played');
+                        }, 8000);
+                    }
+                } else {
+                    // Optional: If you want the animation to reset when it leaves view, uncomment this
+                    // entry.target.classList.remove('animate-glow');
+                    // entry.target.classList.remove('animate-glow-played'); // Allow replay
+                }
+            });
+        }, { threshold: 0.4 }); // Trigger when 40% of the card is visible
+
+        whyChooseCards.forEach(card => {
+            whyChooseCardObserver.observe(card);
+        });
+
     } else {
         // Fallback for browsers without IntersectionObserver
         if (companyName) startShimmer(companyName);
         if (adminLink) startShimmer(adminLink);
         if (aboutUsClickHint) showAboutUsHint();
+
+        // Fallback for whyChooseCards (won't have "on view" trigger)
+        whyChooseCards.forEach(card => {
+            card.classList.add('animate-glow'); // Apply animation immediately if no IntersectionObserver
+        });
     }
 
     // --- Disappearing "Click Me" Text ---
@@ -386,7 +426,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (modalBackdropOverlay) {
                     modalBackdropOverlay.classList.add('active');
                     // Ensure modal backdrop is behind enlarged logo overlay
-                    modalBackdropOverlay.style.zIndex = '9998'; 
+                    modalBackdropOverlay.style.zIndex = '9998';
                 }
                 // Enlarged logo overlay has its z-index set in CSS (9999) and doesn't need dynamic adjustment here.
             } else if (activeModals.length > 0) {
@@ -394,7 +434,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (modalBackdropOverlay) {
                     modalBackdropOverlay.classList.add('active');
                     // Backdrop for regular modals (above header, below enlarged logo)
-                    modalBackdropOverlay.style.zIndex = '1006'; 
+                    modalBackdropOverlay.style.zIndex = '1006';
                 }
             }
             // Always update header style after overlay state changes
@@ -405,7 +445,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (modalElement) {
                 modalElement.classList.add('active');
                 // Modal element's z-index (above backdrop, below enlarged logo)
-                modalElement.style.zIndex = '1007'; 
+                modalElement.style.zIndex = '1007';
                 this.updateOverlayState();
             }
         },
