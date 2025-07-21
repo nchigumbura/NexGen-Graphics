@@ -23,8 +23,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const enlargedLogoOverlay = document.querySelector('.enlarged-logo-overlay');
     const enlargedLogoImg = enlargedLogoOverlay ? enlargedLogoOverlay.querySelector('img') : null;
 
-    // New: Select all why-choose-card elements
+    // Existing: Select all why-choose-card elements
     const whyChooseCards = document.querySelectorAll('.why-choose-card');
+
+    // NEW: Select the parent container for the "rise up" animations
+    const imageGallerySectionContainer = document.getElementById('imageGallerySectionContainer');
+    const testimonialsSection = imageGallerySectionContainer ? imageGallerySectionContainer.querySelector('.testimonials-section') : null;
+    const galleryItems = imageGallerySectionContainer ? imageGallerySectionContainer.querySelectorAll('.gallery-item') : [];
 
     let shimmerObserver;
     let lastScrollTop = 0;
@@ -146,28 +151,21 @@ document.addEventListener('DOMContentLoaded', () => {
         if (companyName) shimmerObserver.observe(companyName);
         if (adminLink) shimmerObserver.observe(adminLink);
 
-        // NEW: IntersectionObserver for Why Choose Cards
+        // IntersectionObserver for Why Choose Cards
         const whyChooseCardObserver = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
-                    // Start glow animation only if it hasn't been played before or if you want it to replay
+                    // Start glow animation only if it hasn't been played before
                     if (!entry.target.classList.contains('animate-glow-played')) {
                         entry.target.classList.add('animate-glow');
                         // Add a class to mark that the animation has played
                         entry.target.classList.add('animate-glow-played');
 
-                        // Optionally, remove animate-glow after it finishes so it can be re-triggered
-                        // For an 8s animation, this timeout should match.
+                        // Optionally, remove animate-glow after it finishes
                         setTimeout(() => {
                             entry.target.classList.remove('animate-glow');
-                            // If you want it to replay *every* time it's viewed, remove 'animate-glow-played' here
-                            // entry.target.classList.remove('animate-glow-played');
-                        }, 8000);
+                        }, 8000); // Match animation duration
                     }
-                } else {
-                    // Optional: If you want the animation to reset when it leaves view, uncomment this
-                    // entry.target.classList.remove('animate-glow');
-                    // entry.target.classList.remove('animate-glow-played'); // Allow replay
                 }
             });
         }, { threshold: 0.4 }); // Trigger when 40% of the card is visible
@@ -175,6 +173,51 @@ document.addEventListener('DOMContentLoaded', () => {
         whyChooseCards.forEach(card => {
             whyChooseCardObserver.observe(card);
         });
+
+        // NEW: Intersection Observer for "Rise Up" animations on the main gallery container
+        const riseUpGalleryObserver = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    // Animate the testimonials section
+                    if (testimonialsSection) {
+                        testimonialsSection.classList.add('is-visible');
+                    }
+
+                    // Stagger the animation of individual gallery items
+                    galleryItems.forEach((item, index) => {
+                        // Apply 'animate-on-scroll' class if not already present
+                        if (!item.classList.contains('animate-on-scroll')) {
+                            item.classList.add('animate-on-scroll');
+                        }
+                        // Add 'is-visible' class with a stagger
+                        setTimeout(() => {
+                            item.classList.add('is-visible');
+                        }, index * 100); // 100ms delay between each item
+                    });
+
+                    // Optional: Uncomment to unobserve after animation
+                    // observer.unobserve(entry.target);
+                } else {
+                    // Optional: If you want the animation to reset when out of view
+                    // if (testimonialsSection) {
+                    //     testimonialsSection.classList.remove('is-visible');
+                    // }
+                    // galleryItems.forEach(item => {
+                    //     item.classList.remove('is-visible');
+                    // });
+                }
+            });
+        }, {
+            threshold: 0.1 // Trigger when 10% of the container is visible
+        });
+
+        if (imageGallerySectionContainer) {
+            // Add base class for testimonials section if it exists
+            if (testimonialsSection) {
+                testimonialsSection.classList.add('animate-on-scroll');
+            }
+            riseUpGalleryObserver.observe(imageGallerySectionContainer);
+        }
 
     } else {
         // Fallback for browsers without IntersectionObserver
@@ -185,6 +228,14 @@ document.addEventListener('DOMContentLoaded', () => {
         // Fallback for whyChooseCards (won't have "on view" trigger)
         whyChooseCards.forEach(card => {
             card.classList.add('animate-glow'); // Apply animation immediately if no IntersectionObserver
+        });
+
+        // Fallback for rise-up elements - just show them immediately
+        if (testimonialsSection) {
+            testimonialsSection.classList.add('is-visible');
+        }
+        galleryItems.forEach(item => {
+            item.classList.add('is-visible');
         });
     }
 

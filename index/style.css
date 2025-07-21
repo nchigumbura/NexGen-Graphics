@@ -803,7 +803,7 @@ header.hide-header {
 
 /* ==========================================================================
 // --- SECOND PART OF STYLES ---
-// Contains styles for sections and components below the hero, such as
+// Contains styles for sections and components below the hero, suchando as
 // Quick Services, additional content blocks, footers, and responsive adjustments.
 // This area focuses on detailed content presentation and overall layout integrity.
 // ========================================================================== */
@@ -812,10 +812,8 @@ header.hide-header {
 /* --- Quick Services Section --- */
 /* ========================================= */
 #quickServicesSectionContainer {
-    /* Remove placeholder styles */
     min-height: auto;
     background-color: rgba(198, 200, 199, 0.7); /* 70% transparent */
-    /* Ensures the section is transparent */
     font-size: unset;
     color: unset;
     box-shadow: none;
@@ -824,7 +822,7 @@ header.hide-header {
     padding: 35px 30px; /* Padding for the entire section content */
     border-radius: 30px;
     max-width: 1200px; /* Max width consistent with other sections */
-    display: block; /* No longer flex placeholder */
+    display: block;
 }
 
 .quick-services-section .section-header {
@@ -832,7 +830,7 @@ header.hide-header {
     justify-content: space-between;
     align-items: center;
     margin-bottom: 30px;
-    padding: 0 0px; /* No horizontal padding here, taken care of by container */
+    padding: 0; /* No horizontal padding here, taken care of by container */
 }
 
 .quick-services-section .section-header h2 {
@@ -911,7 +909,6 @@ header.hide-header {
     font-size: 1.1em;
     font-weight: 600;
 }
-
 
 .service-item.content-card {
     background-color: #4C4C4C; /* Dark gray background for content cards */
@@ -994,12 +991,11 @@ header.hide-header {
     color: #555;
     line-height: 1.6;
     margin-bottom: 30px;
-    /* Ensure text is centered within its block for smaller screens or when wrapping */
     text-align: center;
 }
 
 .why-choose-contact-button {
-    display: inline-block; /* Changed from block to inline-block for better centering with auto margins */
+    display: inline-block;
     background-color: #929292; /* Dark gray from screenshot button */
     color: rgb(0, 0, 0);
     padding: 10px 20px;
@@ -1009,8 +1005,7 @@ header.hide-header {
     transition: background-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
     border: none;
     cursor: pointer;
-    /* Ensure button is centered */
-    margin: 20px auto; /* This correctly centers an inline-block element within a flex container */
+    margin: 20px auto;
 }
 
 .why-choose-contact-button:hover {
@@ -1046,10 +1041,6 @@ header.hide-header {
     min-height: 180px; /* Ensure consistent height for cards */
     justify-content: flex-start; /* Align content to the top */
     box-sizing: border-box; /* Include padding in width/height */
-
-    /* New: For the diagonal glow effect */
-    position: relative; /* Needed for absolute positioning of the glow */
-    overflow: hidden; /* Crucial to contain the glow within the card's rounded corners */
 }
 
 .why-choose-card:hover {
@@ -1063,7 +1054,6 @@ header.hide-header {
     align-items: center; /* Vertically align icon and heading */
     margin-bottom: 10px; /* Space between header and description */
     width: 100%; /* Take full width to allow internal alignment */
-    /* Removed text-align: center here as it's now applied directly to h3 */
 }
 
 .why-choose-card .icon {
@@ -1082,7 +1072,6 @@ header.hide-header {
     font-weight: 700;
     text-align: center; /* Center the heading text within its space */
     flex-grow: 1; /* Allow heading to take available space */
-    /* Added min-width to prevent squishing if text is long and icon is wide */
     min-width: 0;
 }
 
@@ -1094,67 +1083,375 @@ header.hide-header {
     text-align: left; /* Ensure description text is left-aligned */
 }
 
-/*
-* NEW: Diagonal Glow Effect for Why Choose Cards
-*/
-.why-choose-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(
-        45deg,
-        rgba(255, 255, 255, 0) 0%,
-        rgba(255, 255, 255, 0.2) 50%, /* Lighter white for the glow */
-        rgba(255, 255, 255, 0) 100%
-    );
-    transform: translateX(-100%) translateY(-100%) rotate(45deg); /* Start off-screen top-left, rotated */
-    transform-origin: center center; /* Center the rotation */
-    opacity: 0; /* Hidden by default */
-    pointer-events: none; /* Ensure it doesn't interfere with clicks */
-}
-
-.why-choose-card.animate-glow::before {
-    animation: diagonal-shimmer 8s ease-in-out forwards; /* 8-second animation */
-}
-
-@keyframes diagonal-shimmer {
-    0% {
-        transform: translateX(-100%) translateY(-100%) rotate(45deg);
-        opacity: 0;
-    }
-    10% {
-        opacity: 1; /* Fade in */
-    }
-    90% {
-        transform: translateX(100%) translateY(100%) rotate(45deg); /* Move across to bottom-right */
-        opacity: 1;
-    }
-    100% {
-        transform: translateX(100%) translateY(100%) rotate(45deg);
-        opacity: 0; /* Fade out */
-    }
-}
-
-
 /* ========================================= */
-/* --- Placeholder for other sections (Keep these minimal) --- */
+/* --- Image Gallery Section --- */
 /* ========================================= */
-/* These will be dynamically loaded/inserted */
-#imageGallerySectionContainer,
-#testimonialsSectionContainer {
-    min-height: 300px; /* Placeholder height */
-    margin: 20px auto;
-    background-color: #eee;
+#imageGallerySectionContainer {
+    margin: 90px auto 0 auto; /* Top margin from previous section, auto for horizontal centering */
+    padding: 0 5%; /* No top/bottom padding here, handled by internal elements */
+    max-width: 1200px; /* Consistent max-width */
+    display: flex;
+    flex-direction: column; /* Stack gallery then testimonials */
+    align-items: center; /* Center content horizontally */
+    min-height: auto; /* Allow content to define height */
+    box-sizing: border-box; /* Include padding in total width */
+}
+
+.image-gallery-grid {
+    display: grid;
+    /* Define 8 equally spaced columns */
+    grid-template-columns: repeat(8, 1fr);
+    /* Make each row 1px tall for precise control */
+    grid-auto-rows: 1px;
+    row-gap: 0.0002em; /* Minimal vertical gap between rows, less than 0.1em but not zero */
+    column-gap: 12px; /* Horizontal gap between columns as requested */
+    width: 100%; /* Take full width of container */
+    max-width: 10000px; /* Adjust as needed for the overall visual width of the gallery */
+    margin-bottom: 50px; /* Space between gallery and testimonials text */
+    position: relative;
+    padding: 20px;
+    box-sizing: border-box; /* Include padding in total width */
+}
+
+.gallery-item {
+    background-color: #f0f0f0; /* Placeholder */
+    border-radius: 25px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    position: relative;
     display: flex;
     justify-content: center;
-    align-items: center;
-    font-size: 1.5em;
-    color: #777;
-    border-radius: 10px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    padding-top: 20px; /* Example, adjust as needed based on content */
-    max-width: 1200px; /* Added max-width for consistency */
+    align-items: center; /* Default for centering content within the item */
+    width: 100%; /* Ensures it fills its single column */
+    z-index: auto;
+    /* Initial state for un-animated items, or before animation kicks in */
+    opacity: 1; /* Default to visible */
+    transform: none; /* Default to no transform */
+    filter: none; /* Default to no blur */
+    transition: none; /* Default to no transition */
+    /* Add will-change for performance optimization during animation */
+    will-change: transform, opacity, filter;
+}
+
+.gallery-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Crucial for images to fill space without distortion */
+    display: block;
+}
+
+.gallery-text-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    padding: 10px; /* Increased padding for better readability */
+    background: linear-gradient(to top, rgba(0,0,0,0.7), rgba(0,0,0,0.2), rgba(0,0,0,0));
+    color: white;
+    text-align: left;
+    transform: translateY(100%);
+    transition: transform 0.3s ease-out;
+    box-sizing: border-box;
+}
+
+.gallery-item:hover .gallery-text-overlay {
+    transform: translateY(0);
+}
+
+.gallery-text-overlay .subtitle {
+    font-size: 0.8em;
+    opacity: 0.8;
+    margin-bottom: 5px;
+}
+
+.gallery-text-overlay h3 {
+    font-size: 1.1em;
+    margin: 0;
+    line-height: 1.2;
+}
+
+/* --- Specific item sizing and placement based on 8-column grid for 8 visual columns --- */
+/* Heights and alignments are set per item to match your description */
+
+/* Column 1 (Visual Column 1): 2 pictures, start from top with 25% distance */
+.gallery-item:nth-child(1) { /* Red boat on black sand beach (vertical) */
+    grid-column: 1 / span 1;
+    grid-row: 1 / span 270; /* Item height 270px */
+    height: 260px;
+    align-self: start;
+    /* This is the final position. Initial animation will adjust based on this. */
+    transform: translateY(40px);
+}
+.gallery-item:nth-child(2) { /* Modern building interiors (square) */
+    grid-column: 1 / span 1;
+    grid-row: 272 / span 270; /* Starts after item 1 + 1px row-gap */
+    height: 260px;
+    align-self: start;
+    transform: translateY(40px);
+}
+
+/* Column 2 (Visual Column 2): 3 square images, start from top with 15% distance */
+.gallery-item:nth-child(3) { /* Mexico cityscape (very tall) */
+    grid-column: 2 / span 1;
+    grid-row: 1 / span 180; /* Item height 180px */
+    height: 170px;
+    align-self: start;
+    transform: translateY(20px);
+}
+.gallery-item:nth-child(4) { /* Planet Earth app with leopard (square) */
+    grid-column: 2 / span 1;
+    grid-row: 182 / span 180; /* Starts after item 3 + 1px row-gap */
+    height: 170px;
+    align-self: start;
+    transform: translateY(20px);
+}
+.gallery-item:nth-child(5) { /* Techno music event design (vertical) */
+    grid-column: 2 / span 1;
+    grid-row: 363 / span 180; /* Starts after item 4 + 1px row-gap */
+    height: 170px;
+    align-self: start;
+    transform: translateY(20px);
+}
+
+/* Column 3 (Visual Column 3): 1 long image, start from top with 25% distance */
+.gallery-item:nth-child(6) { /* Graphic design of woman's face (vertical) */
+    grid-column: 3 / span 1;
+    grid-row: 1 / span 380; /* Item height 380px */
+    height: 370px;
+    align-self: start;
+    transform: translateY(40px);
+}
+
+/* Column 4 (Visual Column 4): 1 long image, start at very top */
+.gallery-item:nth-child(7) { /* Planet Earth app with chimpanzee (vertical) */
+    grid-column: 4 / span 1;
+    grid-row: 1 / span 400; /* Item height 400px */
+    height: 370px;
+    align-self: start;
+    transform: translateY(0);
+}
+
+/* Column 5 (Visual Column 5): Ancient ruins, start at very top */
+.gallery-item:nth-child(8) { /* Ancient ruins with sky (vertical-tall) */
+    grid-column: 5 / span 1;
+    grid-row: 1 / span 500; /* Item height 500px */
+    height: 370px;
+    align-self: start;
+    transform: translateY(0);
+}
+
+/* Column 6 (Visual Column 6): World Environment Day, start from top with 25% distance */
+.gallery-item:nth-child(9) { /* World Environment Day graphic (square) */
+    grid-column: 6 / span 1;
+    grid-row: 1 / span 380; /* Item height 380px */
+    height: 370px;
+    align-self: start;
+    transform: translateY(40px);
+}
+
+/* Column 7 (Visual Column 7): 3 images (items 10, 11, 12), start from top with 15% distance */
+.gallery-item:nth-child(10) { /* RUN abstract design (vertical) */
+    grid-column: 7 / span 1;
+    grid-row: 1 / span 180; /* Item height 180px */
+    height: 170px;
+    align-self: start;
+    transform: translateY(20px);
+}
+.gallery-item:nth-child(11) { /* I Was Born Not Knowing graphic (square) */
+    grid-column: 7 / span 1;
+    grid-row: 182 / span 180; /* Starts after item 10 + 1px row-gap */
+    height: 170px;
+    align-self: start;
+    transform: translateY(20px);
+}
+.gallery-item:nth-child(12) { /* Eunoia abstract graphic (square) */
+    grid-column: 7 / span 1;
+    grid-row: 363 / span 180; /* Starts after item 11 + 1px row-gap */
+    height: 170px;
+    align-self: start;
+    transform: translateY(20px);
+}
+
+/* Column 8 (Visual Column 8): 2 pictures (items 13, 14), start from top with 25% distance */
+.gallery-item:nth-child(13) { /* Final abstract design card (vertical) */
+    grid-column: 8 / span 1;
+    grid-row: 1 / span 270; /* Item height 270px */
+    height: 260px;
+    align-self: start;
+    transform: translateY(40px);
+}
+.gallery-item:nth-child(14) { /* Duplicate Final abstract design card (vertical) */
+    grid-column: 8 / span 1;
+    grid-row: 272 / span 270; /* Starts after item 13 + 1px row-gap */
+    height: 260px;
+    align-self: start;
+    transform: translateY(40px);
+}
+
+
+/* Responsive adjustments for 8-column layout */
+@media (max-width: 1024px) {
+    .image-gallery-grid {
+        grid-template-columns: repeat(4, 1fr); /* 4 columns on medium screens */
+        gap: 8px; /* Maintain tighter gap */
+        padding: 15px; /* Adjust padding for better look on smaller screens */
+    }
+    .gallery-item {
+        grid-column: span 1 !important; /* Each item takes 1 of the 4 columns */
+        grid-row: auto !important; /* Let rows auto-flow */
+        height: auto !important; /* Allow height to be determined by aspect-ratio */
+        aspect-ratio: 1/1.2; /* Default aspect ratio for responsiveness */
+        transform: none !important; /* Reset any desktop transforms */
+        align-self: stretch !important; /* Stretch to fill available height */
+    }
+    /* Specific items that were originally "tall" or "very tall" can retain a taller aspect ratio */
+    .gallery-item:nth-child(1), .gallery-item:nth-child(3), .gallery-item:nth-child(5), .gallery-item:nth-child(6),
+    .gallery-item:nth-child(7), .gallery-item:nth-child(8), .gallery-item:nth-child(10), .gallery-item:nth-child(13), .gallery-item:nth-child(14)
+    {
+        aspect-ratio: 0.7/1 !important; /* Taller aspect ratio for these items */
+    }
+}
+
+@media (max-width: 768px) {
+    .image-gallery-grid {
+        grid-template-columns: repeat(2, 1fr); /* 2 columns on tablets */
+        gap: 8px; /* Maintain tighter gap */
+        padding: 10px;
+        border-left: none; /* Remove sub-dividers on small screens */
+        border-right: none;
+    }
+    .gallery-item {
+        grid-column: span 1 !important; /* Each item takes 1 of the 2 columns */
+        grid-row: auto !important;
+        aspect-ratio: 1/1.3 !important; /* Slightly taller aspect for general items */
+        transform: none !important;
+        z-index: auto !important;
+        align-self: stretch !important;
+        justify-self: stretch !important;
+        height: auto !important;
+    }
+    /* Specific items can be made even taller if needed */
+    .gallery-item:nth-child(3), /* Mexico cityscape (very tall) */
+    .gallery-item:nth-child(8), /* Ancient ruins with sky (vertical-tall) */
+    .gallery-item:nth-child(10) /* RUN abstract design (vertical) */
+    {
+        aspect-ratio: 1/1.5 !important; /* Make these even taller on mobile */
+    }
+
+    /* For smaller screens, ensure the overlay does not overlap too much */
+    .gallery-text-overlay {
+        padding: 8px;
+    }
+    .gallery-text-overlay .subtitle {
+        font-size: 0.65em;
+    }
+    .gallery-text-overlay h3 {
+        font-size: 0.85em;
+    }
+}
+
+@media (max-width: 480px) {
+    .image-gallery-grid {
+        grid-template-columns: repeat(1, 1fr); /* 1 column on very small mobiles */
+        gap: 8px; /* Maintain tighter gap */
+    }
+    .gallery-item {
+        grid-column: span 1 !important; /* Each item takes up 1 of the 1 column */
+        aspect-ratio: 1/1.4 !important; /* General aspect for very small screens */
+    }
+    .gallery-item:nth-child(3), /* Mexico cityscape (very tall) */
+    .gallery-item:nth-child(8), /* Ancient ruins with sky (vertical-tall) */
+    .gallery-item:nth-child(10) /* RUN abstract design (vertical) */
+    {
+        aspect-ratio: 1/1.8 !important; /* Even taller for very small screens */
+    }
+}
+
+/* Testimonials Section */
+.testimonials-section {
+    text-align: center;
+    margin-top: -180px; /* Space from image gallery */
+    padding-bottom: 90px; /* Padding below for spacing before next section/footer */
+}
+
+.testimonials-section .testimonials-badge {
+    color: #333;
+    padding: 8px 20px;
+    border-radius: 20px;
+    font-size: 0.9em;
+    font-weight: 700;
+    display: inline-block; /* Allows padding and keeps text centered */
+    margin-bottom: 25px; /* Space below badge */
+    border: 2px solid #333; /* Add subtle gray border */
+}
+
+.testimonials-section h2 {
+    font-size: 1.7em;
+    color: #333;
+    margin-bottom: 50px;
+    line-height: 1.2;
+}
+
+/* NEW: Style for the transparent text part */
+.testimonials-section h2 .transparent-text {
+    opacity: 0.65; /* 65% transparency */
+    /* You might want to adjust font-weight or color slightly if needed for better contrast */
+}
+
+
+.testimonials-section p {
+    font-size: 1.1em;
+    color: #555;
+    line-height: 1.5;
+    max-width: 700px; /* Limit width for readability */
+    margin: 0 auto; /* Center paragraph */
+}
+
+/* --- NEW ANIMATION STYLES --- */
+
+/* Initial hidden state for elements that will animate on scroll */
+/* Testimonials section will rise up from below */
+.testimonials-section.animate-on-scroll {
+    opacity: 0;
+    transform: translateY(50px); /* Start 50px below its final position */
+    transition: opacity 0.8s ease-out, transform 0.8s ease-out; /* Smooth transition */
+}
+
+/* State when Testimonials element is visible and animated */
+.testimonials-section.animate-on-scroll.is-visible {
+    opacity: 1;
+    transform: translateY(0); /* Move to its original position */
+}
+
+
+/* Specific adjustments for Image Gallery items for iOS minimalist effect */
+
+/* Define custom properties for initial offset based on existing transforms */
+/* These properties are crucial. Ensure they are correctly set based on the `transform` in .gallery-item:nth-child(X) */
+.gallery-item[style*="transform: translateY(0)"] { --final-translateY: 0px; }
+.gallery-item[style*="transform: translateY(20px)"] { --final-translateY: 20px; }
+.gallery-item[style*="transform: translateY(40px)"] { --final-translateY: 40px; }
+
+
+.gallery-item.animate-on-scroll {
+    /* Capture the existing translateY and add an offset for animation start */
+    /* This ensures the animation starts from BELOW its final defined position */
+    transform: translate(0, calc(var(--final-translateY, 0px) + 30px)) scale(0.98); /* Start lower and slightly scaled */
+    filter: blur(5px); /* Start blurred */
+    opacity: 0;
+    transition: opacity 0.8s ease-out, transform 0.8s ease-out, filter 0.8s ease-out;
+}
+
+.gallery-item.animate-on-scroll.is-visible {
+    /* When visible, revert to the original transform and remove blur/scale */
+    /* The key is to ensure this perfectly matches the non-animated state of each item. */
+    transform: translate(0, var(--final-translateY, 0px)) scale(1); /* Return to original scale and position */
+    filter: blur(0px); /* Remove blur */
+    opacity: 1;
+}
+
+/* Ensure testimonials text doesn't have an initial `text-align: left` from content-card styles */
+.testimonials-section h2,
+.testimonials-section p {
+    text-align: center; /* Override any left-alignment from other sections */
 }

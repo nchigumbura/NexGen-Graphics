@@ -57,19 +57,19 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Global functions to be called by other scripts (like animation.js) ---
     // These functions now delegate directly to the animationModule.
     // Ensure animationModule is loaded before these are called.
-    window.openModal = function(modalElement) {
+    window.openModal = function (modalElement) {
         if (window.animationModule && window.animationModule.openModal) {
             window.animationModule.openModal(modalElement);
         }
     };
 
-    window.closeModal = function(modalElement) {
+    window.closeModal = function (modalElement) {
         if (window.animationModule && window.animationModule.closeModal) {
             window.animationModule.closeModal(modalElement);
         }
     };
 
-    window.showEnlargedLogo = function(imageUrl) {
+    window.showEnlargedLogo = function (imageUrl) {
         if (window.animationModule && window.animationModule.showEnlargedLogo) {
             window.animationModule.showEnlargedLogo(imageUrl);
         }
@@ -192,7 +192,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 linkHref: 'services.html',
                 bgColor: '#758184' // Light gray for image cards
 
-                   // Light pink with 75% opacity
+                // Light pink with 75% opacity
             },
             {
                 type: 'content-card',
@@ -319,106 +319,136 @@ document.addEventListener('DOMContentLoaded', () => {
     // Data for Image Gallery items, including identifiers and types
     const galleryItemsData = [
         {
-            id: 'img-a',
-            src: 'index/images/gallery-image-1-red-boat.jpg',
+            id: 'img-1',
+            src: 'index/images/gallery-image-1-red-boat.jpeg',
             alt: 'Red boat on black sand beach',
-            subtitle: 'Design Showcase',
-            heading: 'Oceanic Horizons',
-            type: 'vertical-large' // Corresponds to gallery-item-vertical-large
+            subtitle: 'Branding & Identity',
+            heading: 'Dynamic Logo Concepts',
+            column: 1, // Semantic identifier
+            type: 'vertical'
         },
         {
-            id: 'img-b',
-            src: 'index/images/image-2-o66.jpg',
+            id: 'img-2',
+            src: 'index/images/image-2-o66.jpeg',
             alt: 'Modern building interiors',
-            subtitle: 'Architecture',
-            heading: 'Urban Spaces',
-            type: 'horizontal-small' // Corresponds to gallery-item-horizontal-small
+            subtitle: 'Web Design',
+            heading: 'Sleek UI/UX Solutions',
+            column: 2, // Semantic identifier
+            type: 'square'
         },
         {
-            id: 'img-c',
+            id: 'img-3',
             src: 'index/images/mexico.jpg',
             alt: 'Cityscape with abstract design',
-            subtitle: 'City Vibes',
-            heading: 'Metropolis Art',
-            type: 'square' // Corresponds to gallery-item-square
+            subtitle: 'Abstract Art',
+            heading: 'Urban Canvas Designs',
+            column: 1, // Semantic identifier
+            type: 'vertical-extra-tall'
         },
         {
-            id: 'img-d',
-            src: 'index/images/BBC.jpg',
+            id: 'img-4',
+            src: 'index/images/BBC.jpeg',
             alt: 'Planet Earth app with leopard',
-            subtitle: 'App Design',
-            heading: 'Planet Earth',
-            type: 'vertical-large'
+            subtitle: 'Campaign Design',
+            heading: 'Nature Doc Promos',
+            column: 2, // Semantic identifier
+            type: 'square'
         },
         {
-            id: 'img-e',
-            src: 'index/images/technoman.jpg',
+            id: 'img-5',
+            src: 'index/images/technoman.jpeg',
             alt: 'Techno music event design',
-            subtitle: 'Event Promo',
-            heading: 'Techno Night',
-            type: 'vertical' // Standard vertical card
+            subtitle: 'Event Graphics',
+            heading: 'Vibrant Techno Posters',
+            column: 3, // Semantic identifier
+            type: 'vertical'
         },
         {
-            id: 'img-f',
-            src: 'index/images/gdwoman.jpg',
+            id: 'img-6',
+            src: 'index/images/gdwoman.jpeg',
             alt: 'Graphic design of woman\'s face',
-            subtitle: 'Portraits',
-            heading: 'Cultural Fusion',
+            subtitle: 'Digital Illustration',
+            heading: 'Modern Portraiture',
+            column: 4, // Semantic identifier
             type: 'vertical'
         },
         {
-            id: 'img-g',
-            src: 'index/images/earthy.jpg',
+            id: 'img-7',
+            src: 'index/images/earthy.jpeg',
             alt: 'Planet Earth app with chimpanzee',
-            subtitle: 'Nature',
-            heading: 'Wildlife Focus',
+            subtitle: 'Advertising Campaign',
+            heading: 'Earthy Abstract Flyers',
+            column: 2, // Semantic identifier
             type: 'vertical'
         },
         {
-            id: 'img-h',
-            src: 'index/images/ruin.jpg',
+            id: 'img-8',
+            src: 'index/images/ruin.jpeg',
             alt: 'Ancient ruins with sky',
-            subtitle: 'History',
-            heading: 'Echoes of Time',
-            type: 'horizontal-small'
+            subtitle: 'Architectural Visuals',
+            heading: 'Historical Site Renderings',
+            column: 5, // Semantic identifier
+            type: 'vertical-tall'
         },
         {
-            id: 'img-i',
-            src: 'index/images/we.jpg',
+            id: 'img-9',
+            src: 'index/images/we.jpeg',
             alt: 'World Environment Day graphic',
-            subtitle: 'Campaign',
-            heading: 'Eco Awareness',
+            subtitle: 'Social Impact Design',
+            heading: 'Eco-Friendly Campaign Art',
+            column: 6, // Semantic identifier
             type: 'square'
         },
         {
-            id: 'img-j',
-            src: 'index/images/run.jpg',
+            id: 'img-10',
+            src: 'index/images/run.jpeg',
             alt: 'RUN abstract design',
-            subtitle: 'Typography',
-            heading: 'Dynamic Motion',
+            subtitle: 'Flyer Layouts',
+            heading: 'Dynamic Art',
+            column: 7, // Semantic identifier (maps to previous column 3)
+            type: 'vertical'
+        },
+        {
+            id: 'img-11',
+            src: 'index/images/borngreene.jpeg',
+            alt: 'I Was Born Not Knowing graphic',
+            subtitle: 'Motivational Graphics',
+            heading: 'Inspirational Poster Design',
+            column: 8, // Semantic identifier (maps to previous column 2)
             type: 'square'
         },
         {
-            id: 'img-k',
-            src: 'index/images/borngreene.jpg',
-            alt: 'I Was Born Not Knowing graphic',
-            subtitle: 'Inspiration',
-            heading: 'Growth Mindset',
-            type: 'vertical-small'
-        },
-        {
-            id: 'img-l',
+            id: 'img-12',
             src: 'index/images/EUNOIA.jpg',
             alt: 'Eunoia abstract graphic',
-            subtitle: 'Abstract',
-            heading: 'Pure Thought',
+            subtitle: 'Concept Art',
+            heading: 'Abstract Mindscapes',
+            column: 6, // Semantic identifier (maps to previous column 1)
             type: 'square'
         },
+        {
+            id: 'img-13',
+            src: 'index/images/final-image.jpeg',
+            alt: 'Final abstract design card',
+            subtitle: 'Creative Portfolio',
+            heading: 'Signature Design Work',
+            column: 7, // Semantic identifier (maps to previous column 3)
+            type: 'vertical'
+        },
+        {
+            id: 'img-1',
+            src: 'index/images/mint.jpeg',
+            alt: 'Final abstract design card',
+            subtitle: 'Creative Portfolio',
+            heading: 'Signature Design Work',
+            column: 7, // Semantic identifier (maps to previous column 3)
+            type: 'vertical'
+        }
     ];
 
     function generateImageGallerySection() {
         const galleryItemsHTML = galleryItemsData.map(item => `
-            <div class="gallery-item gallery-item-${item.type}" id="${item.id}">
+            <div class="gallery-item ${item.type}" id="${item.id}" data-column="${item.column}">
                 <img src="${item.src}" alt="${item.alt}">
                 <div class="gallery-text-overlay">
                     <p class="subtitle">${item.subtitle}</p>
@@ -427,19 +457,23 @@ document.addEventListener('DOMContentLoaded', () => {
             </div>
         `).join('');
 
+        // The overall section structure is handled by the main HTML now,
+        // this function generates only the grid and its items.
         const imageGalleryHTML = `
-            <section class="image-gallery-section">
-                <div class="gallery-grid">
-                    ${galleryItemsHTML}
-                </div>
-            </section>
+            <div class="image-gallery-grid">
+                ${galleryItemsHTML}
+            </div>
+            <div class="testimonials-section">
+                <span class="testimonials-badge">Testimonials</span>
+                <h2>Trusted by customers and leaders<br><span class = "transparent-text">communities and loyal fans</span></h2>
+            </div>
         `;
         return imageGalleryHTML;
     }
 
     // Function to add click handlers to the dynamically generated gallery images
     function setupImageGalleryClickHandlers() {
-        const galleryImages = document.querySelectorAll('.image-gallery-section .gallery-item img');
+        const galleryImages = document.querySelectorAll('.image-gallery-grid .gallery-item img');
         galleryImages.forEach(img => {
             img.addEventListener('click', () => {
                 // When an image is clicked, call the globally defined showEnlargedLogo function
@@ -492,19 +526,19 @@ document.addEventListener('DOMContentLoaded', () => {
             </div>
         `).join('');
 
+        // The structure of the testimonials section is now directly returned
+        // including the badge and main text, as per the screenshot.
         const testimonialsHTML = `
-            <section class="testimonials-section">
-                <div class="section-header-top-right">
-                    <p>Testimonials</p>
+            <div class="section-header-top-right">
+                <p>Testimonials</p>
+            </div>
+            <div class="testimonials-content">
+                <h2>Trusted by customers and leaders</h2>
+                <p class="sub-heading">communities and loyal fans</p>
+                <div class="testimonials-grid">
+                    ${testimonialCardsHTML}
                 </div>
-                <div class="testimonials-content">
-                    <h2>Trusted by customers and leaders</h2>
-                    <p class="sub-heading">communities and loyal fans</p>
-                    <div class="testimonials-grid">
-                        ${testimonialCardsHTML}
-                    </div>
-                </div>
-            </section>
+            </div>
         `;
         return testimonialsHTML;
     }
@@ -529,11 +563,13 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     if (imageGallerySectionContainer) {
+        // Updated to pass the correct HTML for the combined image gallery and testimonials
         imageGallerySectionContainer.innerHTML = generateImageGallerySection();
         // Setup click handlers for gallery images
         setupImageGalleryClickHandlers();
     }
 
+    // Populate the testimonials section
     if (testimonialsSectionContainer) {
         testimonialsSectionContainer.innerHTML = generateTestimonialsSection();
     }
