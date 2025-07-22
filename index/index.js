@@ -436,19 +436,19 @@ document.addEventListener('DOMContentLoaded', () => {
             type: 'vertical'
         },
         {
-            id: 'img-1',
+            id: 'img-14', // Changed to img-14 to be unique
             src: 'index/images/mint.jpeg',
             alt: 'Final abstract design card',
             subtitle: 'Creative Portfolio',
             heading: 'Signature Design Work',
-            column: 7, // Semantic identifier (maps to previous column 3)
+            column: 8, // Semantic identifier (maps to previous column 3)
             type: 'vertical'
         }
     ];
 
     function generateImageGallerySection() {
         const galleryItemsHTML = galleryItemsData.map(item => `
-            <div class="gallery-item ${item.type}" id="${item.id}" data-column="${item.column}">
+            <div class="gallery-item animate-on-scroll ${item.type}" id="${item.id}" data-column="${item.column}">
                 <img src="${item.src}" alt="${item.alt}">
                 <div class="gallery-text-overlay">
                     <p class="subtitle">${item.subtitle}</p>
@@ -487,54 +487,55 @@ document.addEventListener('DOMContentLoaded', () => {
     // Data for Testimonials
     const testimonialsData = [
         {
-            stars: 5, // We'll represent stars visually with CSS
+            stars: 5, // This is the value to use!
             text: "I'm genuinely impressed by the amazing designs and how affordable everything is! You've definitely won me over—I'll be getting in touch again for sure.",
-            profileImg: 'index/images/tafadzwa.jpg',
+            profileImg: 'index/images/tafadzwa.jpeg',
             name: "Tafadzwa M",
             request: "Business Profile"
         },
         {
-            stars: 5,
+            stars: 4, // This is the value to use!
             text: "They truly made everything effortless. From start to finish, it was smooth sailing—I felt completely taken care of the whole time.",
-            profileImg: "index/images/tariro.jpg",
+            profileImg: "index/images/tariro.jpeg",
             name: "Tariro K",
             request: "Business Logo"
         },
         {
-            stars: 5,
+            stars: 4, // This is the value to use!
             text: "Zvese zvakagadzirirwa on time, and the experience was easy handina kana kumbonetseka.also the layout yakandifadza handina kuita stress zvachose.",
-            profileImg: "index/images/chipo.jpg",
+            profileImg: "index/images/chipo.jpeg",
             name: "Chipo H",
             request: "Graduation Party Invite"
         }
     ];
 
     function generateTestimonialsSection() {
-        const testimonialCardsHTML = testimonialsData.map(testimonial => `
-            <div class="testimonial-card">
-                <div class="stars" data-rating="${testimonial.stars}">
-                    <span class="star">&#9733;</span><span class="star">&#9733;</span><span class="star">&#9733;</span><span class="star">&#9733;</span><span class="star">&#9733;</span>
-                </div>
-                <p class="testimonial-text">${testimonial.text}</p>
-                <div class="customer-info">
-                    <img src="${testimonial.profileImg}" alt="${testimonial.name} Profile" class="customer-profile-img">
-                    <div class="customer-details">
-                        <p class="customer-name">${testimonial.name}</p>
-                        <p class="customer-request">${testimonial.request}</p>
+        const testimonialCardsHTML = testimonialsData.map(testimonial => {
+            // --- CRITICAL CHANGE HERE ---
+            let starsHtml = '';
+            for (let i = 0; i < testimonial.stars; i++) {
+                starsHtml += '<span class="star">&#9733;</span>'; // Add a star for each point in rating
+            }
+            // --- END CRITICAL CHANGE ---
+
+            return `
+                <div class="testimonial-card">
+                    <div class="stars" data-rating="${testimonial.stars}">
+                        ${starsHtml} </div>
+                    <p class="testimonial-text">${testimonial.text}</p>
+                    <div class="customer-info">
+                        <img src="${testimonial.profileImg}" alt="${testimonial.name} Profile" class="customer-profile-img">
+                        <div class="customer-details">
+                            <p class="customer-name">${testimonial.name}</p>
+                            <p class="customer-request">${testimonial.request}</p>
+                        </div>
                     </div>
                 </div>
-            </div>
-        `).join('');
+            `;
+        }).join('');
 
-        // The structure of the testimonials section is now directly returned
-        // including the badge and main text, as per the screenshot.
         const testimonialsHTML = `
-            <div class="section-header-top-right">
-                <p>Testimonials</p>
-            </div>
             <div class="testimonials-content">
-                <h2>Trusted by customers and leaders</h2>
-                <p class="sub-heading">communities and loyal fans</p>
                 <div class="testimonials-grid">
                     ${testimonialCardsHTML}
                 </div>

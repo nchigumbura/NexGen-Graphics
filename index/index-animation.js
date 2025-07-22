@@ -23,18 +23,23 @@ document.addEventListener('DOMContentLoaded', () => {
     const enlargedLogoOverlay = document.querySelector('.enlarged-logo-overlay');
     const enlargedLogoImg = enlargedLogoOverlay ? enlargedLogoOverlay.querySelector('img') : null;
 
-    // Existing: Select all why-choose-card elements
+    // New: Select all why-choose-card elements
     const whyChooseCards = document.querySelectorAll('.why-choose-card');
 
-    // NEW: Select the parent container for the "rise up" animations
-    const imageGallerySectionContainer = document.getElementById('imageGallerySectionContainer');
-    const testimonialsSection = imageGallerySectionContainer ? imageGallerySectionContainer.querySelector('.testimonials-section') : null;
-    const galleryItems = imageGallerySectionContainer ? imageGallerySectionContainer.querySelectorAll('.gallery-item') : [];
+    // Select all gallery items and testimonials section
+    const imageGalleryGrid = document.querySelector('.image-gallery-grid'); // Renamed for clarity
+    const galleryItems = document.querySelectorAll('.gallery-item');
+    const testimonialsSection = document.querySelector('.testimonials-section');
 
     let shimmerObserver;
     let lastScrollTop = 0;
     let navAnimationPlayedOnLoad = false;
     const topThreshold = 50;
+
+    // Gallery specific variables
+    let scrollSpeed = 0.5; // Pixels per frame
+    let galleryAnimationFrameId;
+    let isGalleryPaused = false; // Flag to control gallery scrolling
 
     // Calculate scrollbar width for body overflow compensation
     function getScrollbarWidth() {
@@ -155,69 +160,57 @@ document.addEventListener('DOMContentLoaded', () => {
         const whyChooseCardObserver = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
-                    // Start glow animation only if it hasn't been played before
                     if (!entry.target.classList.contains('animate-glow-played')) {
                         entry.target.classList.add('animate-glow');
-                        // Add a class to mark that the animation has played
                         entry.target.classList.add('animate-glow-played');
-
-                        // Optionally, remove animate-glow after it finishes
                         setTimeout(() => {
                             entry.target.classList.remove('animate-glow');
-                        }, 8000); // Match animation duration
+                        }, 8000);
                     }
                 }
             });
-        }, { threshold: 0.4 }); // Trigger when 40% of the card is visible
+        }, { threshold: 0.4 });
 
         whyChooseCards.forEach(card => {
             whyChooseCardObserver.observe(card);
         });
 
-        // NEW: Intersection Observer for "Rise Up" animations on the main gallery container
-        const riseUpGalleryObserver = new IntersectionObserver((entries, observer) => {
-            entries.forEach(entry => {
+        // NEW: IntersectionObserver for Image Gallery items (no longer for simple visibility, but to manage carousel)
+        // This observer is now less critical as the hover/click events handle expansion.
+        // The carousel's continuous scroll is managed separately.
+        const galleryItemObserver = new IntersectionObserver((entries) => {
+             entries.forEach(entry => {
                 if (entry.isIntersecting) {
-                    // Animate the testimonials section
-                    if (testimonialsSection) {
-                        testimonialsSection.classList.add('is-visible');
-                    }
-
-                    // Stagger the animation of individual gallery items
-                    galleryItems.forEach((item, index) => {
-                        // Apply 'animate-on-scroll' class if not already present
-                        if (!item.classList.contains('animate-on-scroll')) {
-                            item.classList.add('animate-on-scroll');
-                        }
-                        // Add 'is-visible' class with a stagger
-                        setTimeout(() => {
-                            item.classList.add('is-visible');
-                        }, index * 100); // 100ms delay between each item
-                    });
-
-                    // Optional: Uncomment to unobserve after animation
-                    // observer.unobserve(entry.target);
+                    entry.target.classList.add('is-visible');
                 } else {
-                    // Optional: If you want the animation to reset when out of view
-                    // if (testimonialsSection) {
-                    //     testimonialsSection.classList.remove('is-visible');
-                    // }
-                    // galleryItems.forEach(item => {
-                    //     item.classList.remove('is-visible');
-                    // });
+                    // Only remove if not currently expanded, to avoid flicker
+                    if (!entry.target.classList.contains('is-expanded')) {
+                        entry.target.classList.remove('is-visible');
+                    }
                 }
             });
-        }, {
-            threshold: 0.1 // Trigger when 10% of the container is visible
+        }, { threshold: 0.3 }); // Trigger when 30% of the item is visible
+
+        galleryItems.forEach(item => {
+            galleryItemObserver.observe(item);
         });
 
-        if (imageGallerySectionContainer) {
-            // Add base class for testimonials section if it exists
-            if (testimonialsSection) {
-                testimonialsSection.classList.add('animate-on-scroll');
-            }
-            riseUpGalleryObserver.observe(imageGallerySectionContainer);
+        // NEW: IntersectionObserver for Testimonials Section
+        const testimonialsObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('is-visible');
+                } else {
+                    entry.target.classList.remove('is-visible'); // Reset for re-animation
+                }
+            });
+        }, { threshold: 0.2 }); // Trigger when 20% of the section is visible
+
+        if (testimonialsSection) {
+            testimonialsSection.classList.add('animate-on-scroll'); // Add initial class
+            testimonialsObserver.observe(testimonialsSection);
         }
+
 
     } else {
         // Fallback for browsers without IntersectionObserver
@@ -230,13 +223,13 @@ document.addEventListener('DOMContentLoaded', () => {
             card.classList.add('animate-glow'); // Apply animation immediately if no IntersectionObserver
         });
 
-        // Fallback for rise-up elements - just show them immediately
-        if (testimonialsSection) {
-            testimonialsSection.classList.add('is-visible');
-        }
+        // Fallback for gallery items and testimonials (no scroll animation)
         galleryItems.forEach(item => {
-            item.classList.add('is-visible');
+            item.classList.add('is-visible'); // Show immediately
         });
+        if (testimonialsSection) {
+            testimonialsSection.classList.add('is-visible'); // Show immediately
+        }
     }
 
     // --- Disappearing "Click Me" Text ---
@@ -309,7 +302,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     homeIcon.style.animation = 'icon-flip-zoom 0.6s ease-out forwards'; // 0.6s for flip and zoom
                     homeIcon.addEventListener('animationend', function iconAnimationEndHandler() {
                         homeIcon.style.animation = 'none'; // Remove animation after it finishes
-                        homeIcon.removeEventListener('animationend', iconAnimationEndHandler);
+                        homeIcon.removeEventListener('animationend', iconAnimationEndEndHandler);
                     }, { once: true });
                     activeBar.removeEventListener('transitionend', handler);
                 }
@@ -601,4 +594,119 @@ document.addEventListener('DOMContentLoaded', () => {
             window.animationModule.handleBackdropClick();
         });
     }
-});
+
+    // --- NEW: Image Gallery Carousel and Interaction Logic ---
+
+    // Function to start the continuous scrolling animation
+    function startGalleryScrolling() {
+        if (!imageGalleryGrid || isGalleryPaused || !window.matchMedia('(max-width: 768px)').matches) {
+            return; // Only scroll on small screens and if not paused
+        }
+
+        galleryAnimationFrameId = requestAnimationFrame(() => {
+            imageGalleryGrid.scrollLeft += scrollSpeed;
+
+            // To create a seamless loop, when the scroll reaches the end, reset it.
+            // A more advanced seamless loop would involve cloning elements.
+            if (imageGalleryGrid.scrollLeft >= (imageGalleryGrid.scrollWidth - imageGalleryGrid.clientWidth)) {
+                imageGalleryGrid.scrollLeft = 0; // Reset to start
+            }
+            startGalleryScrolling(); // Continue the animation loop
+        });
+    }
+
+    // Function to stop the continuous scrolling animation
+    function stopGalleryScrolling() {
+        if (galleryAnimationFrameId) {
+            cancelAnimationFrame(galleryAnimationFrameId);
+            galleryAnimationFrameId = null;
+        }
+    }
+
+    // Add interaction listeners for each gallery item
+    galleryItems.forEach(item => {
+        // Hover/Click to expand and pause carousel
+        item.addEventListener('mouseenter', () => {
+            if (window.matchMedia('(max-width: 768px)').matches) {
+                isGalleryPaused = true;
+                stopGalleryScrolling();
+                item.classList.add('is-expanded');
+            }
+        });
+
+        item.addEventListener('mouseleave', () => {
+            if (window.matchMedia('(max-width: 768px)').matches) {
+                item.classList.remove('is-expanded');
+                // Give a short delay before resuming scroll to allow transition to finish
+                setTimeout(() => {
+                    isGalleryPaused = false;
+                    startGalleryScrolling();
+                }, 300); // Match CSS transition duration
+            }
+        });
+
+        // For touch devices: single tap/click to expand, and double tap to open
+        let lastClickTime = 0;
+        item.addEventListener('click', (event) => {
+            if (!window.matchMedia('(max-width: 768px)').matches) return; // Only on small screens
+
+            const currentTime = new Date().getTime();
+            const timeDiff = currentTime - lastClickTime;
+
+            if (timeDiff > 0 && timeDiff < 300) { // Double click detected (within 300ms)
+                // Double click action: Open enlarged image
+                const imgElement = item.querySelector('img');
+                if (imgElement && window.animationModule && typeof window.animationModule.showEnlargedLogo === 'function') {
+                    window.animationModule.showEnlargedLogo(imgElement.src);
+                    isGalleryPaused = true; // Keep gallery paused when enlarged image is open
+                    stopGalleryScrolling();
+                }
+                lastClickTime = 0; // Reset for next sequence
+            } else {
+                // Single click action: Toggle expand state
+                item.classList.toggle('is-expanded');
+                if (item.classList.contains('is-expanded')) {
+                    isGalleryPaused = true;
+                    stopGalleryScrolling();
+                } else {
+                    isGalleryPaused = false;
+                    startGalleryScrolling();
+                }
+                lastClickTime = currentTime;
+            }
+        });
+    });
+
+    // Handle enlarged logo closing to resume gallery scroll if applicable
+    if (enlargedLogoOverlay) {
+        enlargedLogoOverlay.addEventListener('transitionend', (event) => {
+            if (event.propertyName === 'opacity' && !enlargedLogoOverlay.classList.contains('active')) {
+                // If enlarged logo just closed and it was active, resume gallery scroll
+                if (window.matchMedia('(max-width: 768px)').matches) {
+                    isGalleryPaused = false;
+                    startGalleryScrolling();
+                }
+            }
+        });
+    }
+
+
+    // Initial setup for gallery scrolling based on screen size
+    window.addEventListener('resize', () => {
+        if (window.matchMedia('(max-width: 768px)').matches) {
+            // Only start if not already running and not paused by user interaction
+            if (!galleryAnimationFrameId && !isGalleryPaused) {
+                startGalleryScrolling();
+            }
+        } else {
+            // If screen is larger, stop any running animation
+            stopGalleryScrolling();
+        }
+    });
+
+    // Start gallery animation on page load if on a small screen
+    if (window.matchMedia('(max-width: 768px)').matches) {
+        startGalleryScrolling();
+    }
+
+}); // End DOMContentLoaded
