@@ -1615,12 +1615,19 @@ header.hide-header {
     }
 
     /* --- Quick Services Section --- */
+    #quickServicesSectionContainer {
+        margin: 50px 0 0 0; /* Full width, 0 margin on left and right */
+        border-radius: 0; /* Remove border-radius for edge-to-edge look */
+        padding: 35px 8px; /* Padding for the entire section content, 8px from edges */
+    }
+
     .services-grid {
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* Allow cards to get slightly smaller */
-        gap: 15px; /* Reduce gap */
+        grid-template-columns: repeat(2, 1fr); /* Two columns */
+        gap: 8px; /* 8px gap around each item */
     }
     .service-item {
         height: 300px; /* Adjust fixed height or consider `height: auto; aspect-ratio: X/Y;` */
+        border-radius: 10px; /* Slightly less rounded for a tighter feel */
     }
 
     /* --- Why Choose Us Section: Layout Change --- */
@@ -1653,18 +1660,23 @@ header.hide-header {
     }
 
     /* --- Image Gallery Mini-Carousel Adjustments --- */
+    #imageGallerySectionContainer {
+        margin: 90px auto 0 auto; /* Keep original top margin */
+        padding: 0; /* Remove side padding, handled by inner elements */
+        max-width: unset; /* Allow full width for carousel */
+        overflow: hidden; /* Hide potential horizontal scrollbar */
+    }
+
     .image-gallery-grid {
         display: flex; /* Change to flexbox for horizontal scroll */
         overflow-x: hidden; /* Hide scrollbar, JS will control scroll */
         white-space: nowrap; /* Prevent items from wrapping */
         justify-content: flex-start; /* Align items to the start */
         align-items: center; /* Vertically center items */
-        gap: 20px; /* Spacing between scrolling items */
-        padding: 20px; /* Padding around the carousel */
-        height: 280px; /* **Adjusted height for carousel container (shows 3-4 pills)** */
+        gap: 12px; /* Original gap between scrolling items */
+        padding: 20px 0; /* Padding around the carousel, 0 on sides to allow items to go off-screen */
+        height: 380px; /* Set a fixed height for the carousel container */
         margin-bottom: 0; /* Remove previous margin to allow new testimonials margin */
-        border-left: none; /* Remove sub-dividers */
-        border-right: none;
         position: relative; /* For text overlay positioning */
         box-sizing: border-box;
         /* Reset grid properties if they were inherited */
@@ -1674,81 +1686,88 @@ header.hide-header {
         column-gap: unset;
     }
     .gallery-item {
-        /* **Adjusted fixed dimensions for consistent carousel items, pill-like** */
-        width: 200px; /* Width of each image in the carousel to show 3-4 */
-        height: 250px; /* Height of each image in the carousel */
+        width: 180px; /* Base width of each non-main image in the carousel */
+        height: 350px; /* Base height of each image in the carousel */
         flex-shrink: 0; /* Prevent items from shrinking */
-        border-radius: 25px; /* **Pill-like shape** */
+        border-radius: 25px; /* Pill-like shape */
         overflow: hidden; /* Ensure content respects border-radius */
-        transition: width 0.3s ease-out, height 0.3s ease-out, transform 0.3s ease-out, z-index 0.3s linear; /* Smooth transitions for expansion */
+        transition: width 0.5s ease-in-out, height 0.5s ease-in-out, transform 0.5s ease-in-out, z-index 0.5s linear, opacity 0.5s ease-in-out; /* Smooth transitions for expansion/shrinkage */
         position: relative; /* For text overlay */
-        cursor: pointer; /* Indicate interactivity */
-
-
-        /* Remove all !important grid/aspect-ratio/transform properties from desktop rules */
-        grid-column: unset !important;
-        grid-row: unset !important;
-        aspect-ratio: unset !important;
-        transform: none !important;
-        z-index: auto !important;
-        align-self: unset !important;
-        justify-self: unset !important;
+        cursor: grab; /* Indicate draggable */
+        will-change: transform, width, height, opacity; /* Optimize for animation */
+        box-shadow: 0 4px 15px rgba(0,0,0,0.08); /* Consistent shadow */
     }
 
-    /* Hover/Focus state for gallery items */
-    .gallery-item.is-expanded {
-        width: 230px; /* **Slightly wider on expansion** */
-        height: 280px; /* **Slightly taller on expansion** */
-        transform: scale(1.05); /* Gentle scale effect */
-        z-index: 10; /* Bring hovered item to front */
-        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3); /* Subtle shadow */
+    /* Main image styling */
+    .gallery-item.is-main {
+        width: 250px; /* Larger width for the main image */
+        height: 350px; /* Keep height consistent with others for alignment, or adjust if needed */
+        transform: scale(1.05); /* Slightly enlarge the main image */
+        box-shadow: 0 8px 25px rgba(0,0,0,0.2); /* More prominent shadow for main image */
+        z-index: 5; /* Bring main item to front */
     }
 
-    /* Gallery text overlay visibility on expansion */
+    /* Gallery text overlay visibility on hover/click on main image */
     .gallery-text-overlay {
-        padding: 10px; /* Slightly more padding for text */
+        padding: 15px; /* More padding for text */
         background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 100%);
         opacity: 0; /* Hidden by default */
         transition: opacity 0.3s ease-in-out; /* Smooth fade-in */
         pointer-events: none; /* Do not interfere with hover on parent */
     }
 
-    .gallery-item.is-expanded .gallery-text-overlay {
-        opacity: 1; /* **Show text on expansion** */
+    .gallery-item.is-main.show-text .gallery-text-overlay {
+        opacity: 1; /* Show text on hover/click on main image */
         pointer-events: auto; /* Enable interactions if needed */
     }
 
     .gallery-text-overlay .subtitle {
-        font-size: 0.7em; /* Slightly larger text */
+        font-size: 0.8em;
     }
     .gallery-text-overlay h3 {
-        font-size: 0.9em; /* Slightly larger heading */
+        font-size: 1.1em;
     }
 
-    /* --- Testimonials Section Adjustments --- */
+    /* Testimonials Section Adjustments */
     .testimonials-section {
-        /* Move below the image gallery by some pixels */
-        margin-top: 60px; /* **Increased margin-top to account for larger gallery** */
-        /* Ensure original padding-bottom is maintained */
+        margin-top: 60px; /* Increased margin-top to account for larger gallery */
         padding-bottom: 90px;
+        padding-left: 10px; /* 10px gap from edges */
+        padding-right: 10px; /* 10px gap from edges */
     }
-    /* Testimonials grid maintains 3 columns, as requested */
+    /* Testimonials grid maintains 3 columns */
     .testimonials-grid {
         grid-template-columns: repeat(3, 1fr); /* Maintain 3 columns */
-        gap: 20px; /* Adjust gap for 3 columns on smaller screens */
+        gap: 10px; /* Tighter gap between cards for smaller screens */
     }
     .testimonial-card {
-        padding: 20px; /* Adjust padding for smaller screens */
+        padding: 15px; /* Adjust padding for smaller screens */
+        box-shadow: 0 4px 10px rgba(0,0,0,0.05); /* Lighter shadow */
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
-    /* Customer info within testimonial card will NOT stack vertically, maintaining original layout */
+
+    /* Testimonial card states */
+    .testimonial-card.is-main {
+        transform: scale(1.05); /* Slightly larger for main card */
+        box-shadow: 0 8px 20px rgba(0,0,0,0.1); /* More prominent shadow for main card */
+        z-index: 2; /* Bring main card to front */
+    }
+
     .testimonial-card .customer-info {
         flex-direction: row; /* Keep elements in a row */
         align-items: center; /* Align them */
         text-align: left; /* Keep text aligned left */
     }
     .testimonial-card .customer-profile-img {
-        margin-right: 15px; /* Restore right margin */
-        margin-bottom: 0; /* Remove bottom margin */
+        margin-right: 10px; /* Slightly less margin for smaller screens */
+        width: 40px; /* Smaller profile image */
+        height: 40px;
+    }
+    .testimonial-card .customer-name {
+        font-size: 0.9em;
+    }
+    .testimonial-card .customer-request {
+        font-size: 0.75em;
     }
 }
 
@@ -1764,7 +1783,7 @@ header.hide-header {
 @media (max-width: 480px) {
     /* --- Header & Navigation --- */
     .company-name, .admin-link {
-        font-size: 0.8em; /* Further reduce company/admin name */
+        font-size: 0.7em; /* Further reduce company/admin name */
     }
     .main-nav ul {
         height: 22px; /* Smallest nav pill height */
@@ -1796,108 +1815,124 @@ header.hide-header {
     }
 
     /* --- Quick Services Section --- */
-    /* Displays 2 items in one row on the smallest screen,
-        maintaining a compact yet informative layout. */
+    #quickServicesSectionContainer {
+        border-radius: 0px;
+        padding: 25px 8px; /* Slightly less vertical padding */
+    }
+    .quick-services-section .section-header h2 {
+        font-size: 1.1em; /* Even smaller section header */
+    }
+    .quick-services-section .see-more-button {
+        padding: 5px 8px; /* Even smaller button padding */
+        font-size: 0.75em; /* Even smaller button font */
+    }
     .services-grid {
-        grid-template-columns: repeat(2, 1fr); /* Two columns on smallest screens */
-        gap: 10px; /* Tighter gap */
+        grid-template-columns: repeat(2, 1fr); /* Still two columns */
+        gap: 6px; /* Even tighter gap */
+        margin-bottom: 8px;
     }
     .service-item {
-        height: 280px; /* Adjusted fixed height for very small screens */
+        height: 220px; /* Adjust fixed height for very small screens */
+        border-radius: 15px; /* Even less rounded */
     }
     .service-item.image-card .image-text-overlay .top-right-text,
     .service-item.image-card .image-text-overlay .bottom-right-text {
-        font-size: 0.8em; /* Adjust text size in image cards */
+        font-size: 0.7em; /* Further adjust text size in image cards */
     }
     .service-item.content-card h3 {
-        font-size: 1em; /* Adjust heading in content cards */
+        font-size: 0.9em; /* Further adjust heading in content cards */
     }
     .service-item.content-card p {
-        font-size: 0.75em; /* Adjust paragraph in content cards */
-    }
-    .quick-services-section .section-header h2 {
-        font-size: 1.2em; /* Smaller section header */
-    }
-    .quick-services-section .see-more-button {
-        padding: 6px 10px; /* Smaller button padding */
-        font-size: 0.8em; /* Smaller button font */
+        font-size: 0.7em; /* Further adjust paragraph in content cards */
     }
 
     /* --- Why Choose Us Section --- */
-    /* Already stacked to 1 column at 768px, no further layout change needed. */
-    /* Adjust internal padding and fonts if necessary for smaller screen. */
     #whyChooseSectionContainer {
-        padding: 20px 3%; /* Reduced padding */
+        padding: 15px 2%; /* Further reduced padding */
     }
     .why-choose-left-content h2 {
-        font-size: 1.6em;
+        font-size: 1.4em;
     }
     .why-choose-left-content p {
+        font-size: 0.85em;
+    }
+    .why-choose-contact-button {
+        padding: 8px 15px; /* Smaller button */
         font-size: 0.9em;
     }
     .why-choose-card {
-        padding: 15px; /* Reduced card padding */
-        min-height: 160px; /* Slightly reduced min height for cards */
+        padding: 12px; /* Further reduced card padding */
+        min-height: 100px; /* Further reduced min height for cards */
+        border-radius: 18px; /* Slightly smaller card radius */
     }
     .why-choose-card .icon {
-        width: 50px; /* Smaller icon */
-        height: 35px;
+        width: 45px; /* Even smaller icon */
+        height: 30px;
     }
     .why-choose-card h3 {
-        font-size: 1em;
+        font-size: 0.9em;
     }
     .why-choose-card p {
-        font-size: 0.75em;
+        font-size: 0.7em;
     }
 
     /* --- Image Gallery Mini-Carousel Adjustments (Smallest Phones) --- */
     .image-gallery-grid {
-        height: 210px; /* **Adjusted height for carousel on smallest phones** */
-        gap: 15px; /* Tighter gap */
-        padding: 15px;
+        height: 280px; /* Keep a decent height */
+        gap: 10px; /* Tighter gap */
+        padding: 15px 0;
     }
     .gallery-item {
-        /* **Smaller but still "big" dimensions for very small screens** */
-        width: 50px; /* Width of each image in the carousel */
-        height: 180px; /* Height of each image in the carousel */
-        border-radius: 20px; /* Slightly smaller border-radius */
+        width: 240px; /* Base width of each non-main image */
+        height: 250px; /* Base height of each image */
+        border-radius: 20px; /* Consistent border-radius */
     }
-    .gallery-item.is-expanded {
-        width: 170px; /* Slightly wider on expansion */
-        height: 200px; /* Slightly taller on expansion */
+    .gallery-item.is-main {
+        width: 200px; /* Main image width */
+        height: 280px; /* Main image height */
     }
-    /* Gallery text overlay remains consistent */
     .gallery-text-overlay {
-        padding: 8px; /* Even less padding */
+        padding: 10px; /* Consistent padding */
     }
     .gallery-text-overlay .subtitle {
-        font-size: 0.6em;
+        font-size: 0.7em;
     }
     .gallery-text-overlay h3 {
-        font-size: 0.8em;
+        font-size: 0.9em;
     }
 
     /* --- Testimonials Section Adjustments --- */
     .testimonials-section {
-        margin-top: 30px; /* Adjust margin for smallest screens */
-        padding-bottom: 70px; /* Slightly less padding at bottom */
+        margin-top: 30px; /* Consistent margin */
+        padding-bottom: 50px; /* Further reduced padding at bottom */
+        padding-left: 8px; /* 8px gap from edges */
+        padding-right: 8px; /* 8px gap from edges */
     }
-    /* Testimonials grid maintains 3 columns, even on smallest screens */
     .testimonials-grid {
-        grid-template-columns: repeat(3, 1fr); /* Maintains 3 columns, cards will be quite small */
-        gap: 10px; /* Tighter gap */
+        grid-template-columns: repeat(3, 1fr); /* Still 3 columns */
+        gap: 8px; /* Even tighter gap */
     }
     .testimonial-card {
-        padding: 15px; /* Even less padding */
+        padding: 10px; /* Smallest padding */
     }
     .testimonials-section h2 {
-        font-size: 1.5em; /* Smaller heading on very small screens */
+        font-size: 1.3em; /* Even smaller heading */
     }
     .testimonials-content .sub-heading {
-        font-size: 1em; /* Smaller sub-heading */
+        font-size: 0.9em; /* Even smaller sub-heading */
     }
     .testimonial-card .testimonial-text {
-        font-size: 0.9em; /* Smaller testimonial text */
+        font-size: 0.8em; /* Even smaller testimonial text */
     }
-    /* Customer info within testimonial card remains horizontal */
+    .testimonial-card .customer-profile-img {
+        width: 35px; /* Even smaller profile image */
+        height: 35px;
+        margin-right: 8px;
+    }
+    .testimonial-card .customer-name {
+        font-size: 0.8em;
+    }
+    .testimonial-card .customer-request {
+        font-size: 0.7em;
+    }
 }
