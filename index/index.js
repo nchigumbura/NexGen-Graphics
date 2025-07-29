@@ -446,6 +446,12 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     ];
 
+    // New list for slider with active property
+    const galleryItemsDataForSlider = galleryItemsData.map((item, index) => ({
+        ...item,
+        active: index === 0 // Set active to true only for the first item
+    }));
+
     function generateImageGallerySection() {
         const galleryItemsHTML = galleryItemsData.map(item => `
             <div class="gallery-item animate-on-scroll ${item.type}" id="${item.id}" data-column="${item.column}">

@@ -39,7 +39,10 @@ document.addEventListener('DOMContentLoaded', () => {
     // Gallery specific variables
     let scrollSpeed = 0.5; // Pixels per frame
     let galleryAnimationFrameId;
-    let isGalleryPaused = false; // Flag to control gallery scrolling
+    let isGalleryPaused = false; // Flag to control gallery scrolling (mainly for mobile)
+    let galleryIntervalId; // For automatic active image transition
+    let currentActiveIndex = 0; // To keep track of the active image
+
 
     // Calculate scrollbar width for body overflow compensation
     function getScrollbarWidth() {
@@ -175,9 +178,7 @@ document.addEventListener('DOMContentLoaded', () => {
             whyChooseCardObserver.observe(card);
         });
 
-        // NEW: IntersectionObserver for Image Gallery items (no longer for simple visibility, but to manage carousel)
-        // This observer is now less critical as the hover/click events handle expansion.
-        // The carousel's continuous scroll is managed separately.
+        // IntersectionObserver for Image Gallery items (no longer for simple visibility, but to manage carousel)
         const galleryItemObserver = new IntersectionObserver((entries) => {
              entries.forEach(entry => {
                 if (entry.isIntersecting) {
@@ -195,7 +196,7 @@ document.addEventListener('DOMContentLoaded', () => {
             galleryItemObserver.observe(item);
         });
 
-        // NEW: IntersectionObserver for Testimonials Section
+        // IntersectionObserver for Testimonials Section
         const testimonialsObserver = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
@@ -302,7 +303,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     homeIcon.style.animation = 'icon-flip-zoom 0.6s ease-out forwards'; // 0.6s for flip and zoom
                     homeIcon.addEventListener('animationend', function iconAnimationEndHandler() {
                         homeIcon.style.animation = 'none'; // Remove animation after it finishes
-                        homeIcon.removeEventListener('animationend', iconAnimationEndEndHandler);
+                        homeIcon.removeEventListener('animationend', iconAnimationEndHandler);
                     }, { once: true });
                     activeBar.removeEventListener('transitionend', handler);
                 }
@@ -520,6 +521,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
             this.updateOverlayState();
 
+            // NEW: Pause gallery scrolling when enlarged image is opened on small screens
+            if (window.matchMedia('(max-width: 768px)').matches) {
+                isGalleryPaused = true;
+                stopGalleryScrolling();
+                clearInterval(galleryIntervalId); // Stop auto-advance too
+            }
+
             // Setup single click listener for closing the enlarged logo
             const closeEnlargedLogoHandler = (e) => {
                 // Check if the click occurred directly on the overlay or the image itself
@@ -534,6 +542,12 @@ document.addEventListener('DOMContentLoaded', () => {
                         enlargedLogoOverlay.style.visibility = 'hidden';
                         enlargedLogoOverlay.removeEventListener('transitionend', handler); // Remove self
                         window.animationModule.updateOverlayState(); // Update global state
+                        // NEW: Resume gallery scrolling if it was paused for the enlarged logo
+                        if (window.matchMedia('(max-width: 768px)').matches && isGalleryPaused) {
+                            isGalleryPaused = false;
+                            startGalleryScrolling();
+                            autoAdvanceGallery(); // Resume auto-advance
+                        }
                     }, { once: true }); // Ensure this listener runs only once
                 }
             };
@@ -595,20 +609,21 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // --- NEW: Image Gallery Carousel and Interaction Logic ---
+    // --- NEW: Image Gallery Carousel and Interaction Logic (for imagegallery media query - small screens/tablets) ---
 
-    // Function to start the continuous scrolling animation
+    // Function to start the continuous scrolling animation (ONLY FOR SMALL SCREENS)
     function startGalleryScrolling() {
+        // Only scroll on small screens and if not paused
         if (!imageGalleryGrid || isGalleryPaused || !window.matchMedia('(max-width: 768px)').matches) {
-            return; // Only scroll on small screens and if not paused
+            return;
         }
 
         galleryAnimationFrameId = requestAnimationFrame(() => {
             imageGalleryGrid.scrollLeft += scrollSpeed;
 
             // To create a seamless loop, when the scroll reaches the end, reset it.
-            // A more advanced seamless loop would involve cloning elements.
-            if (imageGalleryGrid.scrollLeft >= (imageGalleryGrid.scrollWidth - imageGalleryGrid.clientWidth)) {
+            // Check if we're at or past the scrollable end
+            if (imageGalleryGrid.scrollLeft + imageGalleryGrid.clientWidth >= imageGalleryGrid.scrollWidth) {
                 imageGalleryGrid.scrollLeft = 0; // Reset to start
             }
             startGalleryScrolling(); // Continue the animation loop
@@ -623,90 +638,170 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Add interaction listeners for each gallery item
-    galleryItems.forEach(item => {
-        // Hover/Click to expand and pause carousel
-        item.addEventListener('mouseenter', () => {
-            if (window.matchMedia('(max-width: 768px)').matches) {
-                isGalleryPaused = true;
-                stopGalleryScrolling();
-                item.classList.add('is-expanded');
+    // Function to update the active image and trigger its animations
+    function updateActiveGalleryImage(index) {
+        if (!galleryItems || galleryItems.length === 0) return;
+
+        // Remove active and animation classes from previous active item
+        galleryItems.forEach((item, idx) => {
+            item.classList.remove('active', 'side-image');
+            const morphOverlay = item.querySelector('.morph-overlay');
+            const textOverlay = item.querySelector('.text-overlay');
+            if (morphOverlay) {
+                morphOverlay.classList.remove('active-morph');
+            }
+            if (textOverlay) {
+                textOverlay.classList.remove('active-text');
+            }
+            // Set non-active items to 'side-image' state for visual distinction
+            if (idx !== index) {
+                item.classList.add('side-image');
             }
         });
 
-        item.addEventListener('mouseleave', () => {
-            if (window.matchMedia('(max-width: 768px)').matches) {
-                item.classList.remove('is-expanded');
-                // Give a short delay before resuming scroll to allow transition to finish
+        // Add active class to the new active item
+        const activeItem = galleryItems[index];
+        if (activeItem) {
+            activeItem.classList.add('active');
+            activeItem.classList.remove('side-image'); // Ensure it's not a side-image
+
+            // Smoothly scroll the grid to bring the active item into view (if not already)
+            // This helps align the auto-scrolling with the active image, especially on larger screens.
+            if (imageGalleryGrid && activeItem) {
+                const itemRect = activeItem.getBoundingClientRect();
+                const gridRect = imageGalleryGrid.getBoundingClientRect();
+                
+                // Calculate scroll amount to center the active item (or bring it fully into view)
+                const scrollLeftAmount = activeItem.offsetLeft - (gridRect.width / 2) + (itemRect.width / 2);
+
+                imageGalleryGrid.scrollTo({
+                    left: scrollLeftAmount,
+                    behavior: 'smooth'
+                });
+            }
+
+            const morphOverlay = activeItem.querySelector('.morph-overlay');
+            const textOverlay = activeItem.querySelector('.text-overlay');
+
+            // Step 1: Image becomes active (handled by .active class in CSS)
+            // Step 2: Morph effect after 2 seconds
+            if (morphOverlay) {
                 setTimeout(() => {
-                    isGalleryPaused = false;
-                    startGalleryScrolling();
-                }, 300); // Match CSS transition duration
+                    morphOverlay.classList.add('active-morph');
+                }, 2000); // 2 seconds after becoming active
             }
-        });
 
-        // For touch devices: single tap/click to expand, and double tap to open
+            // Step 3: Text overlay after morph effect completes (approx 3 seconds after image becomes active)
+            if (textOverlay) {
+                setTimeout(() => {
+                    textOverlay.classList.add('active-text');
+                }, 3000); // 3 seconds after image becomes active (1s after morph starts)
+            }
+        }
+    }
+
+    // Function to transition to the next slide automatically
+    function autoAdvanceGallery() {
+        clearInterval(galleryIntervalId); // Clear any existing interval
+
+        // Only auto-advance if on a small screen
+        if (window.matchMedia('(max-width: 768px)').matches) {
+            galleryIntervalId = setInterval(() => {
+                currentActiveIndex = (currentActiveIndex + 1) % galleryItems.length;
+                updateActiveGalleryImage(currentActiveIndex);
+            }, 5000); // Transition every 5 seconds (this includes the 3s for animations)
+        }
+    }
+
+    // Add interaction listeners for each gallery item
+    galleryItems.forEach((item, index) => {
         let lastClickTime = 0;
         item.addEventListener('click', (event) => {
-            if (!window.matchMedia('(max-width: 768px)').matches) return; // Only on small screens
+            event.preventDefault(); // Prevent default behavior for clicks on gallery items
 
-            const currentTime = new Date().getTime();
-            const timeDiff = currentTime - lastClickTime;
+            // Stop the auto-advancing when a user interacts, regardless of screen size
+            clearInterval(galleryIntervalId);
 
-            if (timeDiff > 0 && timeDiff < 300) { // Double click detected (within 300ms)
-                // Double click action: Open enlarged image
+            if (window.matchMedia('(max-width: 768px)').matches) {
+                // Mobile/Tablet specific behavior: Tap to activate, Double tap to enlarge
+                const currentTime = new Date().getTime();
+                const timeDiff = currentTime - lastClickTime;
+
+                if (timeDiff > 0 && timeDiff < 300) { // Double click detected (within 300ms)
+                    // Double click action: Open enlarged image
+                    const imgElement = item.querySelector('img');
+                    if (imgElement && window.animationModule && typeof window.animationModule.showEnlargedLogo === 'function') {
+                        window.animationModule.showEnlargedLogo(imgElement.src);
+                        // isGalleryPaused is handled within showEnlargedLogo
+                        stopGalleryScrolling(); // Stop continuous scroll
+                    }
+                    lastClickTime = 0; // Reset for next sequence
+                } else {
+                    // Single click action: Make this item active and trigger its animations
+                    currentActiveIndex = index; // Set clicked item as active
+                    updateActiveGalleryImage(currentActiveIndex);
+                    // After user interaction, restart auto-advance
+                    autoAdvanceGallery();
+                    lastClickTime = currentTime;
+                }
+            } else {
+                // Desktop behavior: Single click directly opens enlarged image
                 const imgElement = item.querySelector('img');
                 if (imgElement && window.animationModule && typeof window.animationModule.showEnlargedLogo === 'function') {
                     window.animationModule.showEnlargedLogo(imgElement.src);
-                    isGalleryPaused = true; // Keep gallery paused when enlarged image is open
-                    stopGalleryScrolling();
-                }
-                lastClickTime = 0; // Reset for next sequence
-            } else {
-                // Single click action: Toggle expand state
-                item.classList.toggle('is-expanded');
-                if (item.classList.contains('is-expanded')) {
-                    isGalleryPaused = true;
-                    stopGalleryScrolling();
-                } else {
-                    isGalleryPaused = false;
-                    startGalleryScrolling();
-                }
-                lastClickTime = currentTime;
-            }
-        });
-    });
-
-    // Handle enlarged logo closing to resume gallery scroll if applicable
-    if (enlargedLogoOverlay) {
-        enlargedLogoOverlay.addEventListener('transitionend', (event) => {
-            if (event.propertyName === 'opacity' && !enlargedLogoOverlay.classList.contains('active')) {
-                // If enlarged logo just closed and it was active, resume gallery scroll
-                if (window.matchMedia('(max-width: 768px)').matches) {
-                    isGalleryPaused = false;
-                    startGalleryScrolling();
+                    // No need to pause auto-scrolling here, as it's not active on large screens
                 }
             }
         });
-    }
 
-
-    // Initial setup for gallery scrolling based on screen size
-    window.addEventListener('resize', () => {
-        if (window.matchMedia('(max-width: 768px)').matches) {
-            // Only start if not already running and not paused by user interaction
-            if (!galleryAnimationFrameId && !isGalleryPaused) {
-                startGalleryScrolling();
-            }
-        } else {
-            // If screen is larger, stop any running animation
-            stopGalleryScrolling();
+        // On larger screens, handle hover for "is-expanded" if needed (CSS takes care of visual)
+        // If you need JS for hover on larger screens to do something specific:
+        if (!window.matchMedia('(max-width: 768px)').matches) {
+            item.addEventListener('mouseenter', () => {
+                // Potentially add a class or trigger an effect on hover for desktop
+                // item.classList.add('is-hovered-desktop');
+            });
+            item.addEventListener('mouseleave', () => {
+                // item.classList.remove('is-hovered-desktop');
+            });
         }
     });
 
-    // Start gallery animation on page load if on a small screen
-    if (window.matchMedia('(max-width: 768px)').matches) {
-        startGalleryScrolling();
+
+    // Initial setup for gallery scrolling based on screen size
+    function initializeGalleryBasedOnScreenSize() {
+        if (window.matchMedia('(max-width: 768px)').matches) {
+            // Small screen (tablet/mobile)
+            if (!galleryAnimationFrameId && !isGalleryPaused) {
+                startGalleryScrolling(); // Start continuous scroll if not already running and not paused
+            }
+            if (!galleryIntervalId) {
+                if (galleryItems.length > 0) {
+                    updateActiveGalleryImage(currentActiveIndex); // Ensure an active image is set
+                }
+                autoAdvanceGallery(); // Always ensure auto-advance for active images is running
+            }
+        } else {
+            // Larger screen (desktop)
+            stopGalleryScrolling(); // Stop any running continuous animation
+            clearInterval(galleryIntervalId); // Also stop auto-advance for active images
+            galleryIntervalId = null; // Clear the interval ID
+
+            // Ensure all images are reset from active/side-image states for larger screens
+            galleryItems.forEach(item => {
+                item.classList.remove('active', 'side-image');
+                const morphOverlay = item.querySelector('.morph-overlay');
+                const textOverlay = item.querySelector('.text-overlay');
+                if (morphOverlay) morphOverlay.classList.remove('active-morph');
+                if (textOverlay) textOverlay.classList.remove('active-text');
+            });
+        }
     }
 
-}); // End DOMContentLoaded
+    // Call on initial load
+    initializeGalleryBasedOnScreenSize();
+
+    // Call on resize
+    window.addEventListener('resize', initializeGalleryBasedOnScreenSize);
+
+}); // End DOMContent

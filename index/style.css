@@ -377,7 +377,6 @@ header.hide-header {
     /* Adjusted width: Using clamp for flexible width.
         The 75vw means it will take 75% of the viewport width.
         The 1000px max-width allows it to grow larger on bigger screens. */
-    width: clamp(300px, 75vw, 1000px); /* Updated width as requested */
     min-height: 200px; /* Minimum height to give it some presence */
     max-height: 90vh; /* Limits max height of the *entire* modal to leave space top/bottom */
     
@@ -1501,63 +1500,140 @@ header.hide-header {
         margin-top: 30px; /* Reduce space between text and image */
     }
 
+    .why-choose-contact-button{
+
+    }
+
     /* --- Image Gallery Grid Adjustments (Traditional Grid) --- */
     /* Transitions from 8 to 4 columns, while retaining custom item aspect ratios */
     .image-gallery-grid {
-        grid-template-columns: repeat(4, 1fr); /* 4 columns for tablets */
-        gap: 8px; /* Tighter gap for better density */
-        padding: 15px; /* Adjusted padding */
-        /* Ensure these are reset if this breakpoint is entered from smaller sizes */
-        display: grid;
-        overflow-x: unset; /* Remove overflow from flex carousel */
-        white-space: unset; /* Allow items to wrap */
+        margin-top: 10px;
+        display: grid; /* Revert to grid display for larger screens */
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* Flexible 4-column layout */
+        gap: 15px; /* Tighter gap for better density */
+        padding: 20px; /* Adjusted padding */
+        overflow: hidden; /* Remove horizontal overflow from carousel */
+        scroll-behavior: auto; /* Remove smooth scroll from JS controlled carousel */
+        white-space: normal; /* Allow text wrapping */
         height: auto; /* Revert height from fixed carousel height */
         justify-content: unset; /* Revert flex alignment */
         align-items: unset; /* Revert flex alignment */
+        flex-wrap: wrap; /* Ensure items wrap in grid */
+        transform: none !important; /* Reset transform from any carousel JS */
     }
     .gallery-item {
-        grid-column: span 1 !important; /* Each item takes 1 of the 4 columns */
-        grid-row: auto !important; /* Allow rows to auto-flow */
-        height: auto !important; /* Let height be determined by aspect-ratio for fluidity */
+        /* Reset any carousel-specific styles that might have been applied by JS */
+        width: auto !important; /* Revert width from fixed carousel slots */
+        flex-basis: auto !important; /* Revert flex-basis */
+        height: auto !important; /* Allow height to be determined by content or aspect-ratio */
+        transform: none !important; /* Reset transforms from carousel */
+        filter: none !important; /* Remove blur/brightness */
+        opacity: 1 !important; /* Ensure full opacity */
+        z-index: auto !important; /* Reset z-index */
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2) !important; /* Revert to standard shadow */
+        border-radius: 8px !important; /* Revert to standard border-radius */
+        pointer-events: auto !important; /* Re-enable pointer events for all items */
+        clip-path: none !important; /* Remove clip-path */
+        margin: 0 !important; /* Remove negative margins */
+        display: block !important; /* Ensure it's block for grid layout */
+
+
+        /* Maintain desired aspect ratios for larger screens as per previous logic */
         aspect-ratio: 1/1.2; /* Default aspect ratio for responsiveness */
-        transform: none !important; /* Reset desktop transforms */
-        align-self: stretch !important; /* Stretch to fill available height */
-        width: unset !important; /* Unset fixed width from smaller breakpoints */
-        flex-shrink: unset !important; /* Unset flex-shrink from smaller breakpoints */
-        border-radius: 0; /* Remove pill-like border radius */
-        transition: none; /* Remove transitions from smaller breakpoints */
-        z-index: auto; /* Reset z-index */
+        display: block; /* Ensure it behaves like a block in grid */
+        overflow: hidden; /* Hide overflow for rounded corners */
+        position: relative; /* For overlay positioning */
     }
+
     /* Specific items that were originally "tall" or "very tall" can retain a taller aspect ratio */
+    /* Ensure these selectors match your content structure for the larger screen grid */
     .gallery-item:nth-child(1), .gallery-item:nth-child(3), .gallery-item:nth-child(5), .gallery-item:nth-child(6),
-    .gallery-item:nth-child(7), .gallery-item:nth-child(8), .gallery-item:nth-child(10), .gallery-item:nth-child(13), .gallery-item:nth-child(14)
-    {
+    .gallery-item:nth-child(7), .gallery-item:nth-child(8), .gallery-item:nth-child(10), .gallery-item:nth-child(13), .gallery-item:nth-child(14) {
         aspect-ratio: 0.7/1 !important; /* Taller aspect ratio for these items */
     }
-    /* Gallery text overlay remains consistent */
+
+    /* Gallery text overlay for larger screens (always visible, or on hover as per JS) */
     .gallery-text-overlay {
-        padding: 10px; /* Reset to default or larger for larger screens */
-        opacity: 1; /* Ensure text is visible by default on grid layout */
-        transition: none; /* Remove opacity transition */
+        position: absolute; /* Needed for overlay */
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        padding: 20px; /* Standard padding */
+        box-sizing: border-box;
+        background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 100%); /* Original gradient */
+        backdrop-filter: none; /* No blur on larger screen grid */
+        -webkit-backdrop-filter: none;
+        border-radius: 8px; /* Match item border radius */
+        mask-image: none; /* Remove mask */
+        -webkit-mask-image: none; /* Remove webkit mask */
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+        align-items: flex-start;
+        opacity: 0; /* Hidden by default, shown on hover/expand by JS */
+        transition: opacity 0.3s ease-in-out; /* Smooth fade in/out */
+        pointer-events: none; /* Allow clicks through by default */
     }
-    .gallery-text-overlay .subtitle {
-        font-size: 0.8em;
+
+    .gallery-item:hover .gallery-text-overlay,
+    .gallery-item.is-expanded .gallery-text-overlay {
+        opacity: 1; /* Show overlay on hover or when expanded */
+        pointer-events: auto; /* Enable interaction with overlay text/links */
     }
+
+    .gallery-text-overlay .subtitle,
     .gallery-text-overlay h3 {
-        font-size: 1.1em;
+        opacity: 1; /* Always visible on larger screens (if overlay is visible) */
+        transition: none; /* Remove delayed transition */
+        text-shadow: 0px 0px 8px rgba(0, 0, 0, 0.5); /* Keep text shadow */
     }
+
 
     /* Testimonials section will revert to its 3-column desktop-like layout at this size */
     .testimonials-grid {
-        grid-template-columns: repeat(3, 1fr); /* Revert to 3 columns */
-        gap: 30px; /* Default desktop gap */
-    }
-    .testimonials-section {
-        margin-top: -240px; /* Original margin-top */
-        padding-bottom: 90px;
+        display: grid; /* Use grid for 3-column layout */
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* Adjust minmax for desired card width */
+        gap: 30px;
+        width: auto; /* Allow grid to size naturally */
+        overflow-x: hidden; /* Remove horizontal overflow from carousel */
+        scroll-snap-type: none; /* Disable native scroll snapping */
+        white-space: normal; /* Allow content wrapping */
+        padding: 0; /* Remove carousel padding */
+        justify-content: center; /* Center testimonials in grid */
+        align-items: flex-start;
+        transform: none; /* Remove JS-driven transform */
+        transition: none; /* Remove carousel transition */
     }
     .testimonial-card {
+        flex-shrink: 0; /* Reset flex-shrink from carousel */
+        border-radius: 15px; /* Keep radius */
+        transition: transform 0.3s ease, box-shadow 0.3s ease, opacity 0.3s ease, background-color 0.3s ease; /* Maintain general transitions */
+        scroll-snap-align: none; /* No native snapping */
+        text-align: center;
+
+        /* Reset from mobile carousel states */
+        width: auto; /* Auto width in grid */
+        height: auto; /* Auto height in grid */
+        flex-basis: auto; /* Auto flex basis */
         padding: 25px; /* Original padding */
+        margin: 0; /* No explicit margin, gap handles it */
+        opacity: 1; /* Ensure full opacity */
+        pointer-events: auto; /* Make them clickable */
+        background-color: #ffffff; /* Default background for desktop */
+        box-shadow: 0 5px 15px rgba(0,0,0,0.08); /* Standard shadow */
+        backdrop-filter: none; /* Remove blur */
+        -webkit-backdrop-filter: none;
+        transform: none; /* Reset scale */
+        z-index: auto; /* Reset z-index */
+    }
+    .testimonials-section {
+        margin-top: -240px; /* Original margin-top for desktop */
+        padding-bottom: 90px;
+        padding-left: 20px; /* Standard padding */
+        padding-right: 20px; /* Standard padding */
+        position: relative;
+        overflow: visible; /* Allow content to overflow if needed */
     }
     .testimonial-card .customer-info {
         flex-direction: row; /* Original horizontal layout */
@@ -1567,6 +1643,21 @@ header.hide-header {
     .testimonial-card .customer-profile-img {
         margin-right: 15px; /* Original margin */
         margin-bottom: 0;
+        width: 60px; /* Standard size */
+        height: 60px; /* Standard size */
+    }
+
+    /* Modal Adjustments for 1024px and below */
+    .modal-window {
+        width: 100%;
+        max-width: 800px; /* Maximum width for tablets */
+        padding: 30px;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+    }
+    .modal-content {
+        padding: 15px;
     }
 }
 
@@ -1643,7 +1734,6 @@ header.hide-header {
     }
     /* The grid of 4 cards within "Why Choose Us" also stacks into a single column. */
     .why-choose-grid-container {
-        grid-template-columns: 1fr; /* Stack cards into a single column */
         gap: 15px; /* Reduced gap between stacked cards */
     }
     /* Adjust card header and paragraph alignment when stacked */
@@ -1659,115 +1749,285 @@ header.hide-header {
         text-align: center; /* Center text within card when stacked */
     }
 
-    /* --- Image Gallery Mini-Carousel Adjustments --- */
+    /* ========================================= */
+    /* --- Image Gallery (Mobile Slider / Carousel) --- */
+    /* ========================================= */
     #imageGallerySectionContainer {
-        margin: 90px auto 0 auto; /* Keep original top margin */
-        padding: 0; /* Remove side padding, handled by inner elements */
-        max-width: unset; /* Allow full width for carousel */
-        overflow: hidden; /* Hide potential horizontal scrollbar */
+       height: 500px;
+       display: flex;
+       justify-content: center;
+       align-items: center;
+       overflow: hidden;
+       position: relative;
+     
     }
 
-    .image-gallery-grid {
-        display: flex; /* Change to flexbox for horizontal scroll */
-        overflow-x: hidden; /* Hide scrollbar, JS will control scroll */
-        white-space: nowrap; /* Prevent items from wrapping */
-        justify-content: flex-start; /* Align items to the start */
-        align-items: center; /* Vertically center items */
-        gap: 12px; /* Original gap between scrolling items */
-        padding: 20px 0; /* Padding around the carousel, 0 on sides to allow items to go off-screen */
-        height: 380px; /* Set a fixed height for the carousel container */
-        margin-bottom: 0; /* Remove previous margin to allow new testimonials margin */
-        position: relative; /* For text overlay positioning */
-        box-sizing: border-box;
-        /* Reset grid properties if they were inherited */
-        grid-template-columns: unset;
-        grid-auto-rows: unset;
-        row-gap: unset;
-        column-gap: unset;
-    }
-    .gallery-item {
-        width: 180px; /* Base width of each non-main image in the carousel */
-        height: 350px; /* Base height of each image in the carousel */
-        flex-shrink: 0; /* Prevent items from shrinking */
-        border-radius: 25px; /* Pill-like shape */
-        overflow: hidden; /* Ensure content respects border-radius */
-        transition: width 0.5s ease-in-out, height 0.5s ease-in-out, transform 0.5s ease-in-out, z-index 0.5s linear, opacity 0.5s ease-in-out; /* Smooth transitions for expansion/shrinkage */
-        position: relative; /* For text overlay */
-        cursor: grab; /* Indicate draggable */
-        will-change: transform, width, height, opacity; /* Optimize for animation */
-        box-shadow: 0 4px 15px rgba(0,0,0,0.08); /* Consistent shadow */
+    .image-gallery-grid { /* This will act as the .image-slider container from your proposal */
+        width: 100%;
+        height: 100%;
+        position: relative; /* Crucial for absolute positioning of items */
+        display: grid;
+        grid-template-columns: 20% 60% 20%; /* Side (visible portion) | Active | Side (visible portion) */
+        grid-template-rows: 1fr;
+        justify-content: center;
+        align-items: center;
+
     }
 
-    /* Main image styling */
-    .gallery-item.is-main {
-        width: 250px; /* Larger width for the main image */
-        height: 350px; /* Keep height consistent with others for alignment, or adjust if needed */
-        transform: scale(1.05); /* Slightly enlarge the main image */
-        box-shadow: 0 8px 25px rgba(0,0,0,0.2); /* More prominent shadow for main image */
-        z-index: 5; /* Bring main item to front */
+    .gallery-item { /* This will act as the .slide from your proposal */
+        position: absolute; /* Position slides absolutely within the .image-gallery-grid */
+        top: 0;
+        height: 100%; /* Set height to fill container */
+        width: 60%;
+        object-fit: cover;
+        display: flex; /* To center img inside */
+        justify-content: center;
+        align-items: center;
+        overflow: hidden;
+        box-shadow: none;
+        border-radius: 0; /* Will be handled by active/side classes */
+        opacity: 0; /* Hidden by default, JS will manage visibility */
+        pointer-events: none; /* Disable clicks on hidden items */
+        transition: transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94), /* Smooth slide movement */
+                     opacity 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                     filter 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                     z-index 0s linear 0.4s; /* z-index changes mid-transition */
+        transform: translateX(0); /* Default, will be overridden by JS for active/side */
     }
 
-    /* Gallery text overlay visibility on hover/click on main image */
-    .gallery-text-overlay {
-        padding: 15px; /* More padding for text */
-        background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 100%);
+    .gallery-item img {
+        width: 100%;
+        height: auto;
+        object-fit: cover;
+    }
+
+    /* Active Slide Styling */
+    .gallery-item.active {
+        grid-column: 2 / 3; /* Visually place in the center column */
+        left: 20%; /* Start at the beginning of the 60% center slot */
+        transform: translateX(0); /* No horizontal shift needed relative to its left position */
+        opacity: 1;
+        pointer-events: auto;
+        z-index: 3;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        border-radius: 20px;
+        clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%) /* Rounded corners for the main card */
+    }
+
+    /* Side Slide Styling (Left & Right) */
+    .gallery-item.side-image { /* Consolidated from side-left/side-right for general side appearance */
+        width: 60%; /* Side images are also 60% width */
+        opacity: 0.7; /* A slight opacity */
+        filter: blur(3px); /* A slight blur */
+        z-index: 1;
+        pointer-events: auto; /* Allow clicks on side images */
+        border-radius: 20px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15); /* Subtle shadow */
+    }
+
+    .gallery-item.side-image.left {
+        /* This will position the 60% width image so only its right 30% is visible on the left side */
+        grid-column: 1/2;
+        left: -20%;           /* More precisely: (60% - 30%) = 30% hidden on left, (100%-60%)/2 for center = 20% + 15%(30/2).  A bit complex.
+           A simpler approach for "show 30% cut off":
+           left: 0; transform: translateX(calc(-100% + 30vw)); (if 30vw is the target visible portion)
+           Or, use transform: translateX(-xx%) to hide the portion, ensuring its right edge is at the desired cut-off.
+           Given the 60% active width, and side elements being 60% too:
+           Total visible width for active + 2*side-visible = 60% + 2 * (some_fraction_of_60%)
+           Let's aim for the screenshot's visual: active centered, sides peeking.
+           The side images are 60% wide. If only 30% is visible, then 30% of their width is visible.
+           So, they are "cut off" by 30% of the *overall container width* not their own width.
+
+           Let's recalculate based on the *container* width (100%).
+           Active: 60% centered means it spans from 20% to 80% of container.
+           Left side: needs to show from 0% to 20%. This is 20% of container width.
+           Right side: needs to show from 80% to 100%. This is 20% of container width.
+
+           So, the side images need to have a visible width of 20% of the container.
+           Since their full width is 60% of the container, then (60%-20%)=40% needs to be hidden on the outer side.
+
+           So, the left image needs its right edge to be at 20% of the container.
+           Its width is 60%. So its left edge must be at 20% - 60% = -40%.
+           `left: -40%;`
+           The right image needs its left edge to be at 80% of the container.
+           Its width is 60%. So its right edge must be at 80% + 60% = 140%.
+           `left: 80%;`
+           These `left` values should work without `translateX` then.
+
+           Let's apply this for clearer math.
+        */
+        left: -40%; /* 60% width. Right edge will be at -40% + 60% = 20% (start of active) */
+        transform: translateX(0); /* Remove additional transform */
+        clip-path: polygon(calc(100% - (20% / 60%) * 100%) 0%, 100% 0%, 100% 100%, calc(100% - (20% / 60%) * 100%) 100%);
+        clip-path: polygon(33.33% 0%, 100% 0%, 100% 100%, 33.33% 100%);
+
+    }
+
+    .gallery-item.side-image.right {
+        grid-column: 3/4;
+        /* This will position the 60% width image so only its left 30% is visible on the right side */
+        left: 60%; /* Left edge will be at 80% (end of active) */
+        transform: translateX(0); /* Remove additional transform */
+        clip-path: polygon(0% 0%, 66.67% 0%, 66.67% 100%, 0% 100%);
+    }
+
+    /* Morph Effect Overlay - This will be applied dynamically by JS to the active slide */
+    .gallery-item .morph-overlay { /* New class for the morphic layer */
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 0; /* Initially hidden */
+        background: rgba(0,0,0,0); /* Placeholder; JS will set accent color or it will be transparent */
+        background: linear-gradient(to top, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.2) 15%, transparent 100%); /* Existing gradient adjusted for 15% fade */
+        backdrop-filter: blur(10px) saturate(180%); /* iOS-like frosted glass */
+        -webkit-backdrop-filter: blur(10px) saturate(180%);
+        border-radius: 0 0 20px 20px; /* Match bottom border radius of card */
         opacity: 0; /* Hidden by default */
-        transition: opacity 0.3s ease-in-out; /* Smooth fade-in */
-        pointer-events: none; /* Do not interfere with hover on parent */
+        transform: translateY(100%); /* Start completely off-screen at the bottom */
+        transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.2s, opacity 0.5s ease-out 0.2s, height 0.5s ease-out 0.2s; /* Smooth slide up and fade, add delay */
+        pointer-events: none; /* No interaction until fully active/shown */
+        z-index: 1; /* Ensure it's above the image, below text */
+        /* Custom property for dominant color (set by JS if implemented) */
+        --dominant-image-color: rgba(0,0,0,0.8); /* Default fallback */
     }
 
-    .gallery-item.is-main.show-text .gallery-text-overlay {
-        opacity: 1; /* Show text on hover/click on main image */
-        pointer-events: auto; /* Enable interactions if needed */
+    .gallery-item.active .morph-overlay.active-morph { /* JS adds .active-morph after delay */
+        opacity: 1;
+        height: 100%; /* Expands to cover whole image */
+        transform: translateY(-85%); /* Rises to show 15% of image below the gradient fade */
+    }
+
+    /* Text Overlay - positioned on top of the morph effect */
+    .gallery-item .text-overlay { /* Your existing class, now for text within the morph overlay */
+        position: absolute; /* Position relative to .gallery-item */
+        bottom: 0; /* Position at the bottom of the *visible* morph overlay area */
+        left: 0;
+        width: 100%;
+        padding: 20px;
+        box-sizing: border-box;
+        color: white; /* Text color */
+        text-align: left;
+        opacity: 0; /* Hidden by default */
+        transform: translateY(20px); /* Slightly below final position */
+        transition: opacity 0.4s ease-out, transform 0.4s ease-out; /* Smooth reveal */
+        pointer-events: none; /* No interaction until fully active/shown */
+        z-index: 2; /* Ensure text is above morph overlay */
+    }
+
+    .gallery-item.active .text-overlay.active-text { /* JS adds .active-text after morph is done */
+        opacity: 1;
+        transform: translateY(0); /* Slide into final position */
+        pointer-events: auto; /* Enable interaction with overlay text/links */
     }
 
     .gallery-text-overlay .subtitle {
         font-size: 0.8em;
+        opacity: 0.8;
+        margin-bottom: 5px;
     }
+
     .gallery-text-overlay h3 {
         font-size: 1.1em;
+        margin: 0;
+        line-height: 1.2;
     }
 
-    /* Testimonials Section Adjustments */
+    /* Testimonials section will now have a custom carousel-like layout */
     .testimonials-section {
-        margin-top: 60px; /* Increased margin-top to account for larger gallery */
+        margin-top: 60px;
         padding-bottom: 90px;
-        padding-left: 10px; /* 10px gap from edges */
-        padding-right: 10px; /* 10px gap from edges */
+        padding-left: 10px;
+        padding-right: 10px;
+        position: relative;
+        overflow: hidden; /* Hides cards outside the 2-1-2 view */
     }
-    /* Testimonials grid maintains 3 columns */
     .testimonials-grid {
-        grid-template-columns: repeat(3, 1fr); /* Maintain 3 columns */
-        gap: 10px; /* Tighter gap between cards for smaller screens */
+        display: flex;
+        overflow-x: auto; /* Managed by JS for this custom 2-1-2 carousel */
+        scroll-snap-type: none; /* No native snapping */
+        white-space: normal;
+        gap: 15px;
+        padding: 0;
+        justify-content: center; /* Center visible items */
+        align-items: flex-start;
+        width: auto;
+        transition: transform 0.5s ease; /* Smooth transition for JS-driven movement */
     }
     .testimonial-card {
-        padding: 15px; /* Adjust padding for smaller screens */
-        box-shadow: 0 4px 10px rgba(0,0,0,0.05); /* Lighter shadow */
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        flex-shrink: 0;
+        border-radius: 15px;
+        transition: transform 0.3s ease, box-shadow 0.3s ease, opacity 0.3s ease, background-color 0.3s ease, flex-basis 0.5s ease;
+        scroll-snap-align: none; /* No native snapping */
+        text-align: center;
+
+        /* Default for items not visible in the 2-1-2 window */
+        width: 0; /* Hide items not in view */
+        height: 0; /* Collapse them */
+        padding: 0; /* Remove padding */
+        margin: 0; /* Remove margin */
+        opacity: 0; /* Fade them out */
+        pointer-events: none; /* Make them unclickable */
+        background-color: transparent;
+        box-shadow: none;
     }
 
-    /* Testimonial card states */
+    /* Main testimonial card styling (JS adds 'is-main' class) */
     .testimonial-card.is-main {
-        transform: scale(1.05); /* Slightly larger for main card */
-        box-shadow: 0 8px 20px rgba(0,0,0,0.1); /* More prominent shadow for main card */
-        z-index: 2; /* Bring main card to front */
+        width: 240px; /* Base width for main card */
+        height: auto; /* Let content determine height */
+        flex-basis: 240px; /* Explicitly set flex basis for main item */
+        padding: 15px;
+        box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+        z-index: 2;
+        background-color: rgba(255, 255, 255, 0.8); /* Slightly less translucent for main */
+        backdrop-filter: blur(5px); /* Subtle blur for main testimonial card */
+        -webkit-backdrop-filter: blur(5px);
+        opacity: 1;
+        pointer-events: auto;
+        transform: scale(1.05); /* Slightly larger */
+    }
+
+    /* Side testimonial cards (JS adds 'is-side' class) */
+    .testimonial-card.is-side {
+        width: 200px; /* Slightly smaller than main */
+        height: auto; /* Let content determine height */
+        flex-basis: 200px; /* Explicitly set flex basis for side items */
+        padding: 15px;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        opacity: 0.85;
+        background-color: rgba(255, 255, 255, 0.6); /* More translucent for side */
+        backdrop-filter: blur(3px); /* Less blur for side testimonial card */
+        -webkit-backdrop-filter: blur(3px);
+        pointer-events: auto;
+        transform: scale(0.95); /* Slightly smaller than main */
     }
 
     .testimonial-card .customer-info {
-        flex-direction: row; /* Keep elements in a row */
-        align-items: center; /* Align them */
-        text-align: left; /* Keep text aligned left */
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
     }
     .testimonial-card .customer-profile-img {
-        margin-right: 10px; /* Slightly less margin for smaller screens */
-        width: 40px; /* Smaller profile image */
-        height: 40px;
+        margin-right: 0;
+        margin-bottom: 10px;
+        width: 50px;
+        height: 50px;
     }
     .testimonial-card .customer-name {
         font-size: 0.9em;
     }
     .testimonial-card .customer-request {
         font-size: 0.75em;
+    }
+
+    /* Modal Adjustments for 768px and below */
+    .modal-window {
+        width: 100%;
+        padding: 25px;
+    }
+    .modal-content {
+        padding: 15px;
     }
 }
 
@@ -1783,72 +2043,72 @@ header.hide-header {
 @media (max-width: 480px) {
     /* --- Header & Navigation --- */
     .company-name, .admin-link {
-        font-size: 0.7em; /* Further reduce company/admin name */
+        font-size: 0.7em;
     }
     .main-nav ul {
-        height: 22px; /* Smallest nav pill height */
+        height: 22px;
         border-radius: 12px;
     }
     .main-nav a {
-        padding: 1px 4px; /* Smallest nav link padding */
-        font-size: 0.8em; /* Smallest nav link font */
+        padding: 1px 4px;
+        font-size: 0.8em;
         border-radius: 10px;
     }
     .active-bar {
-        height: 20px; /* Smallest active bar height */
+        height: 20px;
         border-radius: 12px;
     }
     .main-nav .home-icon {
-        width: 16px; /* Smallest home icon */
+        width: 16px;
         height: 16px;
     }
 
     /* --- Hero Section --- */
     .hero-text-overlay p:first-child {
-        font-size: 1em; /* Smallest sub-heading */
+        font-size: 1em;
     }
     .hero-text-overlay h1 {
-        font-size: 1.8em; /* Smallest main heading */
+        font-size: 1.8em;
     }
     .hero-image-container {
-        margin-top: 20px; /* Further reduce space */
+        margin-top: 20px;
     }
 
     /* --- Quick Services Section --- */
     #quickServicesSectionContainer {
         border-radius: 0px;
-        padding: 25px 8px; /* Slightly less vertical padding */
+        padding: 25px 8px;
     }
     .quick-services-section .section-header h2 {
-        font-size: 1.1em; /* Even smaller section header */
+        font-size: 1.1em;
     }
     .quick-services-section .see-more-button {
-        padding: 5px 8px; /* Even smaller button padding */
-        font-size: 0.75em; /* Even smaller button font */
+        padding: 5px 8px;
+        font-size: 0.75em;
     }
     .services-grid {
-        grid-template-columns: repeat(2, 1fr); /* Still two columns */
-        gap: 6px; /* Even tighter gap */
+        grid-template-columns: repeat(2, 1fr);
+        gap: 6px;
         margin-bottom: 8px;
     }
     .service-item {
-        height: 220px; /* Adjust fixed height for very small screens */
-        border-radius: 15px; /* Even less rounded */
+        height: 220px;
+        border-radius: 15px;
     }
     .service-item.image-card .image-text-overlay .top-right-text,
     .service-item.image-card .image-text-overlay .bottom-right-text {
-        font-size: 0.7em; /* Further adjust text size in image cards */
+        font-size: 0.7em;
     }
     .service-item.content-card h3 {
-        font-size: 0.9em; /* Further adjust heading in content cards */
+        font-size: 0.9em;
     }
     .service-item.content-card p {
-        font-size: 0.7em; /* Further adjust paragraph in content cards */
+        font-size: 0.7em;
     }
 
     /* --- Why Choose Us Section --- */
     #whyChooseSectionContainer {
-        padding: 15px 2%; /* Further reduced padding */
+        padding: 15px 2%;
     }
     .why-choose-left-content h2 {
         font-size: 1.4em;
@@ -1857,16 +2117,16 @@ header.hide-header {
         font-size: 0.85em;
     }
     .why-choose-contact-button {
-        padding: 8px 15px; /* Smaller button */
+        padding: 8px 15px;
         font-size: 0.9em;
     }
     .why-choose-card {
-        padding: 12px; /* Further reduced card padding */
-        min-height: 100px; /* Further reduced min height for cards */
-        border-radius: 18px; /* Slightly smaller card radius */
+        padding: 12px;
+        min-height: 100px;
+        border-radius: 18px;
     }
     .why-choose-card .icon {
-        width: 45px; /* Even smaller icon */
+        width: 45px;
         height: 30px;
     }
     .why-choose-card h3 {
@@ -1876,63 +2136,115 @@ header.hide-header {
         font-size: 0.7em;
     }
 
-    /* --- Image Gallery Mini-Carousel Adjustments (Smallest Phones) --- */
+    /* --- Image Gallery (Mobile Slider / Carousel) Adjustments --- */
+    #imageGallerySectionContainer {
+        height: 700px; /* Fixed height for smallest phones */
+        padding: 0;
+    }
+
     .image-gallery-grid {
-        height: 280px; /* Keep a decent height */
-        gap: 10px; /* Tighter gap */
-        padding: 15px 0;
+        /* Inherits display: flex from 768px breakpoint */
+        justify-content: center;
+        align-items: center;
+        width: 100%; /* Ensure it stays 100% */
     }
-    .gallery-item {
-        width: 240px; /* Base width of each non-main image */
-        height: 250px; /* Base height of each image */
-        border-radius: 20px; /* Consistent border-radius */
+
+    .gallery-item.active { /* Center Image */
+        border-radius: 15px; /* Slightly less rounded */
+        width: 60%; /* Active image takes 60% width of the 100% grid */
+        left: 20%; /* Centers the 60% width item: (100% - 60%) / 2 = 20% */
     }
-    .gallery-item.is-main {
-        width: 200px; /* Main image width */
-        height: 280px; /* Main image height */
+
+    .gallery-item.side-image { /* Left and Right Side Images */
+        border-radius: 15px;
+        width: 60%; /* Side images are also 60% width */
     }
-    .gallery-text-overlay {
-        padding: 10px; /* Consistent padding */
+
+    .gallery-item.side-image.left {
+        left: -40%; /* Position as calculated for 768px */
     }
-    .gallery-text-overlay .subtitle {
+
+    .gallery-item.side-image.right {
+        left: 80%; /* Position as calculated for 768px */
+    }
+
+    .gallery-item .morph-overlay {
+        border-radius: 0 0 15px 15px; /* Match active card border-radius */
+        backdrop-filter: blur(8px) saturate(160%); /* Slightly less blur */
+        -webkit-backdrop-filter: blur(8px) saturate(160%);
+    }
+
+    .gallery-item.active .morph-overlay.active-morph {
+        height: 100%;
+        transform: translateY(-85%);
+    }
+
+    .gallery-item .text-overlay {
+        padding: 10px; /* Reduced padding for smaller screens */
+    }
+    .gallery-item .text-overlay .subtitle {
         font-size: 0.7em;
     }
-    .gallery-text-overlay h3 {
+    .gallery-item .text-overlay h3 {
         font-size: 0.9em;
     }
 
-    /* --- Testimonials Section Adjustments --- */
-    .testimonials-section {
-        margin-top: 30px; /* Consistent margin */
-        padding-bottom: 50px; /* Further reduced padding at bottom */
-        padding-left: 8px; /* 8px gap from edges */
-        padding-right: 8px; /* 8px gap from edges */
-    }
+
+    /* Testimonials section will now have a scrollable horizontal layout */
     .testimonials-grid {
-        grid-template-columns: repeat(3, 1fr); /* Still 3 columns */
-        gap: 8px; /* Even tighter gap */
+        gap: 15px;
+        width: 100%;
+        scroll-snap-type: x mandatory; /* Re-enable native snapping for smallest screens if preferred */
+        -webkit-overflow-scrolling: touch; /* Smooth scrolling for iOS */
+        scroll-behavior: smooth; /* For smooth programmatic scrolling */
+        transition: none; /* Remove JS transform transition as native scroll will handle it */
+        justify-content: flex-start; /* Align items to start for native scrolling */
     }
     .testimonial-card {
-        padding: 10px; /* Smallest padding */
+        flex: 0 0 90%; /* Each card takes up 90% of the viewport width */
+        scroll-snap-align: center; /* Snap to center of the card */
+        padding: 15px; /* Reduced padding */
+        height: auto; /* Let content define height */
+        opacity: 1; /* Ensure visible for native scroll carousel */
+        background-color: rgba(255, 255, 255, 0.8);
+        backdrop-filter: blur(5px);
+        -webkit-backdrop-filter: blur(5px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        transform: none; /* Remove transforms applied by JS carousel logic */
+        pointer-events: auto; /* Ensure clickable */
     }
-    .testimonials-section h2 {
-        font-size: 1.3em; /* Even smaller heading */
+    .testimonials-section {
+        margin-top: 40px;
+        padding-bottom: 90px;
+        padding-left: 0; /* Remove side padding for full width cards */
+        padding-right: 0; /* Remove side padding for full width cards */
     }
-    .testimonials-content .sub-heading {
-        font-size: 0.9em; /* Even smaller sub-heading */
-    }
-    .testimonial-card .testimonial-text {
-        font-size: 0.8em; /* Even smaller testimonial text */
+    .testimonial-card .customer-info {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
     }
     .testimonial-card .customer-profile-img {
-        width: 35px; /* Even smaller profile image */
-        height: 35px;
-        margin-right: 8px;
+        margin-right: 0;
+        margin-bottom: 8px;
+        width: 45px;
+        height: 45px;
     }
     .testimonial-card .customer-name {
-        font-size: 0.8em;
+        font-size: 0.85em;
+        margin-left: 0;
     }
     .testimonial-card .customer-request {
         font-size: 0.7em;
+        margin-left: 0;
+        margin-top: 2px;
+    }
+    /* Modal Adjustments for 480px and below */
+    .modal-window {
+        width: 100%;
+        padding: 2px;
+    }
+    .modal-content {
+        padding: 10px;
     }
 }
