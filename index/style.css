@@ -1504,89 +1504,9 @@ header.hide-header {
 
     }
 
-    /* --- Image Gallery Grid Adjustments (Traditional Grid) --- */
-    /* Transitions from 8 to 4 columns, while retaining custom item aspect ratios */
-    .image-gallery-grid {
-        margin-top: 10px;
-        display: grid; /* Revert to grid display for larger screens */
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* Flexible 4-column layout */
-        gap: 15px; /* Tighter gap for better density */
-        padding: 20px; /* Adjusted padding */
-        overflow: hidden; /* Remove horizontal overflow from carousel */
-        scroll-behavior: auto; /* Remove smooth scroll from JS controlled carousel */
-        white-space: normal; /* Allow text wrapping */
-        height: auto; /* Revert height from fixed carousel height */
-        justify-content: unset; /* Revert flex alignment */
-        align-items: unset; /* Revert flex alignment */
-        flex-wrap: wrap; /* Ensure items wrap in grid */
-        transform: none !important; /* Reset transform from any carousel JS */
-    }
-    .gallery-item {
-        /* Reset any carousel-specific styles that might have been applied by JS */
-        width: auto !important; /* Revert width from fixed carousel slots */
-        flex-basis: auto !important; /* Revert flex-basis */
-        height: auto !important; /* Allow height to be determined by content or aspect-ratio */
-        transform: none !important; /* Reset transforms from carousel */
-        filter: none !important; /* Remove blur/brightness */
-        opacity: 1 !important; /* Ensure full opacity */
-        z-index: auto !important; /* Reset z-index */
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2) !important; /* Revert to standard shadow */
-        border-radius: 8px !important; /* Revert to standard border-radius */
-        pointer-events: auto !important; /* Re-enable pointer events for all items */
-        clip-path: none !important; /* Remove clip-path */
-        margin: 0 !important; /* Remove negative margins */
-        display: block !important; /* Ensure it's block for grid layout */
-
-
-        /* Maintain desired aspect ratios for larger screens as per previous logic */
-        aspect-ratio: 1/1.2; /* Default aspect ratio for responsiveness */
-        display: block; /* Ensure it behaves like a block in grid */
-        overflow: hidden; /* Hide overflow for rounded corners */
-        position: relative; /* For overlay positioning */
-    }
-
-    /* Specific items that were originally "tall" or "very tall" can retain a taller aspect ratio */
-    /* Ensure these selectors match your content structure for the larger screen grid */
-    .gallery-item:nth-child(1), .gallery-item:nth-child(3), .gallery-item:nth-child(5), .gallery-item:nth-child(6),
-    .gallery-item:nth-child(7), .gallery-item:nth-child(8), .gallery-item:nth-child(10), .gallery-item:nth-child(13), .gallery-item:nth-child(14) {
-        aspect-ratio: 0.7/1 !important; /* Taller aspect ratio for these items */
-    }
-
-    /* Gallery text overlay for larger screens (always visible, or on hover as per JS) */
-    .gallery-text-overlay {
-        position: absolute; /* Needed for overlay */
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        padding: 20px; /* Standard padding */
-        box-sizing: border-box;
-        background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 100%); /* Original gradient */
-        backdrop-filter: none; /* No blur on larger screen grid */
-        -webkit-backdrop-filter: none;
-        border-radius: 8px; /* Match item border radius */
-        mask-image: none; /* Remove mask */
-        -webkit-mask-image: none; /* Remove webkit mask */
-        display: flex;
-        flex-direction: column;
-        justify-content: flex-end;
-        align-items: flex-start;
-        opacity: 0; /* Hidden by default, shown on hover/expand by JS */
-        transition: opacity 0.3s ease-in-out; /* Smooth fade in/out */
-        pointer-events: none; /* Allow clicks through by default */
-    }
-
-    .gallery-item:hover .gallery-text-overlay,
-    .gallery-item.is-expanded .gallery-text-overlay {
-        opacity: 1; /* Show overlay on hover or when expanded */
-        pointer-events: auto; /* Enable interaction with overlay text/links */
-    }
-
-    .gallery-text-overlay .subtitle,
-    .gallery-text-overlay h3 {
-        opacity: 1; /* Always visible on larger screens (if overlay is visible) */
-        transition: none; /* Remove delayed transition */
-        text-shadow: 0px 0px 8px rgba(0, 0, 0, 0.5); /* Keep text shadow */
+    
+    .testimonials-section{
+       padding-top: 90px;
     }
 
 
@@ -1750,193 +1670,110 @@ header.hide-header {
     }
 
     /* ========================================= */
-    /* --- Image Gallery (Mobile Slider / Carousel) --- */
+    /* --- Image Gallery (Mobile Slider / Carousel) Adjustments --- */
     /* ========================================= */
     #imageGallerySectionContainer {
-       height: 500px;
-       display: flex;
-       justify-content: center;
-       align-items: center;
-       overflow: hidden;
-       position: relative;
-     
-    }
-
-    .image-gallery-grid { /* This will act as the .image-slider container from your proposal */
-        width: 100%;
-        height: 100%;
-        position: relative; /* Crucial for absolute positioning of items */
-        display: grid;
-        grid-template-columns: 20% 60% 20%; /* Side (visible portion) | Active | Side (visible portion) */
-        grid-template-rows: 1fr;
+        height: 700px !important; /* Force this height for the container */
+        padding: 0;
+        display: flex;
         justify-content: center;
-        align-items: center;
-
-    }
-
-    .gallery-item { /* This will act as the .slide from your proposal */
-        position: absolute; /* Position slides absolutely within the .image-gallery-grid */
-        top: 0;
-        height: 100%; /* Set height to fill container */
-        width: 60%;
-        object-fit: cover;
-        display: flex; /* To center img inside */
-        justify-content: center;
-        align-items: center;
+        align-items: center; /* Ensures the grid itself is centered vertically */
         overflow: hidden;
-        box-shadow: none;
-        border-radius: 0; /* Will be handled by active/side classes */
-        opacity: 0; /* Hidden by default, JS will manage visibility */
-        pointer-events: none; /* Disable clicks on hidden items */
-        transition: transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94), /* Smooth slide movement */
-                     opacity 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94),
-                     filter 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94),
-                     z-index 0s linear 0.4s; /* z-index changes mid-transition */
-        transform: translateX(0); /* Default, will be overridden by JS for active/side */
+        position: relative;
+        border-radius: 12px;
+    }
+
+    .image-gallery-grid {
+        display: flex;
+        flex-wrap: nowrap;
+        width: 100%;
+        height: 100% !important; /* Force this to take full height of #imageGallerySectionContainer */
+        justify-content: center;
+        align-items: stretch !important; /* Force all flex items (gallery-item) to stretch to fill height */
+        transition: transform 0.5s ease-in-out;
+        position: relative;
+        grid-template-columns: none;
+        grid-template-rows: none;
+        overflow: hidden;
+        gap: 15px;
+        scroll-behavior: auto;
+    
+    }
+
+    .gallery-item {
+        /*
+        Ensure all gallery items have a consistent height, matching the grid's height.
+        `flex-shrink: 0` and `flex-grow: 0` combined with `flex-basis: 0`
+        means their width is determined only by the .active/.side-image/.inactive rules.
+        */
+        height: 100% !important; /* CRITICAL: Takes full height of .image-gallery-grid */
+        display: flex;
+        justify-content: center;
+        align-items: center; /* Centers image within the gallery-item's height/width */
+        overflow: hidden;
+        border-radius: 20px;
+        opacity: 0.5;
+        pointer-events: none;
+        transform-origin: center center;
+        transition: transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                    opacity 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                    filter 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                    z-index 0s linear 0.4s;
+        flex-shrink: 0;
+        flex-grow: 0;
+        flex-basis: 0;
+        filter: blur(3px);
+        z-index: 1;
+        margin: 0 8px; /* Margin between visible slides */
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
     }
 
     .gallery-item img {
         width: 100%;
-        height: auto;
-        object-fit: cover;
+        height: 100% !important; /* Force the image to take full height of its parent (.gallery-item) */
+        object-fit: cover !important; /* Ensure it fills the space and crops if necessary */
+        border-radius: inherit;
     }
 
     /* Active Slide Styling */
     .gallery-item.active {
-        grid-column: 2 / 3; /* Visually place in the center column */
-        left: 20%; /* Start at the beginning of the 60% center slot */
-        transform: translateX(0); /* No horizontal shift needed relative to its left position */
+        flex-basis: 60%;
         opacity: 1;
         pointer-events: auto;
         z-index: 3;
+        transform: scale(1);
+        filter: none;
+        margin: 0 auto;
         box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
-        border-radius: 20px;
-        clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%) /* Rounded corners for the main card */
     }
 
     /* Side Slide Styling (Left & Right) */
-    .gallery-item.side-image { /* Consolidated from side-left/side-right for general side appearance */
-        width: 60%; /* Side images are also 60% width */
-        opacity: 0.7; /* A slight opacity */
-        filter: blur(3px); /* A slight blur */
-        z-index: 1;
-        pointer-events: auto; /* Allow clicks on side images */
+    .gallery-item.side-image {
+        flex-basis: 15%;
+        opacity: 0.6;
+        filter: blur(3px);
+        z-index: 2;
+        pointer-events: auto;
         border-radius: 20px;
-        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15); /* Subtle shadow */
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
     }
 
-    .gallery-item.side-image.left {
-        /* This will position the 60% width image so only its right 30% is visible on the left side */
-        grid-column: 1/2;
-        left: -20%;           /* More precisely: (60% - 30%) = 30% hidden on left, (100%-60%)/2 for center = 20% + 15%(30/2).  A bit complex.
-           A simpler approach for "show 30% cut off":
-           left: 0; transform: translateX(calc(-100% + 30vw)); (if 30vw is the target visible portion)
-           Or, use transform: translateX(-xx%) to hide the portion, ensuring its right edge is at the desired cut-off.
-           Given the 60% active width, and side elements being 60% too:
-           Total visible width for active + 2*side-visible = 60% + 2 * (some_fraction_of_60%)
-           Let's aim for the screenshot's visual: active centered, sides peeking.
-           The side images are 60% wide. If only 30% is visible, then 30% of their width is visible.
-           So, they are "cut off" by 30% of the *overall container width* not their own width.
-
-           Let's recalculate based on the *container* width (100%).
-           Active: 60% centered means it spans from 20% to 80% of container.
-           Left side: needs to show from 0% to 20%. This is 20% of container width.
-           Right side: needs to show from 80% to 100%. This is 20% of container width.
-
-           So, the side images need to have a visible width of 20% of the container.
-           Since their full width is 60% of the container, then (60%-20%)=40% needs to be hidden on the outer side.
-
-           So, the left image needs its right edge to be at 20% of the container.
-           Its width is 60%. So its left edge must be at 20% - 60% = -40%.
-           `left: -40%;`
-           The right image needs its left edge to be at 80% of the container.
-           Its width is 60%. So its right edge must be at 80% + 60% = 140%.
-           `left: 80%;`
-           These `left` values should work without `translateX` then.
-
-           Let's apply this for clearer math.
-        */
-        left: -40%; /* 60% width. Right edge will be at -40% + 60% = 20% (start of active) */
-        transform: translateX(0); /* Remove additional transform */
-        clip-path: polygon(calc(100% - (20% / 60%) * 100%) 0%, 100% 0%, 100% 100%, calc(100% - (20% / 60%) * 100%) 100%);
-        clip-path: polygon(33.33% 0%, 100% 0%, 100% 100%, 33.33% 100%);
-
-    }
-
-    .gallery-item.side-image.right {
-        grid-column: 3/4;
-        /* This will position the 60% width image so only its left 30% is visible on the right side */
-        left: 60%; /* Left edge will be at 80% (end of active) */
-        transform: translateX(0); /* Remove additional transform */
-        clip-path: polygon(0% 0%, 66.67% 0%, 66.67% 100%, 0% 100%);
-    }
-
-    /* Morph Effect Overlay - This will be applied dynamically by JS to the active slide */
-    .gallery-item .morph-overlay { /* New class for the morphic layer */
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        width: 100%;
-        height: 0; /* Initially hidden */
-        background: rgba(0,0,0,0); /* Placeholder; JS will set accent color or it will be transparent */
-        background: linear-gradient(to top, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.2) 15%, transparent 100%); /* Existing gradient adjusted for 15% fade */
-        backdrop-filter: blur(10px) saturate(180%); /* iOS-like frosted glass */
-        -webkit-backdrop-filter: blur(10px) saturate(180%);
-        border-radius: 0 0 20px 20px; /* Match bottom border radius of card */
-        opacity: 0; /* Hidden by default */
-        transform: translateY(100%); /* Start completely off-screen at the bottom */
-        transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.2s, opacity 0.5s ease-out 0.2s, height 0.5s ease-out 0.2s; /* Smooth slide up and fade, add delay */
-        pointer-events: none; /* No interaction until fully active/shown */
-        z-index: 1; /* Ensure it's above the image, below text */
-        /* Custom property for dominant color (set by JS if implemented) */
-        --dominant-image-color: rgba(0,0,0,0.8); /* Default fallback */
-    }
-
-    .gallery-item.active .morph-overlay.active-morph { /* JS adds .active-morph after delay */
-        opacity: 1;
-        height: 100%; /* Expands to cover whole image */
-        transform: translateY(-85%); /* Rises to show 15% of image below the gradient fade */
-    }
-
-    /* Text Overlay - positioned on top of the morph effect */
-    .gallery-item .text-overlay { /* Your existing class, now for text within the morph overlay */
-        position: absolute; /* Position relative to .gallery-item */
-        bottom: 0; /* Position at the bottom of the *visible* morph overlay area */
-        left: 0;
-        width: 100%;
-        padding: 20px;
-        box-sizing: border-box;
-        color: white; /* Text color */
-        text-align: left;
-        opacity: 0; /* Hidden by default */
-        transform: translateY(20px); /* Slightly below final position */
-        transition: opacity 0.4s ease-out, transform 0.4s ease-out; /* Smooth reveal */
-        pointer-events: none; /* No interaction until fully active/shown */
-        z-index: 2; /* Ensure text is above morph overlay */
-    }
-
-    .gallery-item.active .text-overlay.active-text { /* JS adds .active-text after morph is done */
-        opacity: 1;
-        transform: translateY(0); /* Slide into final position */
-        pointer-events: auto; /* Enable interaction with overlay text/links */
-    }
-
-    .gallery-text-overlay .subtitle {
-        font-size: 0.8em;
-        opacity: 0.8;
-        margin-bottom: 5px;
-    }
-
-    .gallery-text-overlay h3 {
-        font-size: 1.1em;
+    /* New: For items that are completely out of view */
+    .gallery-item.inactive {
+        flex-basis: 0;
         margin: 0;
-        line-height: 1.2;
+        opacity: 0;
+        pointer-events: none;
+        z-index: 0;
+        transform: scale(0.7);
+        filter: blur(5px);
+        box-shadow: none;
     }
 
     /* Testimonials section will now have a custom carousel-like layout */
     .testimonials-section {
-        margin-top: 60px;
-        padding-bottom: 90px;
+        padding-top: 300px;
+        padding-bottom: 100px;
         padding-left: 10px;
         padding-right: 10px;
         position: relative;
@@ -1972,36 +1809,6 @@ header.hide-header {
         box-shadow: none;
     }
 
-    /* Main testimonial card styling (JS adds 'is-main' class) */
-    .testimonial-card.is-main {
-        width: 240px; /* Base width for main card */
-        height: auto; /* Let content determine height */
-        flex-basis: 240px; /* Explicitly set flex basis for main item */
-        padding: 15px;
-        box-shadow: 0 8px 20px rgba(0,0,0,0.15);
-        z-index: 2;
-        background-color: rgba(255, 255, 255, 0.8); /* Slightly less translucent for main */
-        backdrop-filter: blur(5px); /* Subtle blur for main testimonial card */
-        -webkit-backdrop-filter: blur(5px);
-        opacity: 1;
-        pointer-events: auto;
-        transform: scale(1.05); /* Slightly larger */
-    }
-
-    /* Side testimonial cards (JS adds 'is-side' class) */
-    .testimonial-card.is-side {
-        width: 200px; /* Slightly smaller than main */
-        height: auto; /* Let content determine height */
-        flex-basis: 200px; /* Explicitly set flex basis for side items */
-        padding: 15px;
-        box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-        opacity: 0.85;
-        background-color: rgba(255, 255, 255, 0.6); /* More translucent for side */
-        backdrop-filter: blur(3px); /* Less blur for side testimonial card */
-        -webkit-backdrop-filter: blur(3px);
-        pointer-events: auto;
-        transform: scale(0.95); /* Slightly smaller than main */
-    }
 
     .testimonial-card .customer-info {
         flex-direction: column;
@@ -2136,60 +1943,113 @@ header.hide-header {
         font-size: 0.7em;
     }
 
+    /* ========================================= */
     /* --- Image Gallery (Mobile Slider / Carousel) Adjustments --- */
+    /* ========================================= */
     #imageGallerySectionContainer {
-        height: 700px; /* Fixed height for smallest phones */
+        height: 700px !important; /* Force this height for the container */
         padding: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center; /* Ensures the grid itself is centered vertically */
+        overflow: hidden;
+        position: relative;
+        border-radius: 12px;
     }
 
     .image-gallery-grid {
-        /* Inherits display: flex from 768px breakpoint */
+        display: flex;
+        flex-wrap: nowrap;
+        width: 100%;
+        height: 100% !important; /* Force this to take full height of #imageGallerySectionContainer */
         justify-content: center;
-        align-items: center;
-        width: 100%; /* Ensure it stays 100% */
+        align-items: stretch !important; /* Force all flex items (gallery-item) to stretch to fill height */
+        transition: transform 0.5s ease-in-out;
+        position: relative;
+        grid-template-columns: none;
+        grid-template-rows: none;
+        gap: 15px;
+        overflow: hidden;
+        scroll-behavior: auto;
     }
 
-    .gallery-item.active { /* Center Image */
-        border-radius: 15px; /* Slightly less rounded */
-        width: 60%; /* Active image takes 60% width of the 100% grid */
-        left: 20%; /* Centers the 60% width item: (100% - 60%) / 2 = 20% */
+    .gallery-item {
+        /*
+        Ensure all gallery items have a consistent height, matching the grid's height.
+        `flex-shrink: 0` and `flex-grow: 0` combined with `flex-basis: 0`
+        means their width is determined only by the .active/.side-image/.inactive rules.
+        */
+        height: 100% !important; /* CRITICAL: Takes full height of .image-gallery-grid */
+        display: flex;
+        justify-content: center;
+        align-items: center; /* Centers image within the gallery-item's height/width */
+        overflow: hidden;
+        border-radius: 20px;
+        opacity: 0.5;
+        pointer-events: none;
+        transform-origin: center center;
+        transition: transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                    opacity 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                    filter 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                    z-index 0s linear 0.4s;
+        flex-shrink: 0;
+        flex-grow: 0;
+        flex-basis: 0;
+        filter: blur(3px);
+        z-index: 1;
+        margin: 0 8px; /* Margin between visible slides */
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
     }
 
-    .gallery-item.side-image { /* Left and Right Side Images */
-        border-radius: 15px;
-        width: 60%; /* Side images are also 60% width */
+    .gallery-item img {
+        width: 100%;
+        height: 100% !important; /* Force the image to take full height of its parent (.gallery-item) */
+        object-fit: cover !important; /* Ensure it fills the space and crops if necessary */
+        border-radius: inherit;
     }
 
-    .gallery-item.side-image.left {
-        left: -40%; /* Position as calculated for 768px */
+    /* Active Slide Styling */
+    .gallery-item.active {
+        flex-basis: 60%;
+        opacity: 1;
+        pointer-events: auto;
+        z-index: 3;
+        transform: scale(1);
+        filter: none;
+        margin: 0 auto;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
     }
 
-    .gallery-item.side-image.right {
-        left: 80%; /* Position as calculated for 768px */
+    /* Side Slide Styling (Left & Right) */
+    .gallery-item.side-image {
+        flex-basis: 15%;
+        opacity: 0.6;
+        filter: blur(3px);
+        z-index: 2;
+        pointer-events: auto;
+        border-radius: 20px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
     }
 
-    .gallery-item .morph-overlay {
-        border-radius: 0 0 15px 15px; /* Match active card border-radius */
-        backdrop-filter: blur(8px) saturate(160%); /* Slightly less blur */
-        -webkit-backdrop-filter: blur(8px) saturate(160%);
+    /* New: For items that are completely out of view */
+    .gallery-item.inactive {
+        flex-basis: 0;
+        margin: 0;
+        opacity: 0;
+        pointer-events: none;
+        z-index: 0;
+        transform: scale(0.7);
+        filter: blur(5px);
+        box-shadow: none;
+    }
+    
+    .testimonials-section {    
+        margin-top: -00px;
     }
 
-    .gallery-item.active .morph-overlay.active-morph {
-        height: 100%;
-        transform: translateY(-85%);
+    .testimonials-section h2 {
+        font-size: 1.5em; /* Override any left-alignment from other sections */
     }
-
-    .gallery-item .text-overlay {
-        padding: 10px; /* Reduced padding for smaller screens */
-    }
-    .gallery-item .text-overlay .subtitle {
-        font-size: 0.7em;
-    }
-    .gallery-item .text-overlay h3 {
-        font-size: 0.9em;
-    }
-
-
     /* Testimonials section will now have a scrollable horizontal layout */
     .testimonials-grid {
         gap: 15px;

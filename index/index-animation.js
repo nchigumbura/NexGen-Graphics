@@ -610,7 +610,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // --- NEW: Image Gallery Carousel and Interaction Logic (for imagegallery media query - small screens/tablets) ---
-
     // Function to start the continuous scrolling animation (ONLY FOR SMALL SCREENS)
     function startGalleryScrolling() {
         // Only scroll on small screens and if not paused
@@ -619,7 +618,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         galleryAnimationFrameId = requestAnimationFrame(() => {
-            imageGalleryGrid.scrollLeft += scrollSpeed;
+            imageGalleryGrid.scrollLeft += 0.4;
 
             // To create a seamless loop, when the scroll reaches the end, reset it.
             // Check if we're at or past the scrollable end
@@ -688,14 +687,14 @@ document.addEventListener('DOMContentLoaded', () => {
             if (morphOverlay) {
                 setTimeout(() => {
                     morphOverlay.classList.add('active-morph');
-                }, 2000); // 2 seconds after becoming active
+                }, 0); // 2 seconds after becoming active
             }
 
             // Step 3: Text overlay after morph effect completes (approx 3 seconds after image becomes active)
             if (textOverlay) {
                 setTimeout(() => {
                     textOverlay.classList.add('active-text');
-                }, 3000); // 3 seconds after image becomes active (1s after morph starts)
+                }, 0); // 3 seconds after image becomes active (1s after morph starts)
             }
         }
     }
