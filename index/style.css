@@ -1772,8 +1772,8 @@ header.hide-header {
 
     /* Testimonials section will now have a custom carousel-like layout */
     .testimonials-section {
-        padding-top: 300px;
-        padding-bottom: 100px;
+        padding-top: -00px;
+        padding-bottom: 90px;
         padding-left: 10px;
         padding-right: 10px;
         position: relative;
@@ -2047,8 +2047,8 @@ header.hide-header {
         margin-top: -00px;
     }
 
-    .testimonials-section h2 {
-        font-size: 1.5em; /* Override any left-alignment from other sections */
+    .testimonials-section h2{
+        font-size: 0.4em; /* Override any left-alignment from other sections */
     }
     /* Testimonials section will now have a scrollable horizontal layout */
     .testimonials-grid {
