@@ -1625,13 +1625,6 @@ header.hide-header {
         margin-top: 25px; /* Further reduce space */
     }
 
-    /* --- Quick Services Section --- */
-    #quickServicesSectionContainer {
-        margin: 50px 0 0 0; /* Full width, 0 margin on left and right */
-        border-radius: 0; /* Remove border-radius for edge-to-edge look */
-        padding: 35px 8px; /* Padding for the entire section content, 8px from edges */
-    }
-
     .services-grid {
         grid-template-columns: repeat(2, 1fr); /* Two columns */
         gap: 8px; /* 8px gap around each item */
@@ -1681,6 +1674,7 @@ header.hide-header {
         overflow: hidden;
         position: relative;
         border-radius: 12px;
+        padding-bottom: 50px;
     }
 
     .image-gallery-grid {
@@ -1769,65 +1763,8 @@ header.hide-header {
         filter: blur(5px);
         box-shadow: none;
     }
-
-    /* Testimonials section will now have a custom carousel-like layout */
-    .testimonials-section {
-        padding-top: -00px;
-        padding-bottom: 90px;
-        padding-left: 10px;
-        padding-right: 10px;
-        position: relative;
-        overflow: hidden; /* Hides cards outside the 2-1-2 view */
+    .testimonials-section{
     }
-    .testimonials-grid {
-        display: flex;
-        overflow-x: auto; /* Managed by JS for this custom 2-1-2 carousel */
-        scroll-snap-type: none; /* No native snapping */
-        white-space: normal;
-        gap: 15px;
-        padding: 0;
-        justify-content: center; /* Center visible items */
-        align-items: flex-start;
-        width: auto;
-        transition: transform 0.5s ease; /* Smooth transition for JS-driven movement */
-    }
-    .testimonial-card {
-        flex-shrink: 0;
-        border-radius: 15px;
-        transition: transform 0.3s ease, box-shadow 0.3s ease, opacity 0.3s ease, background-color 0.3s ease, flex-basis 0.5s ease;
-        scroll-snap-align: none; /* No native snapping */
-        text-align: center;
-
-        /* Default for items not visible in the 2-1-2 window */
-        width: 0; /* Hide items not in view */
-        height: 0; /* Collapse them */
-        padding: 0; /* Remove padding */
-        margin: 0; /* Remove margin */
-        opacity: 0; /* Fade them out */
-        pointer-events: none; /* Make them unclickable */
-        background-color: transparent;
-        box-shadow: none;
-    }
-
-
-    .testimonial-card .customer-info {
-        flex-direction: column;
-        align-items: center;
-        text-align: center;
-    }
-    .testimonial-card .customer-profile-img {
-        margin-right: 0;
-        margin-bottom: 10px;
-        width: 50px;
-        height: 50px;
-    }
-    .testimonial-card .customer-name {
-        font-size: 0.9em;
-    }
-    .testimonial-card .customer-request {
-        font-size: 0.75em;
-    }
-
     /* Modal Adjustments for 768px and below */
     .modal-window {
         width: 100%;
@@ -2107,4 +2044,5 @@ header.hide-header {
     .modal-content {
         padding: 10px;
     }
+
 }
