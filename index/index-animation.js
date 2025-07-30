@@ -611,24 +611,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- NEW: Image Gallery Carousel and Interaction Logic (for imagegallery media query - small screens/tablets) ---
     // Function to start the continuous scrolling animation (ONLY FOR SMALL SCREENS)
-    function startGalleryScrolling() {
-        // Only scroll on small screens and if not paused
-        if (!imageGalleryGrid || isGalleryPaused || !window.matchMedia('(max-width: 768px)').matches) {
-            return;
-        }
-
-        galleryAnimationFrameId = requestAnimationFrame(() => {
-            imageGalleryGrid.scrollLeft += 0.4;
-
-            // To create a seamless loop, when the scroll reaches the end, reset it.
-            // Check if we're at or past the scrollable end
-            if (imageGalleryGrid.scrollLeft + imageGalleryGrid.clientWidth >= imageGalleryGrid.scrollWidth) {
-                imageGalleryGrid.scrollLeft = 0; // Reset to start
-            }
-            startGalleryScrolling(); // Continue the animation loop
-        });
-    }
-
+    
     // Function to stop the continuous scrolling animation
     function stopGalleryScrolling() {
         if (galleryAnimationFrameId) {
@@ -664,19 +647,22 @@ document.addEventListener('DOMContentLoaded', () => {
             activeItem.classList.add('active');
             activeItem.classList.remove('side-image'); // Ensure it's not a side-image
 
-            // Smoothly scroll the grid to bring the active item into view (if not already)
-            // This helps align the auto-scrolling with the active image, especially on larger screens.
+            // Smoothly scroll the grid to bring the active item into view
             if (imageGalleryGrid && activeItem) {
-                const itemRect = activeItem.getBoundingClientRect();
-                const gridRect = imageGalleryGrid.getBoundingClientRect();
-                
-                // Calculate scroll amount to center the active item (or bring it fully into view)
-                const scrollLeftAmount = activeItem.offsetLeft - (gridRect.width / 2) + (itemRect.width / 2);
-
-                imageGalleryGrid.scrollTo({
-                    left: scrollLeftAmount,
-                    behavior: 'smooth'
-                });
+                // *** MODIFIED LOGIC HERE FOR INITIAL POSITIONING ***
+                if (index === 0) {
+                    // For the very first image, always start at scrollLeft = 0
+                    imageGalleryGrid.scrollTo({
+                        left: 0,
+                        behavior: 'smooth'
+                    });
+                } else {
+                    // For all other images, continue to center them
+                    imageGalleryGrid.scrollTo({
+                        left: activeItem.offsetLeft + (activeItem.offsetWidth / 2) - (imageGalleryGrid.clientWidth / 2),
+                        behavior: 'smooth'
+                    });
+                }
             }
 
             const morphOverlay = activeItem.querySelector('.morph-overlay');
@@ -771,9 +757,15 @@ document.addEventListener('DOMContentLoaded', () => {
     function initializeGalleryBasedOnScreenSize() {
         if (window.matchMedia('(max-width: 768px)').matches) {
             // Small screen (tablet/mobile)
-            if (!galleryAnimationFrameId && !isGalleryPaused) {
-                startGalleryScrolling(); // Start continuous scroll if not already running and not paused
+
+            // 1. Reset scroll position to the very beginning
+            if (imageGalleryGrid) {
+                imageGalleryGrid.scrollLeft = 0; // Force scroll to the start
             }
+
+            // 2. Ensure currentActiveIndex starts at 0 for initial setup
+            currentActiveIndex = 0; 
+            
             if (!galleryIntervalId) {
                 if (galleryItems.length > 0) {
                     updateActiveGalleryImage(currentActiveIndex); // Ensure an active image is set
@@ -794,6 +786,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (morphOverlay) morphOverlay.classList.remove('active-morph');
                 if (textOverlay) textOverlay.classList.remove('active-text');
             });
+            
         }
     }
 

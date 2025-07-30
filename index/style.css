@@ -652,6 +652,7 @@ header.hide-header {
 .flip-card-back {
     /* Corrected path: Images are inside the 'images' folder */
     background-image: url('images/nate.png'); 
+    filter: blur(1px);
     transform: rotateY(180deg);
 }
 
@@ -722,7 +723,7 @@ header.hide-header {
     justify-content: center;
     align-items: center;
     overflow: hidden;
-    padding: 20px 20px 40px 20px;
+    padding: 10px 20px 40px 20px;
     text-align: center;
 }
 
@@ -748,15 +749,16 @@ header.hide-header {
     font-size: 1.2em;
     font-weight: 700;
     color: #555;
-    margin-bottom: 2px; /* Shortened distance: Adjusted from 5px to 2px as requested */
+    margin-bottom: -20px; /* Shortened distance: Adjusted from 5px to 2px as requested */
     line-height: 1.2;
 }
 
 .hero-text-overlay h1 {
-    font-size: 2.5em;
+    font-size: 2.3em;
     margin-bottom: 20px;
     font-weight: 700;
     line-height: 1.2;
+    margin-bottom: 40px;
     color: #333;
 }
 
@@ -783,18 +785,6 @@ header.hide-header {
     height: auto;
     display: block;
     object-fit: cover;
-}
-
-
-@keyframes pulse-glow {
-    0% {
-        box-shadow: 0 0 20px 5px rgba(0, 255, 0, 0.7);
-        border-image: linear-gradient(to right, #00ff00, #33cc33, #00ff00) 1;
-    }
-    100% {
-        box-shadow: 0 0 30px 10px rgba(0, 255, 0, 1);
-        border-image: linear-gradient(to right, #33cc33, #00ff00, #33cc33) 1;
-    }
 }
 
 /* ==========================================================================
@@ -1674,7 +1664,6 @@ header.hide-header {
         overflow: hidden;
         position: relative;
         border-radius: 12px;
-        padding-bottom: 50px;
     }
 
     .image-gallery-grid {
@@ -1764,6 +1753,7 @@ header.hide-header {
         box-shadow: none;
     }
     .testimonials-section{
+        margin-top: 20px;
     }
     /* Modal Adjustments for 768px and below */
     .modal-window {
@@ -1809,10 +1799,10 @@ header.hide-header {
 
     /* --- Hero Section --- */
     .hero-text-overlay p:first-child {
-        font-size: 1em;
+        font-size: 0.9em;
     }
     .hero-text-overlay h1 {
-        font-size: 1.8em;
+        font-size: 1.7em;
     }
     .hero-image-container {
         margin-top: 20px;
@@ -1820,8 +1810,9 @@ header.hide-header {
 
     /* --- Quick Services Section --- */
     #quickServicesSectionContainer {
+        margin: 20px 0;
         border-radius: 0px;
-        padding: 25px 8px;
+        padding: 25px 15px;
     }
     .quick-services-section .section-header h2 {
         font-size: 1.1em;
@@ -1980,17 +1971,24 @@ header.hide-header {
         box-shadow: none;
     }
     
-    .testimonials-section {    
-        margin-top: -00px;
+    .testimonials-section{
+        margin-top: -10px !important;
+        padding-bottom: 90px;
+        padding-left: 0;
+        padding-right: 0;
     }
 
     .testimonials-section h2{
-        font-size: 0.4em; /* Override any left-alignment from other sections */
+        padding: 0 15px;
+        font-size: 1.4em; /* Override any left-alignment from other sections */
     }
     /* Testimonials section will now have a scrollable horizontal layout */
     .testimonials-grid {
         gap: 15px;
         width: 100%;
+        display: flex;
+        overflow-x: auto;
+        align-items: stretch !important;
         scroll-snap-type: x mandatory; /* Re-enable native snapping for smallest screens if preferred */
         -webkit-overflow-scrolling: touch; /* Smooth scrolling for iOS */
         scroll-behavior: smooth; /* For smooth programmatic scrolling */
@@ -1998,10 +1996,10 @@ header.hide-header {
         justify-content: flex-start; /* Align items to start for native scrolling */
     }
     .testimonial-card {
-        flex: 0 0 90%; /* Each card takes up 90% of the viewport width */
+        flex: 0 0 80%; /* Each card takes up 80% of the viewport width */
         scroll-snap-align: center; /* Snap to center of the card */
         padding: 15px; /* Reduced padding */
-        height: auto; /* Let content define height */
+        height: 315px !important; /* Force full height in carousel */
         opacity: 1; /* Ensure visible for native scroll carousel */
         background-color: rgba(255, 255, 255, 0.8);
         backdrop-filter: blur(5px);
@@ -2010,12 +2008,7 @@ header.hide-header {
         transform: none; /* Remove transforms applied by JS carousel logic */
         pointer-events: auto; /* Ensure clickable */
     }
-    .testimonials-section {
-        margin-top: 40px;
-        padding-bottom: 90px;
-        padding-left: 0; /* Remove side padding for full width cards */
-        padding-right: 0; /* Remove side padding for full width cards */
-    }
+    
     .testimonial-card .customer-info {
         flex-direction: column;
         align-items: center;
