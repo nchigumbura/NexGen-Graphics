@@ -622,18 +622,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Function to update the active image and trigger its animations
     function updateActiveGalleryImage(index) {
+        
         if (!galleryItems || galleryItems.length === 0) return;
 
         // Remove active and animation classes from previous active item
         galleryItems.forEach((item, idx) => {
             item.classList.remove('active', 'side-image');
             const morphOverlay = item.querySelector('.morph-overlay');
-            const textOverlay = item.querySelector('.text-overlay');
+            const textOverlay = item.querySelector('.gallery-text-overlay');
             if (morphOverlay) {
                 morphOverlay.classList.remove('active-morph');
             }
             if (textOverlay) {
-                textOverlay.classList.remove('active-text');
+                textOverlay.classList.remove('gallery-active-text');
             }
             // Set non-active items to 'side-image' state for visual distinction
             if (idx !== index) {
@@ -666,8 +667,26 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             const morphOverlay = activeItem.querySelector('.morph-overlay');
-            const textOverlay = activeItem.querySelector('.text-overlay');
+            const textOverlay = activeItem.querySelector('.gallery-text-overlay');
+            const imgElement = activeItem.querySelector('img'); // Get the image element
 
+            //step 1: Get the dominat color from the image
+            if (imgElement && morphOverlay) {
+                // Wait for the image to load to ensure color can be picked
+                imgElement.onload = () => {
+                    const dominantColor =getDominantColor( imgElement);
+
+                    // Set the gradient background dynamically
+                    morphOverlay.style.background = `linear-gradient(to top, ${dominantColor} 0%, transparent 100%)`;
+                    morphOverlay.classList.add('active-morph'); // Add the active class
+                }
+                // If the image is already loaded, run the logic immediately
+                if (imgElement.complete) {
+                   const dominantColor = getDominantColor(imgElement);
+                   morphOverlay.style.background = `linear-gradient(to top, ${dominantColor} 0%, transparent 100%)`;
+                   morphOverlay.classList.add('active-morph');
+                }
+            }
             // Step 1: Image becomes active (handled by .active class in CSS)
             // Step 2: Morph effect after 2 seconds
             if (morphOverlay) {
@@ -679,7 +698,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // Step 3: Text overlay after morph effect completes (approx 3 seconds after image becomes active)
             if (textOverlay) {
                 setTimeout(() => {
-                    textOverlay.classList.add('active-text');
+                    textOverlay.classList.add('gallery-active-text');
                 }, 0); // 3 seconds after image becomes active (1s after morph starts)
             }
         }
@@ -782,9 +801,9 @@ document.addEventListener('DOMContentLoaded', () => {
             galleryItems.forEach(item => {
                 item.classList.remove('active', 'side-image');
                 const morphOverlay = item.querySelector('.morph-overlay');
-                const textOverlay = item.querySelector('.text-overlay');
+                const textOverlay = item.querySelector('.gallery-text-overlay');
                 if (morphOverlay) morphOverlay.classList.remove('active-morph');
-                if (textOverlay) textOverlay.classList.remove('active-text');
+                if (textOverlay) textOverlay.classList.remove('gallery-active-text');
             });
             
         }
@@ -795,5 +814,47 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Call on resize
     window.addEventListener('resize', initializeGalleryBasedOnScreenSize);
+
+    // Function to get the dominant color from an image using a canvas
+    function getDominantColor(imgElement) {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = imgElement.width;
+        canvas.height = imgElement.height;
+        ctx.drawImage(imgElement, 0, 0);
+
+        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        const data = imageData.data;
+        const colorCounts = {};
+        let dominantColor = { r: 0, g: 0, b: 0 };
+        let maxCount = 0;
+
+        for (let i = 0; i < data.length; i += 4) {
+           const r = data[i];
+           const g = data[i + 1];
+           const b = data[i + 2];
+           const rgb = `rgb(${r},${g},${b})`;
+           colorCounts[rgb] = (colorCounts[rgb] || 0) + 1;
+           if (colorCounts[rgb] > maxCount) {
+               maxCount = colorCounts[rgb];
+               dominantColor = { r, g, b };
+            }
+    }
+    return `rgba(${dominantColor.r}, ${dominantColor.g}, ${dominantColor.b}, 0.8)`;
+
+    // Function to determine if a color is "dark" based on its luminance
+    function isColorDark(rgbString) {
+       const rgb = rgbString.split(',').map(Number);
+       const r = rgb[0];
+       const g = rgb[1];
+       const b = rgb[2];
+
+       // Calculate perceived luminance (a common formula)
+       const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+    
+       // Return true if the color is dark, false if it's light
+       return luminance <= 0.5;
+    }
+}
 
 }); // End DOMContent

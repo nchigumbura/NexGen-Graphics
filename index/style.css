@@ -1433,6 +1433,16 @@ header.hide-header {
     text-align: center; /* Override any left-alignment from other sections */
 }
 
+/* Hide the carousel's text overlay in the grid gallery */
+#grid-gallery-container .text-overlay {
+    display: none;
+}
+
+/* Hide the grid's text overlay in the carousel gallery */
+#carousel-gallery-container .gallery-text-overlay {
+    display: none;
+}
+
 /* ========================================================================== */
 /* --- RESPONSIVE MEDIA QUERIES --- */
 /* ========================================================================== */
@@ -1569,6 +1579,71 @@ header.hide-header {
     .modal-content {
         padding: 15px;
     }
+
+    /* Testimonials section will now have a scrollable horizontal layout */
+    .testimonials-grid {
+        gap: 15px;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        overflow-x: auto;
+        align-items: stretch !important;
+        scroll-snap-type: x mandatory; /* Re-enable native snapping for smallest screens if preferred */
+        -webkit-overflow-scrolling: touch; /* Smooth scrolling for iOS */
+        scroll-behavior: smooth; /* For smooth programmatic scrolling */
+        transition: none; /* Remove JS transform transition as native scroll will handle it */
+        justify-content: flex-start; /* Align items to start for native scrolling */
+    }
+
+    .testimonial-card {
+        margin: 5px 0px;
+        flex: 0 0 80%; /* Each card takes up 80% of the viewport width */
+        scroll-snap-align: center; /* Snap to center of the card */
+        padding: 15px; /* Reduced padding */
+        height: px !important; /* Force full height in carousel */
+        opacity: 1; /* Ensure visible for native scroll carousel */
+        background-color: rgba(255, 255, 255, 0.8);
+        backdrop-filter: blur(5px);
+        -webkit-backdrop-filter: blur(5px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        transform: none; /* Remove transforms applied by JS carousel logic */
+        pointer-events: auto; /* Ensure clickable */
+    }
+    
+
+    .testimonial-card .stars .star {
+        color: #FFD700; /* Gold color for stars */
+        font-size: 1.2em; /* Size of the star icon */
+        margin-right: 2px; /* Small space between stars */
+    }
+
+    .testimonial-card .stars {
+        display: flex;
+        justify-content: flex-start;
+        width: 100%;
+        margin: 5px;
+    }
+
+    .testimonial-card .customer-info {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+    .testimonial-card .customer-profile-img {
+        margin-right: 0;
+        margin-bottom: 8px;
+        width: 45px;
+        height: 45px;
+    }
+    .testimonial-card .customer-name {
+        font-size: 0.85em;
+        margin-left: 0;
+    }
+    .testimonial-card .customer-request {
+        font-size: 0.7em;
+        margin-left: 0;
+        margin-top: 2px;
+    }
 }
 
 
@@ -1656,7 +1731,7 @@ header.hide-header {
     /* --- Image Gallery (Mobile Slider / Carousel) Adjustments --- */
     /* ========================================= */
     #imageGallerySectionContainer {
-        height: 700px !important; /* Force this height for the container */
+        height: 1000px !important; /* Force this height for the container */
         padding: 0;
         display: flex;
         justify-content: center;
@@ -1671,16 +1746,13 @@ header.hide-header {
         flex-wrap: nowrap;
         width: 100%;
         height: 100% !important; /* Force this to take full height of #imageGallerySectionContainer */
-        justify-content: center;
+        justify-content: flex-start;
         align-items: stretch !important; /* Force all flex items (gallery-item) to stretch to fill height */
         transition: transform 0.5s ease-in-out;
         position: relative;
-        grid-template-columns: none;
-        grid-template-rows: none;
-        overflow: hidden;
-        gap: 15px;
-        scroll-behavior: auto;
-    
+        overflow-x: auto;
+        overflow-y: hidden;
+        scroll-behavior: smooth;
     }
 
     .gallery-item {
@@ -1696,7 +1768,7 @@ header.hide-header {
         overflow: hidden;
         border-radius: 20px;
         opacity: 0.5;
-        pointer-events: none;
+        pointer-events: auto;
         transform-origin: center center;
         transition: transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94),
                     opacity 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94),
@@ -1705,6 +1777,7 @@ header.hide-header {
         flex-shrink: 0;
         flex-grow: 0;
         flex-basis: 0;
+        opacity: 0.5;
         filter: blur(3px);
         z-index: 1;
         margin: 0 8px; /* Margin between visible slides */
@@ -1724,11 +1797,12 @@ header.hide-header {
         opacity: 1;
         pointer-events: auto;
         z-index: 3;
-        transform: scale(1);
+        transform: scale(0.8);
         filter: none;
         margin: 0 auto;
         box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
     }
+    
 
     /* Side Slide Styling (Left & Right) */
     .gallery-item.side-image {
@@ -1742,16 +1816,45 @@ header.hide-header {
     }
 
     /* New: For items that are completely out of view */
-    .gallery-item.inactive {
-        flex-basis: 0;
-        margin: 0;
-        opacity: 0;
-        pointer-events: none;
-        z-index: 0;
-        transform: scale(0.7);
-        filter: blur(5px);
-        box-shadow: none;
+    /* --- The 'Morph' Overlay Effect --- */
+    .morph-overlay {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        border-radius: 0; /* Starts as a circle */
+        transform: translateY(0%); /* Start at the top */
+        transition: height 0.8s cubic-bezier(0.65, 0, 0.35, 1); /* Animate the height */
+        z-index: 2; /* Below the text */
+        opacity: 0; /* Start invisible */
+        overflow: hidden;
     }
+
+    .morph-overlay.active-morph{
+        height: 0%;
+        opacity: 1;
+    }
+
+    /* --- The 'Text' Overlay Effect --- */
+    .text-overlay {
+        position: absolute;
+        bottom: 20px; /* Position it at the bottom */
+        left: 20px;
+        right: 20px;
+        opacity: 0; /* Starts invisible */
+        transform: translateY(20px); /* Starts slightly below its final position */
+        transition: opacity 0.5s ease-in, transform 0.5s ease-in; /* Smooth transitions for both properties */
+        z-index: 3; /* Sits on top of the morph effect */
+        color: rgb(var(--text-color-rgb)); /* Use the dynamic text color */
+    }
+
+    .text-overlay.active-text {
+       opacity: 1; /* Make it visible */
+       transform: translateY(0); /* Slide it up into place */
+       transition-delay: 0.5s; /* Add a delay to run after the morph effect starts */
+    }
+
     .testimonials-section{
         margin-top: 20px;
     }
@@ -1763,6 +1866,63 @@ header.hide-header {
     .modal-content {
         padding: 15px;
     }
+
+    /* Testimonials section will now have a scrollable horizontal layout */
+    .testimonials-grid {
+        gap: 15px;
+        width: 100%;
+        display: flex;
+        overflow-x: auto;
+        align-items: stretch !important;
+        scroll-snap-type: x mandatory; /* Re-enable native snapping for smallest screens if preferred */
+        -webkit-overflow-scrolling: touch; /* Smooth scrolling for iOS */
+        scroll-behavior: smooth; /* For smooth programmatic scrolling */
+        transition: none; /* Remove JS transform transition as native scroll will handle it */
+        justify-content: flex-start; /* Align items to start for native scrolling */
+    }
+
+    .testimonial-card {
+        margin: 5px 0px;
+        flex: 0 0 80%; /* Each card takes up 80% of the viewport width */
+        scroll-snap-align: center; /* Snap to center of the card */
+        padding: 15px; /* Reduced padding */
+        opacity: 1; /* Ensure visible for native scroll carousel */
+        background-color: rgba(255, 255, 255, 0.8);
+        backdrop-filter: blur(5px);
+        -webkit-backdrop-filter: blur(5px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        transform: none; /* Remove transforms applied by JS carousel logic */
+        pointer-events: auto; /* Ensure clickable */
+    }
+
+    .testimonial-card .customer-info {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+    .testimonial-card .customer-profile-img {
+        margin-right: 0;
+        margin-bottom: 8px;
+        width: 45px;
+        height: 45px;
+    }
+    .testimonial-card .customer-name {
+        font-size: 0.85em;
+        margin-left: 0;
+    }
+    .testimonial-card .customer-request {
+        font-size: 0.7em;
+        margin-left: 0;
+        margin-top: 2px;
+    }
+
+    .testimonial-card .stars {
+    display: flex;
+    justify-content: flex-start; /* This moves the stars to the left side */
+    align-items: center;
+    width: 100%; /* Ensure the container spans the full width of the card */
+    margin: 5px; /* Add a small space below the stars */
+}
 }
 
 
@@ -1875,7 +2035,7 @@ header.hide-header {
     /* --- Image Gallery (Mobile Slider / Carousel) Adjustments --- */
     /* ========================================= */
     #imageGallerySectionContainer {
-        height: 700px !important; /* Force this height for the container */
+        height: 750px !important; /* Force this height for the container */
         padding: 0;
         display: flex;
         justify-content: center;
@@ -1890,13 +2050,12 @@ header.hide-header {
         flex-wrap: nowrap;
         width: 100%;
         height: 100% !important; /* Force this to take full height of #imageGallerySectionContainer */
-        justify-content: center;
+        justify-content: flex-start;
         align-items: stretch !important; /* Force all flex items (gallery-item) to stretch to fill height */
         transition: transform 0.5s ease-in-out;
         position: relative;
-        grid-template-columns: none;
-        grid-template-rows: none;
-        gap: 15px;
+        overflow-x: auto;
+        overflow-y: hidden;
         overflow: hidden;
         scroll-behavior: auto;
     }
@@ -1999,7 +2158,6 @@ header.hide-header {
         flex: 0 0 80%; /* Each card takes up 80% of the viewport width */
         scroll-snap-align: center; /* Snap to center of the card */
         padding: 15px; /* Reduced padding */
-        height: 315px !important; /* Force full height in carousel */
         opacity: 1; /* Ensure visible for native scroll carousel */
         background-color: rgba(255, 255, 255, 0.8);
         backdrop-filter: blur(5px);
@@ -2036,6 +2194,34 @@ header.hide-header {
     }
     .modal-content {
         padding: 10px;
+    }
+    
+    .contact-details p, .social-links a {
+        margin-bottom: 8px; /* Consistent spacing */
+        font-size: 0.8em; /* Smaller font for details */
+    }
+
+    .social-links {
+        display: flex;
+        justify-content: center;
+        margin-top: 20px;
+        margin-bottom: 10px;
+        padding: 5px;
+    }
+
+    .social-links a {
+        display: flex;
+        background-color: #3e4954; /* Consistent accent color for buttons */
+        color: white;
+        padding: 8px 12px; /* Slightly smaller buttons */
+        margin: 0  10px;
+        border-radius: 12px; /* More rounded corners for buttons */
+    }
+
+    .social-links a:hover {
+        background-color: #2a5685;
+        transform: translateY(-1px); /* Subtle lift on hover */
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1); /* Soft shadow on hover */
     }
 
 }

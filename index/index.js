@@ -452,16 +452,34 @@ document.addEventListener('DOMContentLoaded', () => {
         active: index === 0 // Set active to true only for the first item
     }));
 
-    function generateImageGallerySection() {
-        const galleryItemsHTML = galleryItemsData.map(item => `
+    function generateImageGallerySection(isCarouselGallery = false) {
+        const galleryItemsHTML = galleryItemsData.map(item => {
+        // Start building the HTML for a single gallery item
+        let itemHTML = `
             <div class="gallery-item animate-on-scroll ${item.type}" id="${item.id}" data-column="${item.column}">
                 <img src="${item.src}" alt="${item.alt}">
+
+                <div class="morph-overlay"></div>
+                
                 <div class="gallery-text-overlay">
                     <p class="subtitle">${item.subtitle}</p>
                     <h3>${item.heading}</h3>
-                </div>
-            </div>
-        `).join('');
+                </div>`;
+
+        // Conditionally add the text-overlay div only if it's the carousel gallery
+        if (isCarouselGallery) {
+            itemHTML += `
+                <div class="text-overlay">
+                    <p class="subtitle">${item.subtitle}</p>
+                    <h3>${item.heading}</h3>
+                </div>`;
+        }
+
+        // Close the gallery-item div
+        itemHTML += `</div>`;
+        return itemHTML;
+    }).join('');
+    
 
         // The overall section structure is handled by the main HTML now,
         // this function generates only the grid and its items.
