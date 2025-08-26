@@ -9,6 +9,13 @@ html {
     box-sizing: inherit;
 }
 
+/* Removes any default backgrounds or borders from the favicon link tag */
+link[href*="2(2).svg"] {
+    background: none !important;
+    border: none !important;
+    box-shadow: none !important;
+}
+
 /* ========================================= */
 /* --- Global / Body Styles --- */
 /* ========================================= */
@@ -235,7 +242,7 @@ header.hide-header {
 
 .main-nav a:hover {
     color: #FFFFFF;
-    transform: scale(1.05); /* Slight enlarge on hover */
+    transform: scale(1.08); /* Slight enlarge on hover */
 }
 
 /* Active Page Indicator (the moving bar) */
