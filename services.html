@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Services | NexGen Graphics</title>
+
+    <meta name="description" content="Explore our range of modern graphic design services, including logo design, flyers, branding kits, and custom designs.">
+    <meta name="keywords" content="graphic design services, logo design, branding services, flyer design, event invitations, Zimbabwe design">
+    <meta name="author" content="Nathaniel Chigumbura">
+
+    <meta property="og:title" content="Services | NexGen Graphics" />
+    <meta property="og:description" content="From branding to print design, we offer a full suite of services to help you curate your legacy." />
+    <meta property="og:image" content="https://yourdomain.com/services/images/services-hero.jpg" />
+    <meta property="og:url" content="https://yourdomain.com/services.html" />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:site_name" content="NexGen Graphics" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Services | NexGen Graphics" />
+    <meta name="twitter:description" content="From branding to print design, we offer a full suite of services to help you curate your legacy." />
+    <meta name="twitter:image" content="https://yourdomain.com/services/images/services-hero.jpg" />
+
+    <link rel="icon" href="index/images/favicon.ico" sizes="any" />
+    <link rel="icon" href="index/images/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="index/images/apple-touch-icon.png" />
+
+    <link rel="stylesheet" href="index/style.css">
+    <link rel="stylesheet" href="services/styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div id="modal-backdrop-overlay"></div>
+
+    <div id="page-content">
+        <header>
+            <div class="header-container">
+                <div class="company-name">
+                    <a href="index.html" id="aboutUsLink">NexGen Graphics</a>
+                    <span class="about-us-click-hint" id="aboutUsClickHint">Click Me</span>
+                </div>
+                <nav class="main-nav">
+                    <ul class="nav-hidden-initial">
+                        <li><a href="index.html">Home</a></li>
+                        <li class="active"> <a href="services.html"><img src="index/images/services-icon.png" alt="Services Icon" class="home-icon"> Services </a> </li>
+                        <li><a href="portfolio.html">Portfolio</a></li>
+                    </ul>
+                </nav>
+                <div class="admin-link"><a href="#" id="adminLoginLink">Admin</a></div>
+            </div>
+        </header>
+
+        <div id="aboutUsWindow" class="modal-window">
+            <div class="modal-content">
+                <span class="close-button" id="closeAboutUs">&times;</span>
+                
+                <div class="modal-content-wrapper">
+                    <div class="flip-card" id="aboutUsFlipCard">
+                        <div class="flip-card-inner">
+                            <div class="flip-card-front"></div>
+                            <div class="flip-card-back"></div>
+                        </div>
+                    </div>
+
+                    <h2>About Us — NexGen Graphics</h2>
+                    <p><strong>Curating the Future, One Design at a Time.</strong></p>
+                    <p>NexGen Graphics is more than just a design studio — it's a legacy in motion.</p>
+                    <p>Founded in 2025 by Nathaniel Chigumbura, NexGen Graphics began as a quiet yet powerful answer to a personal calling. After applying for a role at a local design company and facing rejection, Nathaniel didn’t stop — instead, something inside him sparked. That spark became NexGen Graphics — a business born not just from skill, but from resilience, vision, and identity.</p>
+                    <p>At only 19, Nathaniel has built three brands known as the Nex-family : Nexcore Accessories, NexWeb Studio, and NexGen Graphics. What ties them together? The “Nex.”</p>
+                    <p>It stands for Nathaniel — the founder — and for Next — a bold declaration of what’s possible when passion meets innovation. Next Generation design. Next Core creativity. Next Web innovation.</p>
+
+                    <h3>Our Mission</h3>
+                    <ul>
+                        <li><strong>To provide bold, clean, modern designs</strong> that help our clients look professional, feel empowered, and express their brand identity clearly — whether online or in print.</li>
+                    </ul>
+
+                    <h3>Our Values</h3>
+                    <ul>
+                        <li><strong>Affordability</strong> – We believe great design should be accessible, no matter your budget.</li>
+                        <li><strong>Creativity</strong> – We don’t just design; we craft stories, moods, and first impressions.</li>
+                        <li><strong>Client-First</strong> – Your vision guides everything we do. We listen, we care, we deliver.</li>
+                        <li><strong>Consistency</strong> – Every design, whether a logo or a letterhead, aligns with who you are.</li>
+                    </ul>
+                    <p>From business flyers and branding kits to wedding invitations and logo design, NexGen Graphics offers not just beautiful visuals — but a thoughtful, grounded approach to storytelling through design.</p>
+                    <p>Whether you're a business owner, event planner, or startup dreamer, we’re here to help you build a brand that lasts.</p>
+                    <p><strong>NexGen Graphics. Designs that Curate Your Legacy.</strong></p>
+                </div>
+            </div>
+        </div>
+
+        <div id="adminLoginWindow" class="modal-window">
+            <div class="modal-content">
+                <span class="close-button" id="closeAdminLogin">&times;</span>
+                
+                <div class="modal-content-wrapper">
+                    <div class="flip-card" id="adminFlipCard">
+                        <div class="flip-card-inner">
+                            <div class="flip-card-front"></div>
+                            <div class="flip-card-back"></div>
+                        </div>
+                    </div>
+
+                    <h2>Welcome back, Boss!</h2> 
+                    <p>Enter your credentials to securely access the admin panel.</p> 
+                    <form id="adminLoginForm">
+                        <div class="form-group">
+                            <label for="username">Username:</label>
+                            <input type="text" id="username" name="username" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="password">Password:</label>
+                            <input type="password" id="password" name="password" required>
+                        </div>
+                        <button type="submit">Login</button>
+                    </form>
+                    <p id="loginMessage" style="color: red; display: none;"></p>
+                </div>
+            </div>
+        </div>
+
+        <div id="contactInfoModal" class="modal-window">
+            <div class="modal-content">
+                <span class="close-button" id="closeContactInfo">&times;</span>
+                
+                <div class="modal-content-wrapper">
+                    <h2>Connect with NexGen Graphics!</h2>
+                    <p>Ready to bring your vision to life? Here's how you can reach us:</p>
+                    <div class="contact-details">
+                        <p><strong>Email:</strong> <a href="mailto:makotonathaniel@gmail.com">makotonathaniel@gmail.com</a></p>
+                        <p><strong>WhatsApp:</strong> <a href="https://wa.me/263710897994" target="_blank">+263 71 089 7994</a></p>
+                    </div>
+                    <h3>Find us on Socials:</h3>
+                    <div class="social-links">
+                        <a href="https://www.instagram.com/nexgengraphics2025?igsh=ejdkMzFwcHQ3NHFz" target="_blank">Instagram</a>
+                        <a href="https://www.facebook.com/share/1Z1uCpiqkR/" target="_blank">Facebook Messenger</a>
+                        <a href="https://www.threads.net/@nexgengraphics2025" target="_blank">Threads</a>
+                    </div>
+                    <p style="margin-top: 20px;">We look forward to hearing from you!</p>
+                </div>
+            </div>
+        </div>
+
+        <main>
+            <section class="hero-section">
+                <div class="hero-text-overlay">
+                    <p>Digital Packages, Print Solutions, Custom Orders.</p>
+                    <h1>Crafting visuals that live <br> beyond the moment </h1>
+                </div>
+                <div id="services-gallery-wrapper">
+                    <div id="services-hero-gallery" class="services-gallery"></div>
+                </div>
+            </section>
+
+            <section class="services-overview-section" id="services-overview-section">
+                <div class="services-header-container">
+                    <h2>Service Overview</h2>
+                    <button id="seeMoreBtn" class="see-more-btn">See more</button>
+                </div>
+                <div id="overview-cards-container" class="overview-cards-container">
+                </div>
+            </section>
+            
+            <div id="servicesGallerySectionContainer"></div>
+
+            <div id="servicesOverviewSectionContainer"></div>
+
+            <div id="pricingSectionContainer"></div>
+
+            <div id="eventBasedDesignSectionContainer"></div>
+
+            <div id="miniBrandKitSectionContainer"></div>
+
+            <div id="promptSectionContainer"></div>
+        </main>
+
+        <footer>
+        </footer>
+    </div>
+
+    <script src="index/index.js"></script>
+    <script src="index/index-animation.js"></script>
+    <script src="services/services.js"></script>
+    <script src="services/animation.js"></script>
+
+</body>
+</html>
