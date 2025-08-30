@@ -1,192 +1,167 @@
-// =========================================
-// --- Services hero Animations ---
-// =========================================
+// animation.js
+
+// Make sure services.js is loaded first to access servicesOverviewData, renderServicesModal, and renderInspoModal
 document.addEventListener('DOMContentLoaded', () => {
 
-    // --- Services Modal Elements ---
-    const servicesSection = document.querySelector('.services-overview-section');
-    const seeMoreBtn = document.querySelector('.see-more-btn');
-    const servicesHeaderContainer = document.querySelector('.services-header-container');
-    const closeBtnText = 'Close X';
+    // --- Modal Elements ---
+    const servicesModal = document.querySelector('#servicesModal');
+    const seeMoreBtn = document.querySelector('#seeMoreBtn');
+    const closeServicesBtn = document.querySelector('#closeServicesBtn');
+    const modalBackdropOverlay = document.getElementById('modal-backdrop-overlay');
+    const body = document.body;
 
     // --- Image Enlarge Elements ---
-    const overviewCards = document.querySelectorAll('.overview-card');
-    const modalBackdropOverlay = document.getElementById('modal-backdrop-overlay');
+    // These elements are no longer used for the enlarged image feature.
+    // They are left in for now but could be removed if not needed elsewhere.
     const enlargedLogoOverlay = document.createElement('div');
     const enlargedLogoImg = document.createElement('img');
 
-    // Dynamically create the enlarged image overlay
     enlargedLogoOverlay.id = 'enlarged-logo-overlay';
     enlargedLogoOverlay.classList.add('enlarged-logo-overlay');
     enlargedLogoOverlay.appendChild(enlargedLogoImg);
     document.body.appendChild(enlargedLogoOverlay);
 
-    // --- Global State & Helper Functions ---
     const servicesModule = {
-        // Function to update the body class and backdrop state
-        updateOverlayState: function() {
-            const isServicesModalActive = servicesSection && servicesSection.classList.contains('modal-window');
-            const isEnlargedActive = enlargedLogoOverlay.classList.contains('active');
-
-            // Handle backdrop and body scroll based on active state
-            if (isServicesModalActive || isEnlargedActive) {
-                document.body.classList.add('modal-active');
-                if (modalBackdropOverlay) {
-                    modalBackdropOverlay.classList.add('active');
-                }
+        lockBodyScroll: function(isLocked) {
+            if (isLocked) {
+                body.classList.add('modal-open');
             } else {
-                document.body.classList.remove('modal-active');
-                if (modalBackdropOverlay) {
+                body.classList.remove('modal-open');
+            }
+        },
+        updateBackdropState: function(isOpening) {
+            if (modalBackdropOverlay) {
+                if (isOpening) {
+                    modalBackdropOverlay.classList.add('active');
+                } else {
                     modalBackdropOverlay.classList.remove('active');
                 }
             }
-
-            // Adjust z-index based on which overlay is on top
-            if (isEnlargedActive) {
-                if (modalBackdropOverlay) {
-                    modalBackdropOverlay.style.zIndex = '9998'; // Behind enlarged image
-                }
-            } else if (isServicesModalActive) {
-                if (modalBackdropOverlay) {
-                    modalBackdropOverlay.style.zIndex = '10'; // Above main content, below enlarged image
-                }
-            } else {
-                if (modalBackdropOverlay) {
-                    modalBackdropOverlay.style.zIndex = '';
-                }
-            }
         },
-
-        // Function to open the main services modal
         openServicesModal: function() {
-            if (servicesSection) {
-                servicesSection.classList.add('modal-window');
-                servicesSection.classList.add('active');
+            if (servicesModal) {
+                servicesModal.classList.add('active');
             }
-            this.updateOverlayState();
-
-            // Change "See More" button text to "Close X"
-            if (seeMoreBtn) {
-                seeMoreBtn.innerHTML = closeBtnText;
-                seeMoreBtn.classList.add('is-close-btn');
-            }
+            this.updateBackdropState(true);
+            this.lockBodyScroll(true);
         },
-
-        // Function to close the main services modal
         closeServicesModal: function() {
-            if (servicesSection) {
-                servicesSection.classList.remove('modal-window');
-                servicesSection.classList.remove('active');
+            if (servicesModal) {
+                servicesModal.classList.remove('active');
             }
-            
-            // Give a brief delay for CSS transition before updating state
-            setTimeout(() => {
-                this.updateOverlayState();
-            }, 600); // Matches CSS transition duration
-
-            // Change "Close X" button text back to "See More"
-            if (seeMoreBtn) {
-                seeMoreBtn.innerHTML = "See More";
-                seeMoreBtn.classList.remove('is-close-btn');
-            }
+            this.updateBackdropState(false);
+            this.lockBodyScroll(false);
         },
-
-        // Function to show the enlarged card image
+        // This function is no longer called from the main click handler.
         showEnlargedImage: function(imageUrl) {
             enlargedLogoImg.src = imageUrl;
             enlargedLogoImg.alt = "Enlarged Service Image";
             enlargedLogoOverlay.classList.add('active');
-            this.updateOverlayState();
+            this.updateBackdropState(true);
+            this.lockBodyScroll(true);
         },
-
-        // Function to hide the enlarged card image
         hideEnlargedImage: function() {
             enlargedLogoOverlay.classList.remove('active');
-            
-            // Wait for fade-out to complete before updating state
-            setTimeout(() => {
-                this.updateOverlayState();
-            }, 300);
+            this.updateBackdropState(false);
+            this.lockBodyScroll(false);
         }
     };
 
-    // --- Event Listeners for Services Modal ---
+    // =========================================
+    // --- Master Event Listener for Card Clicks ---
+    // =========================================
+    document.addEventListener('click', (event) => {
+        const card = event.target.closest('.overview-card');
 
-    // Toggle the services modal with the "See More" button
-    if (seeMoreBtn && servicesSection) {
-        seeMoreBtn.addEventListener('click', (event) => {
-            event.preventDefault();
-            // Check the current state of the button to determine action
-            if (seeMoreBtn.classList.contains('is-close-btn')) {
-                servicesModule.closeServicesModal();
-            } else {
-                servicesModule.openServicesModal();
-            }
-        });
-    }
+        // Check if the click was inside a card
+        if (card) {
+            const toggleBtn = event.target.closest('.card-toggle-btn');
+            const inspoBtn = event.target.closest('.btn-inspo');
+            const detailsBtn = event.target.closest('.btn-details');
 
-    // --- Event Listeners for Individual Cards ---
-
-    // Open enlarged view when clicking a card
-    overviewCards.forEach(card => {
-        card.addEventListener('click', (event) => {
-            // Prevent the click if it's on a button inside the card
-            if (event.target.closest('.card-buttons') || event.target.closest('.card-toggle-btn')) {
+            // Find the corresponding service data
+            const serviceHeading = card.dataset.serviceHeading;
+            const serviceData = servicesOverviewData.find(service => service.heading === serviceHeading);
+            
+            // Handle the "Inspo" button click
+            if (inspoBtn) {
+                event.stopPropagation(); // Prevent the parent card click from firing
+                if (serviceData && serviceData.images) {
+                    renderInspoModal(serviceData.heading, serviceData.images);
+                    servicesModule.openServicesModal();
+                }
                 return;
             }
-            
-            // Get the background image URL from the card's style
-            const style = window.getComputedStyle(card);
-            const bgImage = style.getPropertyValue('background-image');
-            const imageUrlMatch = /url\("?(.+?)"?\)/.exec(bgImage);
-            
-            if (imageUrlMatch && imageUrlMatch[1]) {
-                const imageUrl = imageUrlMatch[1];
-                servicesModule.showEnlargedImage(imageUrl);
+
+            // Handle the "+" toggle button click
+            if (toggleBtn) {
+                event.stopPropagation();
+                const cardButtons = card.querySelector('.card-buttons');
+                const plusBtn = card.querySelector('.card-toggle-btn');
+
+                plusBtn.style.display = 'none';
+                cardButtons.classList.remove('hidden');
+
+                setTimeout(() => {
+                    cardButtons.classList.add('hidden');
+                    plusBtn.style.display = 'flex';
+                }, 10000); // 10 seconds
+                return;
             }
+
+            // --- NEW: Handle the "More details" button click ---
+            if (detailsBtn) {
+                event.stopPropagation();
+                if (serviceData) {
+                    renderDetailsModal(serviceData); // Call the new render function
+                    servicesModule.openServicesModal();
+                }
+                return;
+            }
+
+            // The code block that showed the enlarged image has been completely removed.
+            // Clicking on the overview card itself will now do nothing.
+        }
+    });
+
+    // --- Modal and Backdrop Event Listeners ---
+    if (seeMoreBtn) {
+        seeMoreBtn.addEventListener('click', (event) => {
+            event.preventDefault();
+            renderServicesModal();
+            servicesModule.openServicesModal();
         });
-    });
-
-    // Close enlarged view when clicking the backdrop or the enlarged image itself
-    enlargedLogoOverlay.addEventListener('click', () => {
-        servicesModule.hideEnlargedImage();
-    });
-
-    // Close enlarged image or modal when clicking the backdrop
-    if (modalBackdropOverlay) {
-        modalBackdropOverlay.addEventListener('click', () => {
-            if (enlargedLogoOverlay.classList.contains('active')) {
-                servicesModule.hideEnlargedImage();
-            } else if (servicesSection.classList.contains('modal-window')) {
+    }
+    
+    // Listen for the close button inside the modal
+    const servicesModalContentWrapper = document.getElementById('services-modal-content-wrapper');
+    if (servicesModalContentWrapper) {
+        servicesModalContentWrapper.addEventListener('click', (event) => {
+            if (event.target.classList.contains('close-button')) {
+                servicesModal.classList.remove('active');
                 servicesModule.closeServicesModal();
             }
         });
     }
 
-    // Handle "See More" button for mobile
-    // This part is for the smaller "+" button on mobile to show buttons
-    document.querySelectorAll('.card-toggle-btn').forEach(btn => {
-        btn.addEventListener('click', (event) => {
-            event.stopPropagation();
-            const card = event.target.closest('.overview-card');
-            const cardButtons = card.querySelector('.card-buttons');
-            
-            if (cardButtons) {
-                cardButtons.style.display = 'flex';
-                // Hide again after a short delay
-                setTimeout(() => {
-                    cardButtons.style.display = 'none';
-                }, 3000); // Hide after 3 seconds
+    if (modalBackdropOverlay) {
+        modalBackdropOverlay.addEventListener('click', () => {
+            // The logic to close the enlarged image overlay is still here,
+            // but the function to open it is no longer called.
+            if (enlargedLogoOverlay.classList.contains('active')) {
+                servicesModule.hideEnlargedImage();
+            } else if (servicesModal.classList.contains('active')) {
+                servicesModule.closeServicesModal();
             }
         });
-    });
+    }
 
     // --- Fade-Up Animation for Services Gallery ---
     const servicesGallery = document.querySelector('.services-gallery');
 
     if (servicesGallery) {
         servicesGallery.classList.add('fade-up-hidden');
-        
+
         const observerOptions = {
             root: null,
             rootMargin: '0px',

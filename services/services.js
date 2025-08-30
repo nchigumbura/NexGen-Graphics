@@ -1,3 +1,5 @@
+// services.js
+
 // =========================================
 // --- Services Data: Hero Image Gallery ---
 // =========================================
@@ -26,7 +28,10 @@ const servicesOverviewData = [
             'services/images/brand-kit-2.jpeg',
             'services/images/brand-kit-3.jpeg',
             'services/images/brand-kit-4.jpeg',
-            'services/images/brand-kit-5.jpeg'
+            'services/images/brand-kit-5.jpeg',
+            'services/images/brand-kit-6.jpeg',
+            'services/images/brand-kit-7.jpeg',
+            'services/images/brand-kit-8.jpeg'
         ]
     },
     {
@@ -42,7 +47,10 @@ const servicesOverviewData = [
             'services/images/logo-2.jpeg',
             'services/images/logo-3.jpeg',
             'services/images/logo-4.jpeg',
-            'services/images/logo-5.jpeg'
+            'services/images/logo-5.jpeg',
+            'services/images/logo-6.jpeg',
+            'services/images/logo-7.jpeg',
+            'services/images/logo-8.jpeg'
         ]
     },
     {
@@ -58,7 +66,10 @@ const servicesOverviewData = [
             'services/images/flyer-2.jpeg',
             'services/images/flyer-3.jpeg',
             'services/images/flyer-4.jpeg',
-            'services/images/flyer-5.jpeg'
+            'services/images/flyer-5.jpeg',
+            'services/images/flyer-6.jpeg',
+            'services/images/flyer-7.jpeg',
+            'services/images/flyer-8.jpeg'
         ]
     },
     {
@@ -71,10 +82,13 @@ const servicesOverviewData = [
         ],
         images: [
             'services/images/stationery-1.jpeg',
-            'services/images/stationery-2.jpg',
-            'services/images/stationery-3.jpg',
-            'services/images/stationery-4.jpg',
-            'services/images/stationery-5.jpg'
+            'services/images/stationery-2.jpeg',
+            'services/images/stationery-3.jpeg',
+            'services/images/stationery-4.jpeg',
+            'services/images/stationery-5.jpeg',
+            'services/images/stationery-6.jpeg',
+            'services/images/stationery-7.jpeg',
+            'services/images/stationery-8.jpeg'
         ]
     },
     {
@@ -86,27 +100,33 @@ const servicesOverviewData = [
             'Premium: Custom luxury cards with metallic/gold mockups & unlimited revisions. $75'
         ],
         images: [
-            'services/images/business-card-1.jpg',
-            'services/images/business-card-2.jpg',
-            'services/images/business-card-3.jpg',
-            'services/images/business-card-4.jpg',
-            'services/images/business-card-5.jpg'
+            'services/images/business-card-1.jpeg',
+            'services/images/business-card-2.jpeg',
+            'services/images/business-card-3.jpeg',
+            'services/images/business-card-4.mp4',
+            'services/images/business-card-5.jpeg',
+            'services/images/business-card-6.jpeg',
+            'services/images/business-card-7.jpeg',
+            'services/images/business-card-8.jpeg'
         ]
     },
     {
         heading: 'Social Media Kits',
-        sentence: 'Transform your online presence with cohesive designs that attract attention and grow your following.',
+        sentence: 'Transform your online presence with cohesive designs that attract attention and grow.',
         details: [
             'Basic: 5 branded templates optimized for Instagram/Facebook. $50',
             'Standard: 10 branded templates, highlight covers & story backgrounds. $99',
             'Premium: Complete kit with 20+ templates, custom icons, and post scheduling mockups. $150'
         ],
         images: [
-            'services/images/social-1.jpg',
-            'services/images/social-2.jpg',
-            'services/images/social-3.jpg',
-            'services/images/social-4.jpg',
-            'services/images/social-5.jpg'
+            'services/images/social-1.jpeg',
+            'services/images/social-2.jpeg',
+            'services/images/social-3.mp4',
+            'services/images/social-4.jpeg',
+            'services/images/social-5.jpeg',
+            'services/images/social-6.jpeg',
+            'services/images/social-7.jpeg',
+            'services/images/social-8.jpeg'
         ]
     },
     {
@@ -118,11 +138,14 @@ const servicesOverviewData = [
             'Premium: Full campaign kit with 6+ banners, animated versions, and unlimited revisions. $150'
         ],
         images: [
-            'services/images/web-1.jpg',
-            'services/images/web-2.jpg',
-            'services/images/web-3.jpg',
-            'services/images/web-4.jpg',
-            'services/images/web-5.jpg'
+            'services/images/web-1.jpeg',
+            'services/images/web-2.jpeg',
+            'services/images/web-3.jpeg', 
+            'services/images/web-4.jpeg',
+            'services/images/web-5.jpeg',
+            'services/images/web-6.jpeg',
+            'services/images/web-7.jpeg',
+            'services/images/web-8.jpeg'
         ]
     },
     {
@@ -135,25 +158,34 @@ const servicesOverviewData = [
         ],
         images: [
             'services/images/presentation-1.jpeg',
-            'services/images/presentation-2.jpg',
-            'services/images/presentation-3.jpg',
-            'services/images/presentation-4.jpg',
-            'services/images/presentation-5.jpg'
+            'services/images/presentation-2.jpeg',
+            'services/images/presentation-3.jpeg',
+            'services/images/presentation-4.jpeg',
+            'services/images/presentation-5.jpeg',
+            'services/images/presentation-6.jpeg',
+            'services/images/presentation-7.jpeg',
+            'services/images/presentation-8.jpeg'
         ]
     }
 ];
 
 const cardsToShowInitially = 6;
-let isFullCatalogShown = false;
 
+// =========================================
+// --- NEW: Global Variables for Slideshow ---
+// =========================================
+let slideshowInterval;
+let currentSlideIndex = 0;
+
+// Function to create a single HTML card from a service object
 function createOverviewCard(service) {
-    const buttonsHtml = `<div class="card-buttons">
-                                <button class="btn btn-inspo">Inspo</button>
-                                <button class="btn btn-details">More details</button>
-                            </div>`;
+    const buttonsHtml = `<div class="card-buttons hidden">
+                            <button class="btn btn-inspo" data-service-heading="${service.heading}">Inspo</button>
+                            <button class="btn btn-details" data-service-heading="${service.heading}">More details</button>
+                        </div>`;
 
     return `
-        <div class="overview-card" data-service-heading="${service.heading}">
+        <div class="overview-card" data-service-heading="${service.heading}" style="background-image: url('${service.images[0]}');">
             <div class="card-overlay">
                 <div class="card-text-content">
                     <h4>${service.heading}</h4>
@@ -161,79 +193,268 @@ function createOverviewCard(service) {
                 </div>
                 ${buttonsHtml}
             </div>
+            <button class="card-toggle-btn">+</button>
         </div>
     `;
 }
 
-function loadServicesOverview() {
+// Function to create and render the full modal content (for "See More")
+function renderServicesModal() {
+    const modalContentWrapper = document.getElementById('services-modal-content-wrapper');
+    if (!modalContentWrapper) return;
+
+    modalContentWrapper.innerHTML = '';
+
+    const headerHtml = `
+        <div class="modal-header">
+            <h2>Our Full Service Catalog</h2>
+        </div>
+    `;
+    modalContentWrapper.innerHTML += headerHtml;
+
+    const cardsContainer = document.createElement('div');
+    cardsContainer.id = 'modal-cards-container';
+    cardsContainer.innerHTML = servicesOverviewData.map(createOverviewCard).join('');
+    modalContentWrapper.appendChild(cardsContainer);
+}
+
+// --- NEW FUNCTION: Renders the "Inspo" Gallery Modal ---
+function renderInspoModal(serviceHeading, mediaFiles) {
+    const modalContentWrapper = document.getElementById('services-modal-content-wrapper');
+    if (!modalContentWrapper) return;
+
+    modalContentWrapper.innerHTML = '';
+
+    const headerHtml = `
+        <div class="modal-header">
+            <h2 class="inspo-heading">Inspiration for <br>${serviceHeading}</h2>
+        </div>
+    `;
+
+    // Map through the media files and create either an <img> or a <video> tag
+    const galleryHtml = mediaFiles.map(mediaSrc => {
+        // Check if the file is a video by its extension
+        if (mediaSrc.endsWith('.mp4')) {
+            return `
+                <div class="inspo-gallery-item">
+                    <video controls muted autoplay loop playsinline>
+                        <source src="${mediaSrc}" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
+                </div>
+            `;
+        } else {
+            return `
+                <div class="inspo-gallery-item">
+                    <img src="${mediaSrc}" alt="Inspiration image for ${serviceHeading}">
+                </div>
+            `;
+        }
+    }).join('');
+
+    modalContentWrapper.innerHTML = `
+        ${headerHtml}
+        <div class="inspo-gallery-container">
+            ${galleryHtml}
+        </div>
+    `;
+}
+
+// Function to load the initial, limited set of cards
+function loadInitialServices() {
     const container = document.getElementById('overview-cards-container');
-    const seeMoreBtn = document.getElementById('seeMoreBtn');
-    
-    if (!container || !seeMoreBtn) return; 
+    if (!container) return;
 
-    const cardsToDisplay = isFullCatalogShown ? servicesOverviewData : servicesOverviewData.slice(0, cardsToShowInitially);
-
-    container.innerHTML = ''; 
-    cardsToDisplay.forEach((service) => {
-        container.innerHTML += createOverviewCard(service);
-    });
-
-    seeMoreBtn.textContent = isFullCatalogShown ? 'Close' : 'See more';
-
-    const overviewCards = document.querySelectorAll('.overview-card');
-    overviewCards.forEach((card, index) => {
-        const service = cardsToDisplay[index];
-        const imageUrl = service.images[0];
-        card.style.backgroundImage = `url('${imageUrl}')`;
-    });
-
-    seeMoreBtn.removeEventListener('click', toggleServicesView);
-    seeMoreBtn.addEventListener('click', toggleServicesView);
-
-    document.querySelectorAll('.btn-inspo').forEach(btn => {
-        btn.addEventListener('click', () => alert('Inspo button clicked!'));
-    });
-    document.querySelectorAll('.btn-details').forEach(btn => {
-        btn.addEventListener('click', () => alert('More details button clicked!'));
-    });
+    const cardsToDisplay = servicesOverviewData.slice(0, cardsToShowInitially);
+    container.innerHTML = cardsToDisplay.map(createOverviewCard).join('');
 }
 
-function toggleServicesView() {
-    isFullCatalogShown = !isFullCatalogShown;
-    const servicesSection = document.getElementById('services-overview-section');
-    const body = document.body;
-    
-    // Toggle the 'modal-active' class on the body to trigger modal-related styles
-    body.classList.toggle('modal-active', isFullCatalogShown);
-    
-    // Toggle the 'modal-window' and 'modal-content' classes on the services section
-    servicesSection.classList.toggle('modal-window', isFullCatalogShown);
-    servicesSection.classList.toggle('modal-content', isFullCatalogShown);
-
-    loadServicesOverview();
-}
-
+// Function to load the hero gallery
 function loadHeroGallery() {
     const galleryContainer = document.getElementById('services-hero-gallery');
     if (!galleryContainer) return;
+    galleryContainer.innerHTML = heroGalleryImages.map((image, index) => {
+        return `<div class="services-column col-${index + 1}">
+                    <img src="${image.src}" alt="${image.alt}" class="services-poster poster-${index + 1}">
+                </div>`;
+    }).join('');
+}
 
-    galleryContainer.innerHTML = ''; 
+// =========================================
+// --- NEW FUNCTION: Renders the "More Details" Modal ---
+// =========================================
+function renderDetailsModal(service) {
+    const modalContentWrapper = document.getElementById('services-modal-content-wrapper');
+    if (!modalContentWrapper) return;
 
-    heroGalleryImages.forEach((image, index) => {
-        const columnDiv = document.createElement('div');
-        columnDiv.classList.add('services-column', `col-${index + 1}`);
+    modalContentWrapper.innerHTML = '';
 
-        const img = document.createElement('img');
-        img.src = image.src;
-        img.alt = image.alt;
-        img.classList.add('services-poster', `poster-${index + 1}`);
+    const detailsContentHtml = `
+        <div class="details-content">
+            <h2 class="details-heading">${service.heading}</h2>
+            <p class="details-sentence">${service.sentence}</p>
+            <ul class="details-list">
+                ${service.details.map(detail => {
+                    const parts = detail.split(':');
+                    const boldPart = parts[0] + ':';
+                    const remainingPart = parts.slice(1).join(':');
+                    return `<li><strong>${boldPart}</strong>${remainingPart}</li>`;
+                }).join('')}
+            </ul>
+        </div>
+    `;
 
-        columnDiv.appendChild(img);
-        galleryContainer.appendChild(columnDiv);
+    const slideshowHtml = `
+        <div class="slideshow-container">
+            <div class="slideshow-inner-wrapper">
+                ${service.images.map((mediaSrc, index) => {
+                    const isActive = index === 0 ? 'active' : '';
+                    if (mediaSrc.endsWith('.mp4')) {
+                        return `
+                            <div class="slide ${isActive}" data-type="video">
+                                <video src="${mediaSrc}" muted playsinline></video>
+                            </div>
+                        `;
+                    } else {
+                        return `
+                            <div class="slide ${isActive}" data-type="image">
+                                <img src="${mediaSrc}" alt="${service.heading} slide ${index + 1}">
+                            </div>
+                        `;
+                    }
+                }).join('')}
+            </div>
+        </div>
+    `;
+
+    modalContentWrapper.innerHTML = `
+        <div class="details-modal-grid">
+            ${detailsContentHtml}
+            ${slideshowHtml}
+        </div>
+    `;
+
+    startSlideshow(service.images);
+}
+
+// =========================================
+// --- FIXED & IMPROVED: Manages the Slideshow Logic ---
+// =========================================
+function startSlideshow(mediaFiles) {
+    const slides = document.querySelectorAll('.slideshow-container .slide');
+    const slideshowContainer = document.querySelector('.slideshow-container');
+    const slideshowWrapper = document.querySelector('.slideshow-inner-wrapper');
+
+    // Clear any previous slideshow timers
+    clearInterval(slideshowInterval);
+    currentSlideIndex = 0;
+
+    // Reset the slideshow wrapper's position to the beginning
+    slideshowWrapper.style.transform = `translateX(0%)`;
+
+    // Ensure the first slide is active
+    slides.forEach(s => s.classList.remove('active'));
+    if (slides.length > 0) {
+        slides[0].classList.add('active');
+        const firstVideo = slides[0].querySelector('video');
+        if (firstVideo) {
+            firstVideo.currentTime = 0;
+            firstVideo.play();
+        }
+    }
+
+    function nextSlide() {
+        if (slides.length <= 1) {
+            clearInterval(slideshowInterval);
+            return;
+        }
+
+        const currentSlideEl = slides[currentSlideIndex];
+        currentSlideEl.classList.remove('active');
+
+        currentSlideIndex = (currentSlideIndex + 1) % slides.length;
+        const nextSlideEl = slides[currentSlideIndex];
+        nextSlideEl.classList.add('active');
+
+        // Apply the transform to the wrapper to slide the content
+        slideshowWrapper.style.transform = `translateX(-${currentSlideIndex * 100}%)`;
+
+        // Handle video playback
+        const activeVideo = nextSlideEl.querySelector('video');
+        if (activeVideo) {
+            clearInterval(slideshowInterval); // Pause timer for video
+            activeVideo.currentTime = 0;
+            activeVideo.play();
+
+            // When video ends, immediately go to the next slide and restart the timer
+            activeVideo.onended = () => {
+                nextSlide();
+                startSlideshowTimer();
+            };
+        }
+    }
+    
+    function startSlideshowTimer() {
+        // Only start the timer if the current slide isn't a video
+        if (slides[currentSlideIndex].dataset.type !== 'video') {
+            slideshowInterval = setInterval(nextSlide, 5000);
+        }
+    }
+    
+    // Initial start
+    startSlideshowTimer();
+
+    // Pause on hover
+    slideshowContainer.addEventListener('mouseenter', () => {
+        clearInterval(slideshowInterval);
+        const activeVideo = slideshowContainer.querySelector('.slide.active video');
+        if (activeVideo) {
+            activeVideo.pause();
+        }
+    });
+
+    // Resume on mouseleave
+    slideshowContainer.addEventListener('mouseleave', () => {
+        const activeVideo = slideshowContainer.querySelector('.slide.active video');
+        if (!activeVideo || activeVideo.paused) {
+            startSlideshowTimer();
+        }
     });
 }
 
+// =========================================
+// --- DOMContentLoaded Listener with all event handlers ---
+// =========================================
 document.addEventListener('DOMContentLoaded', () => {
     loadHeroGallery();
-    loadServicesOverview();
+    loadInitialServices();
+
+    const overviewSection = document.getElementById('services-overview-section');
+    if (overviewSection) {
+        overviewSection.addEventListener('click', (event) => {
+            const targetButton = event.target.closest('.btn-details, .btn-inspo');
+            if (targetButton) {
+                const serviceHeading = targetButton.dataset.serviceHeading;
+                const service = servicesOverviewData.find(s => s.heading === serviceHeading);
+                if (service) {
+                    if (targetButton.classList.contains('btn-details')) {
+                        renderDetailsModal(service);
+                        document.getElementById('servicesModal').classList.add('active');
+                    } else if (targetButton.classList.contains('btn-inspo')) {
+                        renderInspoModal(service.heading, service.images);
+                        document.getElementById('servicesModal').classList.add('active');
+                    }
+                }
+            }
+        });
+    }
+
+    const modalWindow = document.getElementById('servicesModal');
+    if (modalWindow) {
+        modalWindow.addEventListener('click', (event) => {
+            if (event.target.classList.contains('close-button')) {
+                modalWindow.classList.remove('active');
+            }
+        });
+    }
 });

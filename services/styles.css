@@ -82,6 +82,12 @@
     padding: 80px 5%;
     background-color: #f7f7f7;
     position: relative; /* Keep this relative for its contents */
+    transition: opacity 0.5s ease;
+}
+
+.services-overview-section.hidden {
+    opacity: 0;
+    pointer-events: none;
 }
 
 .services-header-container {
@@ -190,7 +196,7 @@
 }
 
 .overview-card:hover .card-overlay {
-    backdrop-filter: blur(0px);
+    backdrop-filter: blur(5px);
 }
 
 .card-text-content {
@@ -200,6 +206,7 @@
 .card-text-content h4 {
     font-size: 1.3rem;
     font-weight: 700;
+    color: #fff;
 }
 
 .card-text-content p {
@@ -208,6 +215,20 @@
 }
 
 /* --- Card Buttons --- */
+
+/* Add this new block to your services.css file */
+
+.card-buttons.hidden {
+    /* Hide the element visually */
+    opacity: 0;
+
+    /* Prevent the buttons from being clickable */
+    pointer-events: none;
+
+    /* Smoothly animate the fade-in/out effect */
+    transition: opacity 0.3s ease-in-out;
+}
+
 .card-buttons {
     display: flex;
     gap: 10px;
@@ -221,6 +242,9 @@
     cursor: pointer;
     transition: background-color 0.3s ease;
     color: #fff;
+    /* Add this for background blur */
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px); /* For Safari compatibility */
 }
 
 .btn-details {
@@ -252,146 +276,299 @@
     font-size: 1.5rem;
     color: #fff;
     z-index: 2;
+
+    /* Add this for background blur */
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px); /* For Safari compatibility */
 }
 
+
 /* ========================================= */
-/* --- New Styles for Services Modal --- */
+/* --- Services Modal Window Sizing --- */
 /* ========================================= */
 
-/* The backdrop that blurs the background */
-#modal-backdrop-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
+#servicesModal .modal-content {
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0);
-    backdrop-filter: blur(0px);
-    opacity: 0;
-    pointer-events: none;
-    transition: backdrop-filter 0.6s ease, opacity 0.6s ease;
-    z-index: 5;
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+    /* Match the background and blur from index.css */
+    background-color: rgba(255, 255, 255, 0.6) !important;
+    backdrop-filter: blur(20px) !important;
+    -webkit-backdrop-filter: blur(10px) !important;
+
+    /* Match the border-radius and box-shadow from index.css */
+    border-radius: 25px !important;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4) !important;
 }
 
-/* This targets the entire body to lock the background and blur other content */
-.modal-active {
+/* Ensure the cards inside the modal have the correct styling */
+#servicesModal #modal-cards-container .overview-card {
+    /* Set a specific background color for the cards */
+    background-color: #f0f0f0;
+}
+
+/* ========================================= */
+/* --- Specific Services Modal Styling --- */
+/* ========================================= */
+
+#servicesModal .modal-content-wrapper {
+    display: flex;
+    flex-direction: column;
+
+    /* This div holds all the actual text/form content */
+    /* IMPORTANT: This padding now creates space for the flip card AND the content below it. */
+    padding-top: 40px; /* Adjusted: flip-card height (180px) + desired gap (e.g., 50px) */
+    box-sizing: border-box;
+    flex-grow: 1; /* Allows this wrapper to take up available vertical space */
+    overflow-y: auto; /* This now handles scrolling for the main content of the modal */
+    position: relative; /* Keep relative for any potential child positioning, though not critical for flip-card now */
+    z-index: 1; /* Ensure it's below the close button if needed, but not critical for flip-card now */
+
+}
+
+.modal-header {
+    text-align: center;
+    padding-bottom: 20px;
+    margin-bottom: 20px;
+}
+
+.modal-header h2 {
+    color: #212121;
+    font-size: 2rem;
+    font-weight: 700;
+}
+
+/* Updated grid for 2x4 layout on large screens */
+#modal-cards-container {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr) !important; /* 4 equal columns */
+    grid-auto-rows: minmax(350px, auto); /* Minimum row height */
+    gap: 25px;
+    width: 100% !important;
+    padding-top: 20px;
+}
+
+#modal-cards-container .overview-card {
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    /* Remove any grid-specific rules from the main overview section */
+    grid-column: span 1 !important; 
+    min-height: 350px;
+}
+
+/* ========================================= */
+/* --- FIX: Card Overlay & Modal Content Styling Overrides --- */
+/* ========================================= */
+
+/* Fix the extra box on the cards by targeting the overlay */
+.overview-card .card-overlay {
+    border-radius: 25px !important;
+    box-shadow: none !important;
+}
+
+/* Fix the extra box on the modal by targeting the main modal content container */
+#servicesModal .modal-content {
+    border-radius: 25px !important;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4) !important;
+}
+
+/* Ensure the card itself maintains its correct style */
+.overview-card {
+    border-radius: 25px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* ========================================= */
+/* --- Card Text Styling --- */
+/* ========================================= */
+.card-text-content h4,
+.card-text-content p {
+    color: #ffffff; /* Sets the text color to white for both the heading and paragraph */
+}
+
+/* ========================================= */
+/* --- FINAL FIX: Override ALL Modal Styles --- */
+/* ========================================= */
+
+#servicesModal.modal-window.active .modal-content {
+    /* Use !important to force these styles to be applied */
+    border-radius: 25px !important;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4) !important;
+    backdrop-filter: blur(20px) !important;
+    -webkit-backdrop-filter: blur(20px) !important;
+    background-color: rgba(255, 255, 255, 0.6) !important;
+}
+
+/* ========================================= */
+/* --- Services Modal Window Styling --- */
+/* ========================================= */
+
+#servicesModal .modal-content {
+    /* Main modal content styling */
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+
+    /* Match the background, blur, border-radius, and box-shadow from index.css */
+    background-color: rgba(255, 255, 255, 0.6) !important;
+    backdrop-filter: blur(20px) !important;
+    -webkit-backdrop-filter: blur(10px) !important;
+    border-radius: 25px !important;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4) !important;
+}
+
+/* ========================================= */
+/* --- FIX: Card Overlay & Card Styling Overrides --- */
+/* ========================================= */
+
+/* This rule is crucial. It resets the shadow and border on the cards when they are inside the modal. */
+#servicesModal .overview-card {
+    border-radius: 25px; /* Ensure the card itself has the right border radius */
+    box-shadow: none !important; /* CRITICAL: Remove the old box shadow */
+}
+
+/* Make sure the overlay on the cards also has the correct radius. */
+#servicesModal .overview-card .card-overlay {
+    border-radius: 25px;
+    box-shadow: none !important; /* Also remove any conflicting shadow on the overlay */
+}
+
+/* ========================================= */
+/* --- Inspo Gallery Styling --- */
+/* ========================================= */
+
+.inspo-gallery-container {
+    padding: 20px;
+    column-count: 4; /* Two columns by default */
+    column-gap: 15px;
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.inspo-gallery-item {
+    -webkit-column-break-inside: avoid;
+    page-break-inside: avoid;
+    break-inside: avoid-column;
+    margin-bottom: 15px; /* Add space between images */
+    border-radius: 25px;
+    overflow: hidden; /* Ensures the image doesn't overflow the rounded corners */
+}
+
+.inspo-gallery-item img {
+    width: 100%;
+    height: auto;
+    border-radius: 25px;
+    display: block; /* Removes extra space below the image */
+}
+
+/* --- NEW: Video Styling --- */
+.inspo-gallery-item video {
+    width: 100%;
+    height: auto;
+    border-radius: 25px;
+    display: block;
+}
+
+/* ========================================= */
+/* --- New: Details Modal Layout --- */
+/* ========================================= */
+
+.details-modal-grid {
+    display: grid;
+    /* This line changes the layout to a perfect 50/50 split */
+    grid-template-columns: 1fr 1fr; 
+    gap: 40px;
+    padding: 40px;
+    max-height: 80vh;
+    box-sizing: border-box;
+    overflow: auto;
+}
+
+.details-content {
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+}
+
+.details-heading {
+    color: #212121;
+    font-size: 3rem;
+    font-weight: 800;
+    margin-bottom: 10px;
+}
+
+.details-sentence {
+    font-size: 1.8rem;
+    font-weight: 650
+    ;
+    color: #555;
+    margin-bottom: 25px;
+}
+
+.details-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.details-list li {
+    font-size: 1.5rem;
+    line-height: 1.8;
+    font-weight: 400;
+    margin-bottom: 10px;
+    color: #444;
+    text-align: left;
+}
+
+.details-list strong {
+    color: #000;
+    font-weight: 600;
+}
+
+/* ========================================= */
+/* --- New: Slideshow Styling --- */
+/* ========================================= */
+.slideshow-container {
+    position: relative;
+    width: 100%;
+    height: 450px; /* Fixed square shape */
+    border-radius: 25px;
     overflow: hidden;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+    background-color: #f0f0f0;
 }
 
-.modal-active #services-gallery-wrapper {
-    filter: blur(5px);
-    pointer-events: none;
-    user-select: none;
-    transition: filter 0.6s ease;
+.slideshow-inner-wrapper {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    transition: transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
-.modal-active #modal-backdrop-overlay {
-    opacity: 1;
-    backdrop-filter: blur(10px);
-    pointer-events: auto;
-}
-
-/* New: Styles that transform the services section into a modal */
-.services-overview-section.modal-window {
-    /* Initial state for the fade-rise animation */
-    position: fixed;
-    top: 55%; /* Start slightly below the center */
-    left: 50%;
-    transform: translate(-50%, -50%) scale(0.95); /* Start slightly smaller */
+.slide {
+    flex-shrink: 0;
+    width: 100%;
+    height: 100%;
     opacity: 0;
-    pointer-events: none;
-    
-    /* Make it a full-screen, scrollable window */
-    width: 90%;
-    height: 90%;
-    
-    /* Apply the modal styling */
-    background-color: rgba(255, 255, 255, 0.6);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border-radius: 40px;
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
-    z-index: 10;
-    
-    /* Add a scrollable wrapper for the content inside */
-    overflow-y: auto;
-    
-    /* Smooth transition for the transformation and opacity */
-    transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275), 
-                opacity 0.6s ease,
-                width 0.6s ease,
-                height 0.6s ease,
-                border-radius 0.6s ease,
-                background-color 0.3s ease;
+    transition: opacity 3s ease-in-out;
 }
 
-.services-overview-section.modal-window.active {
-    /* Final state for the fade-rise animation */
-    top: 50%;
-    transform: translate(-50%, -50%) scale(1);
+.slide.active {
     opacity: 1;
-    pointer-events: auto;
 }
 
-/* Styles for the grid when the modal is active */
-.services-overview-section.modal-window #overview-cards-container {
-    grid-template-columns: repeat(4, 1fr);
-    grid-auto-flow: row dense;
+.slide img,
+.slide video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 25px;
 }
 
-.services-overview-section.modal-window .overview-card {
-    grid-column: span 1 !important;
-    grid-row: auto;
-}
-
-/* Style for the close button inside the modal */
-.services-overview-section.modal-window .see-more-btn {
-    position: sticky; /* Changed to sticky for better behavior with scrolling */
-    top: 20px;
-    right: 20px;
-    background-color: rgba(0, 0, 0, 0.5);
-    z-index: 11;
-}
-
-/* --- Media Queries for Responsiveness --- */
-@media (min-width: 768px) {
-    .card-toggle-btn {
-        display: none;
-    }
-}
-@media (max-width: 767px) {
-    #overview-cards-container {
-        grid-template-columns: 1fr;
-    }
-    .overview-card:nth-child(1),
-    .overview-card:nth-child(2),
-    .overview-card:nth-child(3),
-    .overview-card:nth-child(4) {
-        grid-column: span 1;
-    }
-    .card-buttons {
-        display: none;
-    }
-    .card-toggle-btn {
-        display: flex;
-    }
-    
-    /* Responsive styles for the modal */
-    .services-overview-section.modal-window {
-        width: 100%;
-        height: 100%;
-        border-radius: 0;
-        top: 0;
-        left: 0;
-        transform: translate(0, 0) scale(1); /* No scale on mobile for better full-screen feel */
-    }
-    
-    .services-overview-section.modal-window.active {
-        top: 0;
-        transform: translate(0, 0) scale(1);
-    }
-    
-    .services-overview-section.modal-window #overview-cards-container {
-        grid-template-columns: 1fr;
-    }
+.slide video {
+    /* Ensures the video fills the container without showing controls */
+    pointer-events: none; 
 }
