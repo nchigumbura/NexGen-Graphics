@@ -1029,7 +1029,7 @@ header.hide-header {
     display: flex;
     flex-direction: column; /* Stack elements vertically */
     text-align: left; /* Default text alignment for paragraphs */
-    box-shadow: 0 2px 10px rgba(0,0,0,0.03); /* Very subtle shadow */
+    box-shadow: 0 2px 10px rgba(0,0,0,0.04); /* Very subtle shadow */
     transition: transform 0.2s ease, box-shadow 0.2s ease;
     min-height: 180px; /* Ensure consistent height for cards */
     justify-content: flex-start; /* Align content to the top */
@@ -1266,7 +1266,7 @@ header.hide-header {
 /* Testimonials Section */
 .testimonials-section {
     text-align: center;
-    margin-top: -240px; /* Space from image gallery - as requested */
+    margin-top: -220px; /* Space from image gallery - as requested */
     padding-bottom: 90px; /* Padding below for spacing before next section/footer */
     display: flex; /* Use flexbox to center content */
     flex-direction: column; /* Stack children vertically */

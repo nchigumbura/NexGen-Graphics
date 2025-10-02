@@ -1,3 +1,10 @@
+html, body {
+    margin: 0;
+    padding: 0;
+    /* This ensures that when an element's width is 100%, it truly covers the viewport. */
+    width: 100%; 
+}
+
 /* ========================================= */
 /* --- Gallery Layout --- */
 /* ========================================= */
@@ -174,7 +181,7 @@
 }
 
 .overview-card:hover {
-    transform: translateY(-5px);
+    transform: translateY(-10px);
 }
 
 .card-overlay {
@@ -571,4 +578,384 @@
 .slide video {
     /* Ensures the video fills the container without showing controls */
     pointer-events: none; 
+}
+
+/* ========================================= */
+/* Pricing Section Styling (iOS Minimalist) --- */
+/* ========================================= */
+
+.pricing-section {
+    padding: 60px 0;
+    /* Centering the section content */
+    width: 100% !important;
+    display: flex;
+    justify-content: center;
+}
+
+.pricing-content-wrapper {
+    transition: all 0.6s ease-out;
+    width: 90%;
+    max-width: 5000px;
+    padding: 40px;
+
+    /* Transition for the smooth expansion effect */
+    transition: width 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94), 
+            border-radius 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    
+    /* iOS Aesthetic: Large rounded container with a light, opaque background */
+    background-color: rgba(207, 208, 207, 0.81); 
+    /* Use the dynamically set variable for radius. Default is 40px */
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+}
+
+.pricing-content-wrapper.pricing-ideal-view {
+    width: 100%;
+    border-radius: none;
+    box-shadow: none; 
+}
+
+/* 2. The 'Edge View' State: When outside the ideal range */
+.pricing-content-wrapper.pricing-edge-view {
+    width: 90%;
+    border-radius: 40px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); 
+}
+
+.pricing-header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.pricing-header h2 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.pricing-header p {
+    font-size: 1.1rem;
+    color: #666;
+}
+
+/* --- Download PDF Button --- */
+
+.download-pdf-wrapper {
+    text-align: center;
+    margin-bottom: 50px;
+}
+
+.download-pdf-btn {
+    display: inline-block;
+    padding: 12px 25px;
+    background-color: #929292; /* Gray color for the button */
+    color: white;
+    border-radius: 25px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: background-color 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.download-pdf-btn:hover {
+    background-color: #0758bb;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+}
+
+/* --- Pricing Cards Container --- */
+
+.pricing-cards-container {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+}
+
+.pricing-card {
+    display: flex;
+    flex-direction: column;
+    padding: 30px;
+    border-radius: 30px;
+    position: relative;
+    text-align: left;
+    
+    /* iOS Aesthetic: Light background with a subtle border/shadow */
+    background-color: rgba(196, 196, 196, 0.99);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+}
+
+/* Specific styling for the 'Standard' card */
+.pricing-card.standard {
+    /* Optional: Slight color shift or deeper shadow for emphasis */
+    background-color: rgba(196, 196, 196, 0.99);
+    box-shadow: 0 6px 25px rgba(0, 0, 0, 0.1);
+}
+
+/* --- Card Header & Badge --- */
+
+.card-header {
+    margin-bottom: 25px;
+}
+
+.card-icon {
+    font-size: 3rem;
+    display: block;
+    margin-bottom: 5px;
+}
+
+.card-title {
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-top: 0;
+    color: #333;
+}
+
+.card-description {
+    font-size: 0.95rem;
+    color: #555;
+    margin-bottom: 0;
+    min-height: 40px; /* Ensures vertical consistency */
+}
+
+.pricing-badge {
+    position: absolute;
+    top: -15px;
+    right: 20px;
+    padding: 5px 15px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: white;
+    background: linear-gradient(135deg, #ff6a00, #ee0979); /* Pink/Red gradient */
+    box-shadow: 0 4px 10px rgba(238, 9, 121, 0.3);
+}
+
+/* --- Service Items List --- */
+
+.card-items-list {
+    flex-grow: 1; /* Pushes the button to the bottom */
+    text-align: left;
+    margin-bottom: 30px;
+}
+
+.pricing-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid #eee; /* Subtle horizontal divider */
+}
+
+.pricing-item:last-child {
+    border-bottom: none;
+}
+
+.pricing-service {
+    font-size: 1rem;
+    color: #444;
+}
+
+.pricing-divider {
+    color: #ccc;
+    font-weight: 300;
+    margin: 0 10px;
+}
+
+.pricing-price-wrapper {
+    /* Rounded gradient rectangle for the price */
+    padding: 5px 12px !important;
+    border-radius: 15px;
+    font-weight: 600;
+    color: white;
+    min-width: 60px; /* Ensures price blocks are uniform */
+    text-align: center !important;
+}
+
+.pricing-price {
+    display: block; /* To center the price text inside the wrapper */
+}
+
+/* Pricing Price Gradient Colors */
+.pricing-card.basic .pricing-price-wrapper {
+    background: linear-gradient(45deg, #929292, #d0d0d0);
+}
+
+.pricing-card.standard .pricing-price-wrapper {
+    background: linear-gradient(45deg, #ff6a00, #ffc94e);
+}
+
+.pricing-card.premium .pricing-price-wrapper {
+    background: linear-gradient(45deg, #007aff, #3cba92);
+}
+
+/* --- Card Buttons --- */
+
+.pricing-card-btn {
+    display: block;
+    width: 100%;
+    padding: 12px 0;
+    border: none;
+    border-radius: 25px;
+    font-weight: 600;
+    text-decoration: none;
+    text-align: center;
+    color: white;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.pricing-card-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* Button Gradients */
+.basic-btn {
+    background: linear-gradient(45deg, #929292, #b5b5b5);
+}
+
+.standard-btn {
+    background: linear-gradient(45deg, #ff6a00, #ee0979); /* Pink/Red gradient */
+}
+
+.premium-btn {
+    background: linear-gradient(45deg, #007aff, #00c6ff); /* Blue gradient */
+}
+
+/* ========================================= */
+/* --- Standard Fade-Up Animation Classes --- */
+/* ========================================= */
+
+.fade-up-hidden {
+    opacity: 0;
+    transform: translateY(20px);
+}
+
+.fade-up-visible {
+    opacity: 1;
+    transform: translateY(0);
+    transition: opacity 1s ease-out, transform 1s ease-out;
+}
+
+/* ========================================= */
+/* --- New: Event Based Design Styling --- */
+/* ========================================= */
+
+.event-design-section {
+    padding: 60px 0;
+    display: flex;
+    justify-content: center;
+    width: 95%;
+    margin: 0 auto;
+    padding-left: 0px; /* Default side padding */
+    padding-right: 0px; /* Default side padding */
+}
+
+.event-design-section.event-close-up {
+    padding-left: 60px; /* Reduced side padding */
+    padding-right: 60px; /* Reduced side padding */
+    transition: scale(-1), transform 1s ease-out;
+}
+
+.event-design-section.event-scrolled-away {
+    padding-left: 0px; /* Wider padding (matches default) */
+    padding-right: 0px; /* Wider padding (matches default) */
+    transform: scale(1.05); /* Default size */
+}
+
+.event-content-wrapper {
+    width: 90%;
+    max-width: 1400px; /* Adjust max-width for better gallery viewing */
+    padding: 30px;
+    
+    /* iOS Aesthetic: Light background with rounded corners */
+    background-color: rgba(207, 208, 207, 0.81); 
+    border-radius: 40px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+}
+
+.event-header {
+    font-size: 1.8rem;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 25px;
+    margin-left: 15px; /* Slight left padding to match the wrapper padding */
+}
+
+/* --- The Custom Grid Container --- */
+
+.event-grid-container {
+    display: grid;
+    /* Define 8 equal columns */
+    grid-template-columns: repeat(8, 1fr);
+    /* Define 6 equal rows */
+    grid-template-rows: repeat(6, 1fr);
+    gap: 15px; /* Spacing between grid items */
+    width: 100%;
+    overflow: hidden; /* Prevent overflow */
+    max-height: 800px; /* Limit the max height of the entire grid */
+}
+
+.event-grid-item {
+    overflow: hidden;
+    border-radius: 25px; /* Rounded corners for individual images */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+    max-height: 800px;
+}
+
+.event-grid-item:hover {
+    transform: scale(1.03); /* Subtle hover effect */
+}
+
+.event-grid-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Ensures images cover the area without distortion */
+    display: block;
+}
+
+/* --- Specific Grid Placement Rules --- */
+/* Your Requested Spans: Columns x Rows (Total cells: 8x6 = 48) */
+
+/* Image 1: Takes up 5 columns and 2 rows (10 cells) */
+.event-grid-item.item-1 {
+    grid-column: span 5;
+    grid-row: span 2;
+}
+
+/* Image 2: Takes up 3 columns and 2 rows (6 cells) */
+.event-grid-item.item-2 {
+    grid-column: span 3;
+    grid-row: span 2;
+}
+
+/* Image 3: Takes up 4 columns and 4 rows (16 cells) */
+.event-grid-item.item-3 {
+    grid-column: span 4;
+    grid-row: span 4;
+}
+
+/* Image 4: Takes up 2 columns and 2 rows (4 cells) */
+.event-grid-item.item-4 {
+    grid-column: span 2;
+    grid-row: span 2;
+}
+
+/* Image 5: Takes up 2 columns and 3 rows (6 cells) */
+.event-grid-item.item-5 {
+    grid-column: span 2;
+    grid-row: span 3;
+}
+
+/* Image 6: Takes up 2 columns and 2 rows (4 cells) */
+.event-grid-item.item-6 {
+    grid-column: span 2;
+    grid-row: span 2;
+}
+
+/* Image 7: Takes up 2 columns and 1 row (2 cells) */
+.event-grid-item.item-7 {
+    grid-column: span 2;
+    grid-row: span 1;
 }

@@ -423,11 +423,174 @@ function startSlideshow(mediaFiles) {
 }
 
 // =========================================
+// --- Services Data: Pricing Section Data ---
+// =========================================
+const pricingData = {
+    header: 'Pricing',
+    subtitle: 'We work with a simple, flexible three-tier model — keeping things transparent and easy to understand.',
+    cards: [
+        {
+            title: 'Basic',
+            description: 'Perfect for online use. Clients receive high-res files via WhatsApp or email.',
+            icon: '🌍', // Globe icon
+            buttonText: 'Get Started',
+            buttonClass: 'basic-btn',
+            items: [
+                { service: 'Logo', price: '$20' },
+                { service: 'Flyer', price: '$10' },
+                { service: 'Poster', price: '$15' },
+                { service: 'Business Card', price: '$10' },
+                { service: 'Social Media Post', price: '$7' },
+                { service: 'Invoice/Letterhead', price: '$10' }
+            ]
+        },
+        {
+            title: 'Standard',
+            description: 'Includes extra design concepts, minor revisions, font/format selection for printing, etc.',
+            icon: '🚀', // Rocket icon
+            badge: 'Most Popular',
+            buttonText: 'Upgrade Now',
+            buttonClass: 'standard-btn',
+            items: [
+                { service: 'Logo + 2 Concepts', price: '$30' },
+                { service: 'Flyer + Caption Support', price: '$15' },
+                { service: 'Poster + Print-Ready Setup', price: '$20' },
+                { service: 'Business Card + QR Code', price: '$15' },
+                { service: 'Basic Brand Kit (logo, colors, fonts)', price: '$50' },
+                { service: 'Invitations', price: '$20' }
+            ]
+        },
+        {
+            title: 'Premium',
+            description: 'Client receives printed pieces in sleek branded packaging.',
+            icon: '✨', // Sparkle icon
+            buttonText: 'Go Premium',
+            buttonClass: 'premium-btn',
+            items: [
+                { service: 'Logo + Basic Brand Kit (Digital only)', price: '$50' },
+                { service: 'Flyer (50 copies A5)', price: '$25-$30' },
+                { service: 'Poster (5 A2 Posters)', price: '$30-$40' },
+                { service: 'Business Cards (100 cards)', price: '$35-$40' },
+                { service: 'Company Profile (10 pages)', price: '$45-$55' }
+            ]
+        }
+    ]
+};
+
+// =========================================
+// --- Function to Render Pricing Section ---
+// =========================================
+
+function createPricingCardHTML(card) {
+    const badgeHtml = card.badge ? `<span class="pricing-badge">${card.badge}</span>` : '';
+
+    const itemsHtml = card.items.map(item => `
+        <div class="pricing-item">
+            <span class="pricing-service">${item.service}</span>
+            <span class="pricing-divider">|</span>
+            <span class="pricing-price-wrapper">
+                <span class="pricing-price">${item.price}</span>
+            </span>
+        </div>
+    `).join('');
+
+    return `
+        <div class="pricing-card ${card.title.toLowerCase()}">
+            ${badgeHtml}
+            <div class="card-header">
+                <span class="card-icon">${card.icon}</span>
+                <h3 class="card-title">${card.title}</h3>
+                <p class="card-description">${card.description}</p>
+            </div>
+            <div class="card-items-list">
+                ${itemsHtml}
+            </div>
+            <a href="#" class="pricing-card-btn ${card.buttonClass}">${card.buttonText}</a>
+        </div>
+    `;
+}
+
+function renderPricingSection() {
+    const container = document.getElementById('pricingSectionContainer');
+    if (!container) return;
+
+    const cardsHtml = pricingData.cards.map(createPricingCardHTML).join('');
+
+    container.innerHTML = `
+        <section class="pricing-section">
+            <div class="pricing-content-wrapper">
+                <div class="pricing-header">
+                    <h2>${pricingData.header}</h2>
+                    <p>${pricingData.subtitle}</p>
+                </div>
+                <div class="download-pdf-wrapper">
+                    <a href="services/images/price.pdf" download class="download-pdf-btn">Download PDF</a>
+                </div>
+                <div class="pricing-cards-container">
+                    ${cardsHtml}
+                </div>
+            </div>
+        </section>
+    `;
+}
+
+// =========================================
+// --- Services Data: Event Based Design Gallery ---
+// =========================================
+const eventGalleryImages = [
+    // Use placeholder names for now - replace with your actual image paths
+    { src: 'services/images/event-1.jpeg', alt: 'Tropical event backdrop' },
+    { src: 'services/images/event-2.png', alt: 'Wedding invitation price card' },
+    { src: 'services/images/event-3.jpeg', alt: 'Wedding invitation suite flat lay' },
+    { src: 'services/images/event-4.jpeg', alt: 'Close-up of engraved invitation' },
+    { src: 'services/images/event-5.jpeg', alt: 'Dark green event stationery' },
+    { src: 'services/images/event-6.jpeg', alt: 'Clear acrylic invitation' },
+    { src: 'services/images/event-7.jpeg', alt: 'Small thank you card collection' }
+];
+
+// =========================================
+// --- Function to Render Event Based Design Section ---
+// =========================================
+function renderEventBasedDesignSection() {
+    const container = document.getElementById('eventBasedDesignSectionContainer');
+    // If the element isn't found, the function stops right here and doesn't inject content.
+    if (!container) {
+        console.error("ERROR: Could not find container ID 'eventBasedDesignSectionContainer'");
+        return;
+    }
+    // Map the images to create grid items
+    const gridItemsHtml = eventGalleryImages.map((image, index) => {
+        // We'll apply the specific grid placement classes in the CSS, 
+        // but we need a unique class for each item here.
+        return `
+            <div class="event-grid-item item-${index + 1}">
+                <img src="${image.src}" alt="${image.alt}">
+            </div>
+        `;
+    }).join('');
+
+    container.innerHTML = `
+        <section class="event-design-section fade-up-hidden">
+            <div class="event-content-wrapper">
+                <h2 class="event-header">Event Based Design</h2>
+                <div class="event-grid-container">
+                    ${gridItemsHtml}
+                </div>
+            </div>
+        </section>
+    `;
+}
+
+
+// =========================================
 // --- DOMContentLoaded Listener with all event handlers ---
 // =========================================
 document.addEventListener('DOMContentLoaded', () => {
     loadHeroGallery();
     loadInitialServices();
+    renderPricingSection();
+    renderEventBasedDesignSection();
+
 
     const overviewSection = document.getElementById('services-overview-section');
     if (overviewSection) {

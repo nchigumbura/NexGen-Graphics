@@ -10,6 +10,97 @@ document.addEventListener('DOMContentLoaded', () => {
     const modalBackdropOverlay = document.getElementById('modal-backdrop-overlay');
     const body = document.body;
 
+    // =======================================================
+    // --- EVENT SECTION: PADDING / SCALE ANIMATION ---
+    // The section's side padding changes based on whether it's 
+    // in the viewport (close-up) or scrolled away (scrolled-away).
+    // =======================================================
+    const eventSection = document.querySelector('.event-design-section');
+    if (eventSection) {
+        // Set the initial state for the animation
+        eventSection.classList.add('event-scrolled-away');
+
+        const eventScaleObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                const visibilityRatio = entry.intersectionRatio; // 0.0 to 1.0
+
+                // Check if the section is within the 30% to 80% visibility range
+                if (visibilityRatio >= 0.20 && visibilityRatio <= 0.80) {
+                    // State: 'Close-Up' (Narrower/Padded)
+                    eventSection.classList.add('event-close-up');
+                    eventSection.classList.remove('event-scrolled-away');
+                } else {
+                    // State: 'Scrolled Away' (Wider/No Padding)
+                    // This covers < 30% visibility AND > 80% visibility
+                    eventSection.classList.add('event-scrolled-away');
+                    eventSection.classList.remove('event-close-up');
+                }
+            });
+        }, {
+            // Threshold of 0 means the state changes as soon as the element enters/leaves the viewport
+            root: null,
+            hreshold: Array.from({ length: 101 }, (_, i) => i / 100) 
+        });
+
+        eventScaleObserver.observe(eventSection);
+    }
+
+
+    // =========================================
+    // --- NEW: Dynamic Pricing Section Scroll Animation (Class-Based) ---
+    // =========================================
+    const pricingWrapper = document.querySelector('.pricing-content-wrapper');
+    const pricingSection = document.querySelector('.pricing-section');
+    const pricingContainer = document.getElementById('pricingSectionContainer'); // Assuming you use this ID on the main wrapper
+
+    if (pricingWrapper && pricingSection && pricingContainer) {
+        // We use a high threshold array to get precise visibility changes
+        const thresholds = Array.from({ length: 101 }, (_, i) => i / 100);
+
+        const animatePricingSection = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                const visibilityRatio = entry.intersectionRatio;
+                
+                // GOAL: Width 100% (No Border) between 40% and 60% visibility.
+                // Width 90% (With Border) when visible but outside that range.
+
+                if (visibilityRatio >= 0.30 && visibilityRatio <= 0.80) {
+                    // Range: 40% to 60% visibility (Ideal View)
+                    // Width 100%, No Border/Radius
+                    pricingWrapper.classList.add('pricing-ideal-view');
+                    pricingWrapper.classList.remove('pricing-edge-view');
+
+                } else if (visibilityRatio > 0 && visibilityRatio < 0.40 || visibilityRatio > 0.60) {
+                    // Range: 0% to 40% OR 60% to 100% visibility (Edge View)
+                    // Width 90%, With Border/Radius
+                    pricingWrapper.classList.add('pricing-edge-view');
+                    pricingWrapper.classList.remove('pricing-ideal-view');
+                }
+                // Note: When visibilityRatio is 0, nothing changes, so the last state persists.
+            });
+        }, {
+            root: null,
+            threshold: thresholds // Use the high-resolution thresholds for smooth steps
+        });
+
+        // Initial Fade-In (Standard iOS Fade-Up) - KEEP THIS BLOCK
+        pricingSection.classList.add('fade-up-hidden'); // Apply initial state
+        
+        const initialObserver = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.remove('fade-up-hidden');
+                    entry.target.classList.add('fade-up-visible');
+                    // Once visible, start observing for the width animation
+                    animatePricingSection.observe(pricingWrapper); // <-- Observe the wrapper, not the section
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.1 });
+
+        initialObserver.observe(pricingSection);
+    }
+
     // --- Image Enlarge Elements ---
     // These elements are no longer used for the enlarged image feature.
     // They are left in for now but could be removed if not needed elsewhere.
@@ -181,3 +272,32 @@ document.addEventListener('DOMContentLoaded', () => {
         observer.observe(servicesGallery);
     }
 });
+
+// Use window.onload or a final DOM check to ensure the dynamically added content is available.
+window.onload = function() {
+    // --- Fade-Up Animation for Event Design Section ---
+    // The .event-design-section is created by services.js and injected into the DOM.
+    const eventSection = document.querySelector('.event-design-section');
+
+    if (eventSection) {
+        // Observer setup
+        const eventObserver = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.remove('fade-up-hidden');
+                    entry.target.classList.add('fade-up-visible');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, {
+            root: null,
+            rootMargin: '0px',
+            threshold: 0.15 
+        });
+
+        eventObserver.observe(eventSection);
+    } else {
+        // Optional: Console log to confirm element wasn't found if it still fails
+        console.error("Event Based Design Section (.event-design-section) not found for animation.");
+    }
+};
